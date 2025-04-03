@@ -137,6 +137,296 @@ document.addEventListener('DOMContentLoaded', function() {
   // Helper function for log base 2
   const log2 = (x) => Math.log(x) / Math.log(2);
 
+  // Component for photography tips
+  function PhotographyTips({ setting, value }) {
+    const getTip = () => {
+      if (setting === "iso") {
+        if (value <= 200) {
+          return "Low ISO: Best for bright conditions. Produces clean images with minimal noise.";
+        } else if (value <= 800) {
+          return "Medium ISO: Good for normal lighting. Balanced between noise and sensitivity.";
+        } else if (value <= 3200) {
+          return "High ISO: Use in low light. May introduce noise but allows faster shutter speeds.";
+        } else {
+          return "Very high ISO: For extremely low light. Will introduce significant noise but enables shooting in near darkness.";
+        }
+      } else if (setting === "aperture") {
+        if (value <= 2.8) {
+          return "Wide aperture: Creates shallow depth of field. Great for portraits and isolating subjects.";
+        } else if (value <= 8) {
+          return "Medium aperture: Good all-around choice. Balances depth of field and sharpness.";
+        } else if (value <= 16) {
+          return "Narrow aperture: Creates deep depth of field. Ideal for landscapes where everything should be in focus.";
+        } else {
+          return "Very narrow aperture: Maximum depth of field. Be aware of diffraction which may reduce overall sharpness.";
+        }
+      } else if (setting === "shutter") {
+        if (value <= 60) {
+          return "Slow shutter: Captures motion blur. Good for creative effects like flowing water or light trails.";
+        } else if (value <= 500) {
+          return "Medium shutter: Good all-around choice for most situations. Freezes casual movement.";
+        } else {
+          return "Fast shutter: Freezes fast action. Ideal for sports, wildlife, and capturing split-second moments.";
+        }
+      }
+      return "";
+    };
+
+    return React.createElement('div', { className: 'mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-md' }, getTip());
+  }
+
+  // Component for exposure meter
+  function ExposureMeter({ exposureCorrect, ev, calculatedEv }) {
+    // Calculate the difference between the calculated EV and scene EV
+    const evDifference = ev - calculatedEv;
+    
+    // Determine the position of the needle on the meter
+    // We'll use a range of -6 to +6 stops
+    const needlePosition = Math.max(-6, Math.min(6, evDifference));
+    const needlePercentage = ((needlePosition + 6) / 12) * 100;
+
+    return React.createElement('div', { className: 'mt-4' },
+      React.createElement('h3', { className: 'text-sm font-medium mb-1' }, 'Exposure Meter'),
+      React.createElement('div', { className: 'h-12 bg-gray-200 rounded-md relative' },
+        // Meter scale
+        React.createElement('div', { className: 'absolute inset-0 flex items-center justify-between px-2' },
+          React.createElement('span', { className: 'text-xs' }, '-6'),
+          React.createElement('span', { className: 'text-xs' }, '-5'),
+          React.createElement('span', { className: 'text-xs' }, '-4'),
+          React.createElement('span', { className: 'text-xs' }, '-3'),
+          React.createElement('span', { className: 'text-xs' }, '-2'),
+          React.createElement('span', { className: 'text-xs' }, '-1'),
+          React.createElement('span', { className: 'text-xs' }, '0'),
+          React.createElement('span', { className: 'text-xs' }, '+1'),
+          React.createElement('span', { className: 'text-xs' }, '+2'),
+          React.createElement('span', { className: 'text-xs' }, '+3'),
+          React.createElement('span', { className: 'text-xs' }, '+4'),
+          React.createElement('span', { className: 'text-xs' }, '+5'),
+          React.createElement('span', { className: 'text-xs' }, '+6')
+        ),
+        
+        // Center mark
+        React.createElement('div', { className: 'absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-400' }),
+        
+        // Needle
+        React.createElement('div', { 
+          className: 'absolute top-0 bottom-0 w-2 bg-red-600 border border-white shadow-md transition-all duration-300',
+          style: { left: `${needlePercentage}%`, transform: 'translateX(-50%)' }
+        }),
+        
+        // Correct exposure indicator
+        React.createElement('div', { className: 'absolute left-1/2 transform -translate-x-1/2 -bottom-6 text-sm' },
+          exposureCorrect 
+            ? React.createElement('span', { className: 'text-green-600 font-medium' }, 'Correct Exposure')
+            : React.createElement('span', { className: 'text-red-600 font-medium' },
+                evDifference < 0 
+                  ? `Underexposed (${Math.abs(evDifference).toFixed(1)} stops)`
+                  : `Overexposed (+${Math.abs(evDifference).toFixed(1)} stops)`
+              )
+        )
+      )
+    );
+  }
+
+  // Component for histogram
+  function Histogram({ sceneType, timeOfDay, exposureCorrect, exposureDifference }) {
+    // Generate histogram data based on scene type and time of day
+    const generateHistogramData = () => {
+      const data = Array(32).fill(0);
+      
+      // Create a seed value from the scene type and time of day to ensure consistency
+      const seed = `${sceneType}-${timeOfDay}`.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      
+      // Deterministic "random" function based on the seed
+      const seededRandom = (index) => {
+        const value = Math.sin(seed + index) * 10000;
+        return Math.abs(value - Math.floor(value));
+      };
+      
+      // Generate different patterns based on scene type and time of day
+      if (sceneType === "landscape") {
+        // Landscape scenes tend to have more mid to high values
+        for (let i = 0; i < data.length; i++) {
+          if (i < 8) {
+            data[i] = 10 + seededRandom(i) * 20;
+          } else if (i < 16) {
+            data[i] = 20 + seededRandom(i) * 40;
+          } else if (i < 24) {
+            data[i] = 40 + seededRandom(i) * 40;
+          } else {
+            data[i] = 20 + seededRandom(i) * 30;
+          }
+        }
+      } else if (timeOfDay === "night") {
+        // Night scenes tend to have more low values
+        for (let i = 0; i < data.length; i++) {
+          if (i < 12) {
+            data[i] = 40 + seededRandom(i) * 40;
+          } else if (i < 20) {
+            data[i] = 20 + seededRandom(i) * 30;
+          } else {
+            data[i] = 5 + seededRandom(i) * 10;
+          }
+        }
+      } else {
+        // Default for other scene types
+        for (let i = 0; i < data.length; i++) {
+          data[i] = 10 + seededRandom(i) * 40;
+        }
+      }
+      
+      // If exposure is incorrect, shift the histogram
+      if (!exposureCorrect) {
+        // Get a shift value based on the exposure difference
+        let shift = 0;
+        
+        if (exposureDifference < 0) {
+          // Underexposed - shift left
+          shift = -Math.min(8, Math.round(Math.abs(exposureDifference) * 2));
+        } else if (exposureDifference > 0) {
+          // Overexposed - shift right
+          shift = Math.min(8, Math.round(Math.abs(exposureDifference) * 2));
+        }
+        
+        if (shift > 0) {
+          // Shift right (overexposed)
+          for (let i = data.length - 1; i >= shift; i--) {
+            data[i] = data[i - shift];
+          }
+          for (let i = 0; i < shift; i++) {
+            data[i] = 0;
+          }
+        } else if (shift < 0) {
+          // Shift left (underexposed)
+          const absShift = Math.abs(shift);
+          for (let i = 0; i < data.length - absShift; i++) {
+            data[i] = data[i + absShift];
+          }
+          for (let i = data.length - absShift; i < data.length; i++) {
+            data[i] = 0;
+          }
+        }
+      }
+      
+      return data;
+    };
+    
+    const histogramData = generateHistogramData();
+    const maxValue = Math.max(...histogramData);
+    
+    return React.createElement('div', null,
+      React.createElement('h3', { className: 'text-sm font-medium mb-1' }, 'Histogram'),
+      React.createElement('div', { className: 'h-32 bg-gray-100 border border-gray-300 rounded-md p-2 flex' },
+        histogramData.map((value, index) => {
+          // Determine the color based on the position in the histogram
+          let barColor = "bg-gray-700"; // Default for midtones
+          
+          if (index < 8) {
+            barColor = "bg-blue-700"; // Shadows (left side)
+          } else if (index >= 24) {
+            barColor = "bg-red-700"; // Highlights (right side)
+          }
+          
+          return React.createElement('div', { key: index, className: 'w-full flex-1 flex flex-col justify-end' },
+            React.createElement('div', { 
+              className: `w-full ${barColor}`,
+              style: { height: `${(value / maxValue) * 100}%` }
+            })
+          );
+        })
+      ),
+      React.createElement('div', { className: 'flex justify-between text-xs text-gray-500 mt-1' },
+        React.createElement('span', { className: 'text-blue-700 font-medium' }, 'Shadows (Underexposed)'),
+        React.createElement('span', null, 'Mid-tones'),
+        React.createElement('span', { className: 'text-red-700 font-medium' }, 'Highlights (Overexposed)')
+      )
+    );
+  }
+
+  // Component for exposure tips
+  function ExposureTips({ exposureCorrect, exposureDifference, exposureMode, autoIso }) {
+    if (exposureCorrect) {
+      return React.createElement('div', { className: 'p-3 bg-gray-100 border-l-4 border-green-500 rounded-md' },
+        React.createElement('p', { className: 'font-medium text-green-700' }, 'Correct Exposure'),
+        React.createElement('p', { className: 'text-gray-700' }, 'Your current settings provide a well-balanced exposure for this scene.')
+      );
+    }
+    
+    // If exposureDifference is negative, we're underexposed (too dark, need more light)
+    // If exposureDifference is positive, we're overexposed (too bright, need less light)
+    const isUnderexposed = exposureDifference < 0;
+    const stopsDifference = Math.abs(exposureDifference).toFixed(1);
+    
+    // Determine which settings can be adjusted based on exposure mode
+    const suggestions = [];
+    
+    if (isUnderexposed) {
+      // Underexposure suggestions - need MORE light
+      if (exposureMode === "manual") {
+        if (!autoIso) suggestions.push("Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)");
+        suggestions.push("Use slower shutter speed (lower number like 1/30 instead of 1/125)");
+        suggestions.push("Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light");
+      } else if (exposureMode === "aperture") {
+        if (!autoIso) {
+          suggestions.push("Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)");
+        } else {
+          suggestions.push("Your camera is using Auto ISO to maintain proper exposure");
+        }
+        suggestions.push("Consider using a wider aperture (lower f-number) if available");
+      } else if (exposureMode === "shutter") {
+        if (!autoIso) {
+          suggestions.push("Increase ISO to boost sensitivity (allows wider aperture range but introduces more noise)");
+        } else {
+          suggestions.push("Your camera is using Auto ISO to maintain proper exposure");
+        }
+      }
+    } else {
+      // Overexposure suggestions - need LESS light
+      if (exposureMode === "manual") {
+        if (!autoIso) suggestions.push("Decrease ISO to reduce sensitivity (reduces noise)");
+        suggestions.push("Use faster shutter speed (higher number like 1/250 instead of 1/60)");
+        suggestions.push("Use smaller aperture (higher f-number like f/11 instead of f/5.6)");
+      } else if (exposureMode === "aperture") {
+        if (!autoIso) {
+          suggestions.push("Decrease ISO to reduce sensitivity (improves image quality)");
+        } else {
+          suggestions.push("Your camera is using Auto ISO to maintain proper exposure");
+        }
+        suggestions.push("Consider using a smaller aperture (higher f-number) if available");
+      } else if (exposureMode === "shutter") {
+        if (!autoIso) {
+          suggestions.push("Decrease ISO to reduce sensitivity (improves image quality)");
+        } else {
+          suggestions.push("Your camera is using Auto ISO to maintain proper exposure");
+        }
+      }
+    }
+    
+    if (autoIso) {
+      suggestions.push("Auto ISO is enabled: Your camera is adjusting ISO automatically to help correct exposure");
+    }
+    
+    return React.createElement('div', { 
+      className: `p-3 bg-gray-100 border-l-4 ${isUnderexposed ? "border-blue-500" : "border-orange-500"} rounded-md`
+    },
+      React.createElement('p', { className: 'font-medium text-gray-800' },
+        isUnderexposed 
+          ? `Underexposed by ${stopsDifference} stops` 
+          : `Overexposed by ${stopsDifference} stops`
+      ),
+      React.createElement('p', { className: 'text-gray-700 mb-2' },
+        isUnderexposed
+          ? "Your image is too dark. Consider these adjustments:"
+          : "Your image is too bright. Consider these adjustments:"
+      ),
+      React.createElement('ul', { className: 'list-disc list-inside text-gray-700 space-y-1' },
+        suggestions.map((suggestion, index) => (
+          React.createElement('li', { key: index }, suggestion)
+        ))
+      )
+    );
+  }
+
   // Component for the header
   function Header() {
     return React.createElement('header', { className: 'bg-white shadow-sm' },
@@ -198,44 +488,6 @@ document.addEventListener('DOMContentLoaded', function() {
     );
   }
 
-  // Component for photography tips
-  function PhotographyTips({ setting, value }) {
-    const getTip = () => {
-      if (setting === "iso") {
-        if (value <= 200) {
-          return "Low ISO: Best for bright conditions. Produces clean images with minimal noise.";
-        } else if (value <= 800) {
-          return "Medium ISO: Good for normal lighting. Balanced between noise and sensitivity.";
-        } else if (value <= 3200) {
-          return "High ISO: Use in low light. May introduce noise but allows faster shutter speeds.";
-        } else {
-          return "Very high ISO: For extremely low light. Will introduce significant noise but enables shooting in near darkness.";
-        }
-      } else if (setting === "aperture") {
-        if (value <= 2.8) {
-          return "Wide aperture: Creates shallow depth of field. Great for portraits and isolating subjects.";
-        } else if (value <= 8) {
-          return "Medium aperture: Good all-around choice. Balances depth of field and sharpness.";
-        } else if (value <= 16) {
-          return "Narrow aperture: Creates deep depth of field. Ideal for landscapes where everything should be in focus.";
-        } else {
-          return "Very narrow aperture: Maximum depth of field. Be aware of diffraction which may reduce overall sharpness.";
-        }
-      } else if (setting === "shutter") {
-        if (value <= 60) {
-          return "Slow shutter: Captures motion blur. Good for creative effects like flowing water or light trails.";
-        } else if (value <= 500) {
-          return "Medium shutter: Good all-around choice for most situations. Freezes casual movement.";
-        } else {
-          return "Fast shutter: Freezes fast action. Ideal for sports, wildlife, and capturing split-second moments.";
-        }
-      }
-      return "";
-    };
-
-    return React.createElement('div', { className: 'mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-md' }, getTip());
-  }
-
   // Main ExposureCalculator component
   function ExposureCalculator() {
     // Scene settings
@@ -259,6 +511,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calculated exposure value
     const [ev, setEv] = useState(12); // Default to midday EV
     const [exposureCorrect, setExposureCorrect] = useState(true);
+
+    // Preview mode
+    const [previewMode, setPreviewMode] = useState("normal"); // normal, dof, motion
 
     // Debug mode
     const [debugMode, setDebugMode] = useState(false);
@@ -312,6 +567,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle exposure mode changes
     const handleExposureModeChange = (value) => {
       setExposureMode(value);
+    };
+
+    // Handle preview mode changes
+    const handlePreviewModeChange = (value) => {
+      setPreviewMode(value);
     };
 
     return React.createElement('div', { className: 'min-h-screen bg-gray-50' },
@@ -475,7 +735,21 @@ document.addEventListener('DOMContentLoaded', function() {
             React.createElement('div', { className: 'bg-white p-6 rounded-lg shadow-sm' },
               React.createElement('div', { className: 'space-y-4' },
                 React.createElement('div', { className: 'flex justify-between items-center' },
-                  React.createElement('h3', { className: 'text-lg font-medium' }, 'Scene Preview')
+                  React.createElement('h3', { className: 'text-lg font-medium' }, 'Scene Preview'),
+                  React.createElement('div', { className: 'flex border rounded-md overflow-hidden' },
+                    React.createElement('button', { 
+                      className: `px-3 py-1 ${previewMode === 'normal' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`,
+                      onClick: () => handlePreviewModeChange('normal')
+                    }, 'Normal'),
+                    React.createElement('button', { 
+                      className: `px-3 py-1 ${previewMode === 'dof' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`,
+                      onClick: () => handlePreviewModeChange('dof')
+                    }, 'Depth of Field'),
+                    React.createElement('button', { 
+                      className: `px-3 py-1 ${previewMode === 'motion' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`,
+                      onClick: () => handlePreviewModeChange('motion')
+                    }, 'Motion')
+                  )
                 ),
                 React.createElement('div', { className: 'relative aspect-video bg-gray-200 rounded-lg overflow-hidden' },
                   React.createElement('img', {
@@ -507,50 +781,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 )
               )
             ),
-            // Exposure Information
-            React.createElement('div', { className: 'bg-white p-6 rounded-lg shadow-sm' },
-              React.createElement('h3', { className: 'text-lg font-medium mb-4' }, 'Exposure Information'),
-              React.createElement('div', { className: 'space-y-4' },
-                React.createElement('div', { className: 'p-3 bg-gray-100 rounded-md' },
-                  React.createElement('p', { className: 'font-medium' }, 'Current Settings:'),
-                  React.createElement('ul', { className: 'mt-2 space-y-1' },
-                    React.createElement('li', null, 
-                      React.createElement('strong', null, 'Aperture:'), 
-                      ' f/', aperture
-                    ),
-                    React.createElement('li', null, 
-                      React.createElement('strong', null, 'Shutter Speed:'), 
-                      ' ', displayShutterSpeed
-                    ),
-                    React.createElement('li', null, 
-                      React.createElement('strong', null, 'ISO:'), 
-                      ' ', iso
-                    ),
-                    React.createElement('li', null, 
-                      React.createElement('strong', null, 'Exposure Mode:'), 
-                      ' ', exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1), ' Priority'
-                    )
-                  )
-                ),
-                React.createElement('div', { 
-                  className: `p-3 rounded-md ${exposureCorrect ? 'bg-green-50 border-l-4 border-green-500' : 'bg-red-50 border-l-4 border-red-500'}`
-                },
-                  exposureCorrect 
-                    ? React.createElement('p', { className: 'font-medium text-green-700' }, 'Correct Exposure')
-                    : React.createElement('p', { className: 'font-medium text-red-700' },
-                        exposureDifference < 0
-                          ? `Underexposed by ${Math.abs(exposureDifference).toFixed(1)} stops`
-                          : `Overexposed by ${exposureDifference.toFixed(1)} stops`
-                      ),
-                  React.createElement('p', { className: 'mt-1 text-sm' },
-                    exposureCorrect
-                      ? 'Your current settings provide a well-balanced exposure for this scene.'
-                      : exposureDifference < 0
-                        ? 'Your image will be too dark. Consider using a wider aperture, slower shutter speed, or higher ISO.'
-                        : 'Your image will be too bright. Consider using a smaller aperture, faster shutter speed, or lower ISO.'
-                  )
-                )
-              )
+            // Exposure Meter
+            React.createElement(ExposureMeter, {
+              exposureCorrect: exposureCorrect,
+              ev: ev,
+              calculatedEv: calculatedEv
+            }),
+            // Histogram
+            React.createElement('div', { className: 'mt-4' },
+              React.createElement(Histogram, {
+                sceneType: sceneType,
+                timeOfDay: timeOfDay,
+                exposureCorrect: exposureCorrect,
+                exposureDifference: exposureDifference
+              })
+            ),
+            // Exposure Tips
+            React.createElement('div', { className: 'mt-4' },
+              React.createElement(ExposureTips, {
+                exposureCorrect: exposureCorrect,
+                exposureDifference: exposureDifference,
+                exposureMode: exposureMode,
+                autoIso: autoIso
+              })
             )
           )
         )
