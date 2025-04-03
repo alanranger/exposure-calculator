@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const REFERENCE_APERTURE = 5.6;
     const REFERENCE_ISO = 100;
     const REFERENCE_SHUTTER_SPEED = 1 / 2000;
-    const REFERENCE_EV = 12;
+    const REFERENCE_EV = 15;
 
     // Auto ISO settings
     const MIN_SHUTTER_SPEED = 1 / 60; // Minimum shutter speed for auto ISO
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isoIndex = 3; // ISO 100
     let autoIso = false;
     let exposureMode = 'aperture'; // aperture, shutter, manual
-    let ev = 12; // Default to midday EV
+    let ev = 15; // Default to midday EV
     let exposureCorrect = true;
     let bulbMode = false;
     let bulbExposureTime = '';
@@ -355,12 +355,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // EV100 = log2((aperture²) / shutter)
         // To adjust for ISO: EV = EV100 + log2(ISO/100)
 
-        // Our reference point (f/5.6, 1/2000s, ISO 100) should give EV 15
-        // But the standard formula gives EV 15.94 for these settings
-        // So we need an offset of -0.94 to align with our scale
-        const OFFSET = -0.94;
+        const EV100 = log2((apertureValue * apertureValue) / shutterValue);
+        const EV = EV100 + log2(100 / isoValue);
 
-        return log2((apertureValue * apertureValue) / shutterValue) + log2(100 / isoValue) + OFFSET;
+        return EV;
     }
 
     // Calculate EV differences from reference settings
@@ -476,9 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter);
 
         // Update the shutter speed index
-          requiredShutter);
-
-        // Update the shutter speed index
         shutterSpeedIndex = closestShutterIndex;
         userChangedShutter = true;
         updateShutterDisplay();
@@ -491,6 +486,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Find the closest standard aperture
         let closestApertureIndex = findClosestIndex(standardApertures, requiredAperture);
+
+        // Check if we need to adjust ISO
+        let require  requiredAperture);
 
         // Check if we need to adjust ISO
         let requiredIso = REFERENCE_ISO;
@@ -626,9 +624,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update debug info
         if (debugMode) {
             debugIso.textContent = iso;
-            if (debugAutoIso) {
-                debugAutoIso.style.display = autoIso ? 'inline' : 'none';
-            }
+            debugAutoIso.style.display = autoIso ? 'inline' : 'none';
         }
         
         // Update Auto ISO info
@@ -640,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update Auto ISO info
     function updateAutoIsoInfo() {
-        if (autoIso && autoIsoInfo) {
+        if (autoIso) {
             autoIsoInfo.classList.remove('hidden');
             if (exposureMode === 'aperture') {
                 autoIsoInfo.textContent = 'Auto ISO: Maintaining minimum shutter speed of 1/60s';
@@ -649,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (exposureMode === 'manual') {
                 autoIsoInfo.textContent = 'Auto ISO: Automatically adjusting ISO to achieve correct exposure';
             }
-        } else if (autoIsoInfo) {
+        } else {
             autoIsoInfo.classList.add('hidden');
         }
     }
@@ -658,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePhotographyTips(setting, value) {
         let tip = '';
         
-        if (setting === 'iso' && isoTips) {
+        if (setting === 'iso') {
             if (value <= 200) {
                 tip = 'Low ISO: Best for bright conditions. Produces clean images with minimal noise.';
             } else if (value <= 800) {
@@ -669,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tip = 'Very high ISO: For extremely low light. Will introduce significant noise but enables shooting in near darkness.';
             }
             isoTips.textContent = tip;
-        } else if (setting === 'aperture' && apertureTips) {
+        } else if (setting === 'aperture') {
             if (value <= 2.8) {
                 tip = 'Wide aperture: Creates shallow depth of field. Great for portraits and isolating subjects.';
             } else if (value <= 8) {
@@ -680,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tip = 'Very narrow aperture: Maximum depth of field. Be aware of diffraction which may reduce overall sharpness.';
             }
             apertureTips.textContent = tip;
-        } else if (setting === 'shutter' && shutterTips) {
+        } else if (setting === 'shutter') {
             if (value >= 1/60) {
                 tip = 'Slow shutter: Captures motion blur. Good for creative effects like flowing water or light trails.';
             } else if (value >= 1/500) {
@@ -695,28 +691,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update scene image
     function updateSceneImage() {
         // Show loading state
-        if (sceneLoading) sceneLoading.classList.remove('hidden');
-        if (sceneError) sceneError.classList.add('hidden');
+        sceneLoading.classList.remove('hidden');
+        sceneError.classList.add('hidden');
         
         // Get the image URL
         const imageUrl = sceneImageUrls[sceneType]?.[timeOfDay];
         
         if (!imageUrl) {
             // Handle missing image
-            if (sceneLoading) sceneLoading.classList.add('hidden');
-            if (sceneError) sceneError.classList.remove('hidden');
+            sceneLoading.classList.add('hidden');
+            sceneError.classList.remove('hidden');
             return;
         }
         
         // Load the image
         sceneImage.src = imageUrl;
         sceneImage.onload = function() {
-            if (sceneLoading) sceneLoading.classList.add('hidden');
+            sceneLoading.classList.add('hidden');
             
             // Update scene description
-            if (sceneDescription) {
-                sceneDescription.textContent = `${sceneType.charAt(0).toUpperCase() + sceneType.slice(1)} at ${timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)}`;
-            }
+            sceneDescription.textContent = `${sceneType.charAt(0).toUpperCase() + sceneType.slice(1)} at ${timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)}`;
             
             // Update visualizations if active
             if (previewMode === 'dof') {
@@ -730,15 +724,13 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         sceneImage.onerror = function() {
-            if (sceneLoading) sceneLoading.classList.add('hidden');
-            if (sceneError) sceneError.classList.remove('hidden');
+            sceneLoading.classList.add('hidden');
+            sceneError.classList.remove('hidden');
         };
     }
 
     // Update DOF visualization
     function updateDofVisualization() {
-        if (!dofZone || !dofIndicator || !dofExplanation || !dofCurrentSetting) return;
-        
         const aperture = standardApertures[apertureIndex];
         
         // Get aperture category
@@ -766,8 +758,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update motion visualization
     function updateMotionVisualization() {
-        if (!motionIndicator || !motionExplanation || !motionCurrentSetting || !motionLines) return;
-        
         const shutterSpeed = standardShutterSpeeds[shutterSpeedIndex];
         
         // Get shutter category
@@ -840,8 +830,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update histogram
     function updateHistogram() {
-        if (!histogramContainer) return;
-        
         // Clear existing histogram
         histogramContainer.innerHTML = '';
         
@@ -972,8 +960,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update exposure meter
     function updateExposureMeter() {
-        if (!exposureMeterNeedle || !exposureMeterStatus || !exposureIndicator) return;
-        
         const aperture = standardApertures[apertureIndex];
         const shutter = standardShutterSpeeds[shutterSpeedIndex];
         const iso = standardIsoValues[isoIndex];
@@ -1028,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateExposureTips(evDifference);
         
         // Update debug info
-        if (debugMode && debugCalculatedEv && debugExposureDifference) {
+        if (debugMode) {
             debugCalculatedEv.textContent = calculatedEv.toFixed(2);
             debugExposureDifference.textContent = evDifference.toFixed(2);
         }
@@ -1036,8 +1022,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update exposure tips
     function updateExposureTips(exposureDifference) {
-        if (!exposureTipsCorrect || !exposureTipsIncorrect || !exposureTipsBulb) return;
-        
         const aperture = standardApertures[apertureIndex];
         const shutter = standardShutterSpeeds[shutterSpeedIndex];
         
@@ -1058,9 +1042,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Update bulb exposure time display
-            if (bulbExposureTimeSpan) {
-                bulbExposureTimeSpan.textContent = bulbExposureTime;
-            }
+            bulbExposureTimeSpan.textContent = bulbExposureTime;
             
             // Show bulb mode tips
             exposureTipsCorrect.classList.add('hidden');
@@ -1068,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', function() {
             exposureTipsBulb.classList.remove('hidden');
             
             // Update debug info
-            if (debugMode && debugRequiredExposure) {
+            if (debugMode) {
                 debugRequiredExposure.textContent = bulbExposureTime;
             }
             return;
@@ -1081,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', function() {
             exposureTipsBulb.classList.add('hidden');
             
             // Update debug info
-            if (debugMode && debugRequiredExposure) {
+            if (debugMode) {
                 debugRequiredExposure.textContent = formatShutterSpeed(shutter);
             }
             
@@ -1100,85 +1082,79 @@ document.addEventListener('DOMContentLoaded', function() {
             const stopsDifference = Math.abs(exposureDifference).toFixed(1);
             
             // Update title
-            if (exposureTipsTitle) {
-                exposureTipsTitle.textContent = isUnderexposed ? `Underexposed by ${stopsDifference} stops` : `Overexposed by ${stopsDifference} stops`;
-            }
+            exposureTipsTitle.textContent = isUnderexposed ? `Underexposed by ${stopsDifference} stops` : `Overexposed by ${stopsDifference} stops`;
             
             // Update description
-            if (exposureTipsDescription) {
-                exposureTipsDescription.textContent = isUnderexposed ? 'Your image is too dark. Consider these adjustments:' : 'Your image is too bright. Consider these adjustments:';
-            }
+            exposureTipsDescription.textContent = isUnderexposed ? 'Your image is too dark. Consider these adjustments:' : 'Your image is too bright. Consider these adjustments:';
             
             // Clear existing suggestions
-            if (exposureTipsSuggestions) {
-                exposureTipsSuggestions.innerHTML = '';
-                
-                // Determine which settings can be adjusted based on exposure mode
-                const suggestions = [];
-                
-                if (isUnderexposed) {
-                    // Underexposure suggestions - need MORE light
-                    if (exposureMode === 'manual') {
-                        if (!autoIso)
-                            suggestions.push('Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)');
-                        suggestions.push('Use slower shutter speed (lower number like 1/30 instead of 1/125)');
-                        suggestions.push('Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light');
-                    } else if (exposureMode === 'aperture') {
-                        if (!autoIso) {
-                            suggestions.push('Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)');
-                        } else {
-                            suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
-                        }
-                        suggestions.push('Consider using a wider aperture (lower f-number) if available');
-                    } else if (exposureMode === 'shutter') {
-                        if (!autoIso) {
-                            suggestions.push('Increase ISO to boost sensitivity (allows wider aperture range but introduces more noise)');
-                        } else {
-                            suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
-                        }
+            exposureTipsSuggestions.innerHTML = '';
+            
+            // Determine which settings can be adjusted based on exposure mode
+            const suggestions = [];
+            
+            if (isUnderexposed) {
+                // Underexposure suggestions - need MORE light
+                if (exposureMode === 'manual') {
+                    if (!autoIso)
+                        suggestions.push('Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)');
+                    suggestions.push('Use slower shutter speed (lower number like 1/30 instead of 1/125)');
+                    suggestions.push('Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light');
+                } else if (exposureMode === 'aperture') {
+                    if (!autoIso) {
+                        suggestions.push('Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)');
+                    } else {
+                        suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
                     }
-                } else {
-                    // Overexposure suggestions - need LESS light
-                    if (exposureMode === 'manual') {
-                        if (!autoIso) suggestions.push('Decrease ISO to reduce sensitivity (reduces noise)');
-                        suggestions.push('Use faster shutter speed (higher number like 1/250 instead of 1/60)');
-                        suggestions.push('Use smaller aperture (higher f-number like f/11 instead of f/5.6)');
-                    } else if (exposureMode === 'aperture') {
-                        if (!autoIso) {
-                            suggestions.push('Decrease ISO to reduce sensitivity (improves image quality)');
-                        } else {
-                            suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
-                        }
-                        suggestions.push('Consider using a smaller aperture (higher f-number) if available');
-                    } else if (exposureMode === 'shutter') {
-                        if (!autoIso) {
-                            suggestions.push('Decrease ISO to reduce sensitivity (improves image quality)');
-                        } else {
-                            suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
-                        }
+                    suggestions.push('Consider using a wider aperture (lower f-number) if available');
+                } else if (exposureMode === 'shutter') {
+                    if (!autoIso) {
+                        suggestions.push('Increase ISO to boost sensitivity (allows wider aperture range but introduces more noise)');
+                    } else {
+                        suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
                     }
                 }
-                
-                if (autoIso) {
-                    suggestions.push('Auto ISO is enabled: Your camera is adjusting ISO automatically to help correct exposure');
+            } else {
+                // Overexposure suggestions - need LESS light
+                if (exposureMode === 'manual') {
+                    if (!autoIso) suggestions.push('Decrease ISO to reduce sensitivity (reduces noise)');
+                    suggestions.push('Use faster shutter speed (higher number like 1/250 instead of 1/60)');
+                    suggestions.push('Use smaller aperture (higher f-number like f/11 instead of f/5.6)');
+                } else if (exposureMode === 'aperture') {
+                    if (!autoIso) {
+                        suggestions.push('Decrease ISO to reduce sensitivity (improves image quality)');
+                    } else {
+                        suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
+                    }
+                    suggestions.push('Consider using a smaller aperture (higher f-number) if available');
+                } else if (exposureMode === 'shutter') {
+                    if (!autoIso) {
+                        suggestions.push('Decrease ISO to reduce sensitivity (improves image quality)');
+                    } else {
+                        suggestions.push('Your camera is using Auto ISO to maintain proper exposure');
+                    }
                 }
-                
-                // Add information about Auto ISO behavior in the tips component
-                if (autoIso && exposureMode === 'aperture') {
-                    suggestions.push('Auto ISO is maintaining a minimum shutter speed of 1/60s, adjusting ISO as needed');
-                    suggestions.push('The camera will use the lowest possible ISO to achieve this shutter speed');
-                }
-                
-                // Add suggestions to the list
-                suggestions.forEach(suggestion => {
-                    const li = document.createElement('li');
-                    li.textContent = suggestion;
-                    exposureTipsSuggestions.appendChild(li);
-                });
             }
             
+            if (autoIso) {
+                suggestions.push('Auto ISO is enabled: Your camera is adjusting ISO automatically to help correct exposure');
+            }
+            
+            // Add information about Auto ISO behavior in the tips component
+            if (autoIso && exposureMode === 'aperture') {
+                suggestions.push('Auto ISO is maintaining a minimum shutter speed of 1/60s, adjusting ISO as needed');
+                suggestions.push('The camera will use the lowest possible ISO to achieve this shutter speed');
+            }
+            
+            // Add suggestions to the list
+            suggestions.forEach(suggestion => {
+                const li = document.createElement('li');
+                li.textContent = suggestion;
+                exposureTipsSuggestions.appendChild(li);
+            });
+            
             // Update debug info
-            if (debugMode && debugRequiredExposure) {
+            if (debugMode) {
                 debugRequiredExposure.textContent = formatShutterSpeed(requiredShutterValue);
             }
         }
@@ -1212,8 +1188,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update EV stop indicators
     function updateEvStopIndicators() {
-        if (!apertureEvIndicator || !shutterEvIndicator || !isoEvIndicator) return;
-        
+        // Only show indicators when there's a user change
+        if (userChangedAperture  {
         // Only show indicators when there's a user change
         if (userChangedAperture) {
             const displayEvDiff = apertureEvDiff;
@@ -1260,8 +1236,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update exposure slider visualization
     function updateExposureSliderVisualization() {
-        if (!apertureSliderDot || !shutterSliderDot || !isoSliderDot) return;
-        
         // Calculate display values directly from props
         // In priority modes, we need to show the compensating relationship
         let displayApertureEvDiff = apertureEvDiff;
@@ -1296,20 +1270,14 @@ document.addEventListener('DOMContentLoaded', function() {
         isoSliderDot.style.left = `${isoPosition}%`;
         
         // Update EV displays
-        if (apertureEvDisplay) {
-            apertureEvDisplay.textContent = apertureEvDisplayText;
-            apertureEvDisplay.className = `ml-2 text-sm font-medium ${apertureEvDisplayText.includes('+') ? 'text-red-500' : apertureEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
-        }
+        apertureEvDisplay.textContent = apertureEvDisplayText;
+        apertureEvDisplay.className = `ml-2 text-sm font-medium ${apertureEvDisplayText.includes('+') ? 'text-red-500' : apertureEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
         
-        if (shutterEvDisplay) {
-            shutterEvDisplay.textContent = shutterEvDisplayText;
-            shutterEvDisplay.className = `ml-2 text-sm font-medium ${shutterEvDisplayText.includes('+') ? 'text-red-500' : shutterEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
-        }
+        shutterEvDisplay.textContent = shutterEvDisplayText;
+        shutterEvDisplay.className = `ml-2 text-sm font-medium ${shutterEvDisplayText.includes('+') ? 'text-red-500' : shutterEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
         
-        if (isoEvDisplay) {
-            isoEvDisplay.textContent = isoEvDisplayText;
-            isoEvDisplay.className = `ml-2 text-sm font-medium ${isoEvDisplayText.includes('+') ? 'text-red-500' : isoEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
-        }
+        isoEvDisplay.textContent = isoEvDisplayText;
+        isoEvDisplay.className = `ml-2 text-sm font-medium ${isoEvDisplayText.includes('+') ? 'text-red-500' : isoEvDisplayText.includes('-') ? 'text-green-500' : 'text-gray-500'}`;
         
         // Calculate total EV adjustment based on exposure mode
         let totalEvAdjustment = 0;
@@ -1324,25 +1292,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update total exposure adjustment
-        if (totalExposureAdjustment) {
-            totalExposureAdjustment.textContent = `${Math.abs(totalEvAdjustment) < 0.1 ? '0.0' : `${totalEvAdjustment > 0 ? '+' : ''}${totalEvAdjustment.toFixed(1)}`} EV`;
-            totalExposureAdjustment.className = `text-sm font-bold ${Math.abs(totalEvAdjustment) < 0.1 ? 'text-gray-500' : totalEvAdjustment > 0 ? 'text-red-500' : 'text-green-500'}`;
-        }
+        totalExposureAdjustment.textContent = `${Math.abs(totalEvAdjustment) < 0.1 ? '0.0' : `${totalEvAdjustment > 0 ? '+' : ''}${totalEvAdjustment.toFixed(1)}`} EV`;
+        totalExposureAdjustment.className = `text-sm font-bold ${Math.abs(totalEvAdjustment) < 0.1 ? 'text-gray-500' : totalEvAdjustment > 0 ? 'text-red-500' : 'text-green-500'}`;
         
         // Update exposure adjustment description
-        if (exposureAdjustmentDescription) {
-            exposureAdjustmentDescription.textContent = Math.abs(totalEvAdjustment) < 0.1 ? 'Correct exposure' : totalEvAdjustment > 0 ? 'Overexposed: Image will be brighter than ideal' : 'Underexposed: Image will be darker than ideal';
-        }
+        exposureAdjustmentDescription.textContent = Math.abs(totalEvAdjustment) < 0.1 ? 'Correct exposure' : totalEvAdjustment > 0 ? 'Overexposed: Image will be brighter than ideal' : 'Underexposed: Image will be darker than ideal';
         
         // Update exposure mode explanation
-        if (exposureModeExplanation) {
-            if (exposureMode === 'aperture') {
-                exposureModeExplanation.textContent = 'In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.';
-            } else if (exposureMode === 'shutter') {
-                exposureModeExplanation.textContent = 'In Shutter Priority mode, changing shutter speed or ISO will automatically adjust aperture to maintain exposure.';
-            } else {
-                exposureModeExplanation.textContent = 'In Manual mode, you must balance all three settings yourself to achieve proper exposure.';
-            }
+        if (exposureMode === 'aperture') {
+            exposureModeExplanation.textContent = 'In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.';
+        } else if (exposureMode === 'shutter') {
+            exposureModeExplanation.textContent = 'In Shutter Priority mode, changing shutter speed or ISO will automatically adjust aperture to maintain exposure.';
+        } else {
+            exposureModeExplanation.textContent = 'In Manual mode, you must balance all three settings yourself to achieve proper exposure.';
         }
         
         // Update equivalent settings
@@ -1364,8 +1326,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update equivalent settings
     function updateEquivalentSettings() {
-        if (!currentSettingsDescription || !equivalentSettings) return;
-        
         const aperture = standardApertures[apertureIndex];
         const shutter = standardShutterSpeeds[shutterSpeedIndex];
         const iso = standardIsoValues[isoIndex];
@@ -1410,9 +1370,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const shutter = standardShutterSpeeds[shutterSpeedIndex];
         const iso = standardIsoValues[isoIndex];
         
-        if (debugSceneType) debugSceneType.textContent = sceneType;
-        if (debugTimeOfDay) debugTimeOfDay.textContent = timeOfDay;
-        if (debugSceneEv) debugSceneEv.textContent = ev;
+        debugSceneType.textContent = sceneType;
+        debugTimeOfDay.textContent = timeOfDay;
+        debugSceneEv.textContent = ev;
         
         // Get the reference exposure time for the current time of day
         const getReferenceExposureTime = (timeOfDay) => {
@@ -1432,13 +1392,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        if (debugReferenceExposure) debugReferenceExposure.textContent = getReferenceExposureTime(timeOfDay);
+        debugReferenceExposure.textContent = getReferenceExposureTime(timeOfDay);
         
-        if (debugIso) debugIso.textContent = iso;
-        if (debugAutoIso) debugAutoIso.style.display = autoIso ? 'inline' : 'none';
+        debugIso.textContent = iso;
+        debugAutoIso.style.display = autoIso ? 'inline' : 'none';
         
-        if (debugAperture) debugAperture.textContent = aperture;
-        if (debugShutterSpeed) debugShutterSpeed.textContent = formatShutterSpeed(shutter);
+        debugAperture.textContent = aperture;
+        debugShutterSpeed.textContent = formatShutterSpeed(shutter);
         
         // Calculate the required shutter speed for correct exposure
         const requiredShutterValue = calculateRequiredShutterSpeed(aperture, ev, iso);
@@ -1456,17 +1416,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        if (debugRequiredExposure) debugRequiredExposure.textContent = formatRequiredExposureTime(requiredShutterValue);
+        debugRequiredExposure.textContent = formatRequiredExposureTime(requiredShutterValue);
         
-        if (debugExposureMode) debugExposureMode.textContent = `${exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1)} Priority`;
+        debugExposureMode.textContent = `${exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1)} Priority`;
         
         // Calculate the actual EV from current camera settings
         const calculatedEv = calculateActualEv(aperture, shutter, iso);
-        if (debugCalculatedEv) debugCalculatedEv.textContent = calculatedEv.toFixed(2);
+        debugCalculatedEv.textContent = calculatedEv.toFixed(2);
         
         // Calculate the difference between the calculated EV and scene EV
         const evDifference = ev - calculatedEv;
-        if (debugExposureDifference) debugExposureDifference.textContent = evDifference.toFixed(2);
+        debugExposureDifference.textContent = evDifference.toFixed(2);
     }
 
     // Initialize the application
@@ -1496,85 +1456,62 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Set initialized flag
         initialized = true;
-        
-        // Set initial exposure mode
-        setExposureMode('aperture');
     }
-    
-    // Function to set exposure mode and update UI
-    function setExposureMode(mode) {
-        // Update exposure mode
-        exposureMode = mode;
+
+    // Event listeners
+
+    // Scene type change
+    sceneTypeSelect.addEventListener('change', function() {
+        sceneType = this.value;
+        updateSceneImage();
+        updateHistogram();
+    });
+
+    // Time of day change
+    timeOfDaySelect.addEventListener('change', function() {
+        timeOfDay = this.value;
+        
+        // Set the EV based on the time of day
+        ev = getEvForTimeOfDay(timeOfDay);
         
         // Reset user change flags
         userChangedAperture = false;
         userChangedShutter = false;
         userChangedIso = false;
         
-        // Update tab UI
-        document.querySelectorAll('.exposure-mode-tabs .tab-trigger').forEach(tab => {
-            if (tab.dataset.mode === mode) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
-        });
-        
-        // Update labels and icons based on exposure mode
+        // Update settings based on new time of day
         if (exposureMode === 'aperture') {
-            if (apertureLabel) apertureLabel.className = 'font-medium text-green-600';
-            if (shutterLabel) shutterLabel.className = 'font-medium text-red-500';
-            if (isoLabel) isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
-            
-            if (apertureIcon) apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
-            if (shutterIcon) shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M12 1v2"></path><path d="M12 21v2"></path><path d="M4.22 4.22l1.42 1.42"></path><path d="M18.36 18.36l1.42 1.42"></path><path d="M1 12h2"></path><path d="M21 12h2"></path><path d="M4.22 19.78l1.42-1.42"></path><path d="M18.36 5.64l1.42-1.42"></path></svg>';
-            
-            // Enable aperture slider, disable shutter slider
-            apertureSlider.disabled = false;
-            apertureSlider.classList.remove('opacity-50');
-            shutterSlider.disabled = true;
-            shutterSlider.classList.add('opacity-50');
-        } else if (exposureMode === 'shutter') {
-            if (apertureLabel) apertureLabel.className = 'font-medium text-red-500';
-            if (shutterLabel) shutterLabel.className = 'font-medium text-green-600';
-            if (isoLabel) isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
-            
-            if (apertureIcon) apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M12 1v2"></path><path d="M12 21v2"></path><path d="M4.22 4.22l1.42 1.42"></path><path d="M18.36 18.36l1.42 1.42"></path><path d="M1 12h2"></path><path d="M21 12h2"></path><path d="M4.22 19.78l1.42-1.42"></path><path d="M18.36 5.64l1.42-1.42"></path></svg>';
-            if (shutterIcon) shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
-            
-            // Enable shutter slider, disable aperture slider
-            apertureSlider.disabled = true;
-            apertureSlider.classList.add('opacity-50');
-            shutterSlider.disabled = false;
-            shutterSlider.classList.remove('opacity-50');
-        } else {
-            if (apertureLabel) apertureLabel.className = 'font-medium text-blue-600';
-            if (shutterLabel) shutterLabel.className = 'font-medium text-blue-600';
-            if (isoLabel) isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
-            
-            if (apertureIcon) apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>';
-            if (shutterIcon) shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>';
-            
-            // Enable both sliders
-            apertureSlider.disabled = false;
-            apertureSlider.classList.remove('opacity-50');
-            shutterSlider.disabled = false;
-            shutterSlider.classList.remove('opacity-50');
-        }
-        
-        // If auto ISO is enabled, update settings based on the new mode
-        if (autoIso) {
-            if (exposureMode === 'aperture') {
+            if (autoIso) {
+                // In aperture priority with auto ISO, calculate the appropriate ISO and shutter speed
                 updateAutoIso(standardApertures[apertureIndex], ev);
-            } else if (exposureMode === 'shutter') {
+            } else {
+                // In aperture priority without auto ISO, adjust shutter speed
+                const requiredShutterValue = calculateRequiredShutterSpeed(standardApertures[apertureIndex], ev, standardIsoValues[isoIndex]);
+                const closestIndex = findClosestIndex(standardShutterSpeeds, requiredShutterValue);
+                shutterSpeedIndex = closestIndex;
+                updateShutterDisplay();
+            }
+        } else if (exposureMode === 'shutter') {
+            if (autoIso) {
+                // In shutter priority with auto ISO, adjust aperture and ISO as needed
                 updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev);
-            } else if (exposureMode === 'manual') {
+            } else {
+                // In shutter priority without auto ISO, adjust aperture
+                const requiredAperture = calculateRequiredAperture(standardShutterSpeeds[shutterSpeedIndex], ev, standardIsoValues[isoIndex]);
+                const closestIndex = findClosestIndex(standardApertures, requiredAperture);
+                apertureIndex = closestIndex;
+                updateApertureDisplay();
+            }
+        } else if (exposureMode === 'manual') {
+            if (autoIso) {
+                // In manual mode with auto ISO, adjust ISO to match the scene EV
                 updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
             }
+            // In manual mode without auto ISO, just update the exposure correctness
         }
         
-        // Update Auto ISO info
-        updateAutoIsoInfo();
+        // Update scene image
+        updateSceneImage();
         
         // Update exposure meter
         updateExposureMeter();
@@ -1584,65 +1521,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update debug info
         updateDebugInfo();
-    }
+    });
 
-    // Event listeners
-    
-    // Scene type change
-    if (sceneTypeSelect) {
-        sceneTypeSelect.addEventListener('change', function() {
-            sceneType = this.value;
-            updateSceneImage();
-            updateHistogram();
-        });
-    }
-    
-    // Time of day change
-    if (timeOfDaySelect) {
-        timeOfDaySelect.addEventListener('change', function() {
-            timeOfDay = this.value;
+    // Aperture slider change
+    apertureSlider.addEventListener('input', function() {
+        if (exposureMode !== 'shutter') {
+            const newApertureIndex = parseInt(this.value);
+            apertureIndex = newApertureIndex;
+            userChangedAperture = true;
+            updateApertureDisplay();
             
-            // Set the EV based on the time of day
-            ev = getEvForTimeOfDay(timeOfDay);
-            
-            // Reset user change flags
-            userChangedAperture = false;
-            userChangedShutter = false;
-            userChangedIso = false;
-            
-            // Update settings based on new time of day
+            // In aperture priority mode, adjust shutter speed
             if (exposureMode === 'aperture') {
                 if (autoIso) {
-                    // In aperture priority with auto ISO, calculate the appropriate ISO and shutter speed
+                    // With Auto ISO, adjust both shutter speed and ISO as needed
                     updateAutoIso(standardApertures[apertureIndex], ev);
                 } else {
-                    // In aperture priority without auto ISO, adjust shutter speed
+                    // Without Auto ISO, just adjust shutter speed
                     const requiredShutterValue = calculateRequiredShutterSpeed(standardApertures[apertureIndex], ev, standardIsoValues[isoIndex]);
                     const closestIndex = findClosestIndex(standardShutterSpeeds, requiredShutterValue);
                     shutterSpeedIndex = closestIndex;
                     updateShutterDisplay();
                 }
-            } else if (exposureMode === 'shutter') {
-                if (autoIso) {
-                    // In shutter priority with auto ISO, adjust aperture and ISO as needed
-                    updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev);
-                } else {
-                    // In shutter priority without auto ISO, adjust aperture
-                    const requiredAperture = calculateRequiredAperture(standardShutterSpeeds[shutterSpeedIndex], ev, standardIsoValues[isoIndex]);
-                    const closestIndex = findClosestIndex(standardApertures, requiredAperture);
-                    apertureIndex = closestIndex;
-                    updateApertureDisplay();
-                }
-            } else if (exposureMode === 'manual') {
-                if (autoIso) {
-                    // In manual mode with auto ISO, adjust ISO to match the scene EV
-                    updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
-                }
-                // In manual mode without auto ISO, just update the exposure correctness
+            } else if (exposureMode === 'manual' && autoIso) {
+                // In manual mode with auto ISO, adjust ISO when aperture changes
+                updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
             }
-            
-            // Update scene image
-            updateSceneImage();
             
             // Update exposure meter
             updateExposureMeter();
@@ -1652,170 +1556,212 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update debug info
             updateDebugInfo();
-        });
-    }
-    
-    // Aperture slider change
-    if (apertureSlider) {
-        apertureSlider.addEventListener('input', function() {
-            if (exposureMode !== 'shutter') {
-                const newApertureIndex = parseInt(this.value);
-                apertureIndex = newApertureIndex;
-                userChangedAperture = true;
-                updateApertureDisplay();
-                
-                // In aperture priority mode, adjust shutter speed
-                if (exposureMode === 'aperture') {
-                    if (autoIso) {
-                        // With Auto ISO, adjust both shutter speed and ISO as needed
-                        updateAutoIso(standardApertures[apertureIndex], ev);
-                    } else {
-                        // Without Auto ISO, just adjust shutter speed
-                        const requiredShutterValue = calculateRequiredShutterSpeed(standardApertures[apertureIndex], ev, standardIsoValues[isoIndex]);
-                        const closestIndex = findClosestIndex(standardShutterSpeeds, requiredShutterValue);
-                        shutterSpeedIndex = closestIndex;
-                        updateShutterDisplay();
-                    }
-                } else if (exposureMode === 'manual' && autoIso) {
-                    // In manual mode with auto ISO, adjust ISO when aperture changes
-                    updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
-                }
-                
-                // Update exposure meter
-                updateExposureMeter();
-                
-                // Update histogram
-                updateHistogram();
-                
-                // Update debug info
-                updateDebugInfo();
-            }
-        });
-    }
-    
+        }
+    });
+
     // Shutter slider change
-    if (shutterSlider) {
-        shutterSlider.addEventListener('input', function() {
-            if (exposureMode !== 'aperture') {
-                const newShutterIndex = parseInt(this.value);
-                shutterSpeedIndex = newShutterIndex;
-                userChangedShutter = true;
-                updateShutterDisplay();
-                
-                // In shutter priority mode, adjust aperture
-                if (exposureMode === 'shutter') {
-                    if (autoIso) {
-                        // With Auto ISO, adjust both aperture and ISO as needed
-                        updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev);
-                    } else {
-                        // Without Auto ISO, just adjust aperture
-                        const requiredAperture = calculateRequiredAperture(standardShutterSpeeds[shutterSpeedIndex], ev, standardIsoValues[isoIndex]);
-                        const closestIndex = findClosestIndex(standardApertures, requiredAperture);
-                        apertureIndex = closestIndex;
-                        updateApertureDisplay();
-                    }
-                } else if (exposureMode === 'manual' && autoIso) {
-                    // In manual mode with auto ISO, adjust ISO when shutter speed changes
-                    updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
-                }
-                
-                // Update exposure meter
-                updateExposureMeter();
-                
-                // Update histogram
-                updateHistogram();
-                
-                // Update debug info
-                updateDebugInfo();
-            }
-        });
-    }
-    
-    // ISO slider change
-    if (isoSlider) {
-        isoSlider.addEventListener('input', function() {
-            if (!autoIso) {
-                const newIsoIndex = parseInt(this.value);
-                const newIso = standardIsoValues[newIsoIndex];
-                const oldIso = standardIsoValues[isoIndex];
-                
-                // Update the ISO index
-                isoIndex = newIsoIndex;
-                userChangedIso = true;
-                updateIsoDisplay();
-                
-                // In aperture priority mode, adjust shutter speed when ISO changes
-                if (exposureMode === 'aperture') {
-                    // Calculate the ISO change in stops
-                    const isoStopsDiff = getIsoStopsDifference(oldIso, newIso);
-                    
-                    // Get the current shutter speed
-                    const currentShutter = standardShutterSpeeds[shutterSpeedIndex];
-                    
-                    // Calculate the new shutter speed based on ISO change
-                    // If ISO increases by 1 stop, shutter speed should be 1 stop faster
-                    const newShutterValue = currentShutter / Math.pow(2, isoStopsDiff);
-                    
-                    // Find the closest standard shutter speed
-                    const newShutterIndex = findClosestIndex(standardShutterSpeeds, newShutterValue);
-                    
-                    // Update the shutter speed index
-                    shutterSpeedIndex = newShutterIndex;
-                    updateShutterDisplay();
-                }
-                // In shutter priority mode, adjust aperture when ISO changes
-                else if (exposureMode === 'shutter') {
-                    // Calculate the ISO change in stops
-                    const isoStopsDiff = getIsoStopsDifference(oldIso, newIso);
-                    
-                    // Get the current aperture
-                    const currentAperture = standardApertures[apertureIndex];
-                    
-                    // Calculate the new aperture based on ISO change
-                    // If ISO increases by 1 stop, aperture should be 1 stop smaller (higher f-number)
-                    const newApertureValue = currentAperture * Math.pow(Math.sqrt(2), isoStopsDiff);
-                    
-                    // Find the closest standard aperture
-                    const newApertureIndex = findClosestIndex(standardApertures, newApertureValue);
-                    
-                    // Update the aperture index
-                    apertureIndex = newApertureIndex;
+    shutterSlider.addEventListener('input', function() {
+        if (exposureMode !== 'aperture') {
+            const newShutterIndex = parseInt(this.value);
+            shutterSpeedIndex = newShutterIndex;
+            userChangedShutter = true;
+            updateShutterDisplay();
+            
+            // In shutter priority mode, adjust aperture
+            if (exposureMode === 'shutter') {
+                if (autoIso) {
+                    // With Auto ISO, adjust both aperture and ISO as needed
+                    updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev);
+                } else {
+                    // Without Auto ISO, just adjust aperture
+                    const requiredAperture = calculateRequiredAperture(standardShutterSpeeds[shutterSpeedIndex], ev, standardIsoValues[isoIndex]);
+                    const closestIndex = findClosestIndex(standardApertures, requiredAperture);
+                    apertureIndex = closestIndex;
                     updateApertureDisplay();
                 }
-                
-                // Update exposure meter
-                updateExposureMeter();
-                
-                // Update histogram
-                updateHistogram();
-                
-                // Update debug info
-                updateDebugInfo();
+            } else if (exposureMode === 'manual' && autoIso) {
+                // In manual mode with auto ISO, adjust ISO when shutter speed changes
+                updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
             }
-        });
-    }
-    
+            
+            // Update exposure meter
+            updateExposureMeter();
+            
+            // Update histogram
+            updateHistogram();
+            
+            // Update debug info
+            updateDebugInfo();
+        }
+    });
+
+    // ISO slider change
+    isoSlider.addEventListener('input', function() {
+        if (!autoIso) {
+            const newIsoIndex = parseInt(this.value);
+            const newIso = standardIsoValues[newIsoIndex];
+            const oldIso = standardIsoValues[isoIndex];
+            
+            // Update the ISO index
+            isoIndex = newIsoIndex;
+            userChangedIso = true;
+            updateIsoDisplay();
+            
+            // In aperture priority mode, adjust shutter speed when ISO changes
+            if (exposureMode === 'aperture') {
+                // Calculate the ISO change in stops
+                const isoStopsDiff = getIsoStopsDifference(oldIso, newIso);
+                
+                // Get the current shutter speed
+                const currentShutter = standardShutterSpeeds[shutterSpeedIndex];
+                
+                // Calculate the new shutter speed based on ISO change
+                // If ISO increases by 1 stop, shutter speed should be 1 stop faster
+                const newShutterValue = currentShutter / Math.pow(2, isoStopsDiff);
+                
+                // Find the closest standard shutter speed
+                const newShutterIndex = findClosestIndex(standardShutterSpeeds, newShutterValue);
+                
+                // Update the shutter speed index
+                shutterSpeedIndex = newShutterIndex;
+                updateShutterDisplay();
+            }
+            // In shutter priority mode, adjust aperture when ISO changes
+            else if (exposureMode === 'shutter') {
+                // Calculate the ISO change in stops
+                const isoStopsDiff = getIsoStopsDifference(oldIso, newIso);
+                
+                // Get the current aperture
+                const currentAperture = standardApertures[apertureIndex];
+                
+                // Calculate the new aperture based on ISO change
+                // If ISO increases by 1 stop, aperture should be 1 stop smaller (higher f-number)
+                const newApertureValue = currentAperture * Math.pow(Math.sqrt(2), isoStopsDiff);
+                
+                // Find the closest standard aperture
+                const newApertureIndex = findClosestIndex(standardApertures, newApertureValue);
+                
+                // Update the aperture index
+                apertureIndex = newApertureIndex;
+                updateApertureDisplay();
+            }
+            
+            // Update exposure meter
+            updateExposureMeter();
+            
+            // Update histogram
+            updateHistogram();
+            
+            // Update debug info
+            updateDebugInfo();
+        }
+    });
+
     // Auto ISO toggle
-    if (autoIsoCheckbox) {
-        autoIsoCheckbox.addEventListener('change', function() {
-            autoIso = this.checked;
+    autoIsoCheckbox.addEventListener('change', function() {
+        autoIso = this.checked;
+        
+        // Update ISO label and slider
+        if (autoIso) {
+            isoLabel.className = 'font-medium text-red-500';
+            isoSlider.disabled = true;
+            isoSlider.classList.add('opacity-50');
+        } else {
+            isoLabel.className = 'font-medium text-orange-500';
+            isoSlider.disabled = false;
+            isoSlider.classList.remove('opacity-50');
+        }
+        
+        // Update Auto ISO info
+        updateAutoIsoInfo();
+        
+        if (autoIso) {
+            // When enabling Auto ISO, calculate the appropriate ISO based on current settings
+            if (exposureMode === 'aperture') {
+                updateAutoIso(standardApertures[apertureIndex], ev);
+            } else if (exposureMode === 'shutter') {
+                updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev);
+            } else if (exposureMode === 'manual') {
+                updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev);
+            }
+        }
+        
+        // Update exposure meter
+        updateExposureMeter();
+        
+        // Update histogram
+        updateHistogram();
+        
+        // Update debug info
+        updateDebugInfo();
+    });
+
+    // Exposure mode tabs
+    document.querySelectorAll('.exposure-mode-tabs .tab-trigger').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            document.querySelectorAll('.exposure-mode-tabs .tab-trigger').forEach(t => {
+                t.classList.remove('active');
+            });
             
-            // Update ISO label and slider
-            if (autoIso) {
-                if (isoLabel) isoLabel.className = 'font-medium text-red-500';
-                isoSlider.disabled = true;
-                isoSlider.classList.add('opacity-50');
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Get the exposure mode
+            const mode = this.dataset.mode;
+            
+            // Update exposure mode
+            exposureMode = mode;
+            
+            // Reset user change flags
+            userChangedAperture = false;
+            userChangedShutter = false;
+            userChangedIso = false;
+            
+            // Update labels and icons based on exposure mode
+            if (exposureMode === 'aperture') {
+                apertureLabel.className = 'font-medium text-green-600';
+                shutterLabel.className = 'font-medium text-red-500';
+                isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
+                
+                apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
+                shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M12 1v2"></path><path d="M12 21v2"></path><path d="M4.22 4.22l1.42 1.42"></path><path d="M18.36 18.36l1.42 1.42"></path><path d="M1 12h2"></path><path d="M21 12h2"></path><path d="M4.22 19.78l1.42-1.42"></path><path d="M18.36 5.64l1.42-1.42"></path></svg>';
+                
+                // Enable aperture slider, disable shutter slider
+                apertureSlider.disabled = false;
+                apertureSlider.classList.remove('opacity-50');
+                shutterSlider.disabled = true;
+                shutterSlider.classList.add('opacity-50');
+            } else if (exposureMode === 'shutter') {
+                apertureLabel.className = 'font-medium text-red-500';
+                shutterLabel.className = 'font-medium text-green-600';
+                isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
+                
+                apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M12 1v2"></path><path d="M12 21v2"></path><path d="M4.22 4.22l1.42 1.42"></path><path d="M18.36 18.36l1.42 1.42"></path><path d="M1 12h2"></path><path d="M21 12h2"></path><path d="M4.22 19.78l1.42-1.42"></path><path d="M18.36 5.64l1.42-1.42"></path></svg>';
+                shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
+                
+                // Enable shutter slider, disable aperture slider
+                apertureSlider.disabled = true;
+                apertureSlider.classList.add('opacity-50');
+                shutterSlider.disabled = false;
+                shutterSlider.classList.remove('opacity-50');
             } else {
-                if (isoLabel) isoLabel.className = 'font-medium text-orange-500';
-                isoSlider.disabled = false;
-                isoSlider.classList.remove('opacity-50');
+                apertureLabel.className = 'font-medium text-blue-600';
+                shutterLabel.className = 'font-medium text-blue-600';
+                isoLabel.className = autoIso ? 'font-medium text-red-500' : 'font-medium text-orange-500';
+                
+                apertureIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>';
+                shutterIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>';
+                
+                // Enable both sliders
+                apertureSlider.disabled = false;
+                apertureSlider.classList.remove('opacity-50');
+                shutterSlider.disabled = false;
+                shutterSlider.classList.remove('opacity-50');
             }
             
-            // Update Auto ISO info
-            updateAutoIsoInfo();
-            
+            // If auto ISO is enabled, update settings based on the new mode
             if (autoIso) {
-                // When enabling Auto ISO, calculate the appropriate ISO based on current settings
                 if (exposureMode === 'aperture') {
                     updateAutoIso(standardApertures[apertureIndex], ev);
                 } else if (exposureMode === 'shutter') {
@@ -1825,6 +1771,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
+            // Update Auto ISO info
+            updateAutoIsoInfo();
+            
             // Update exposure meter
             updateExposureMeter();
             
@@ -1834,16 +1783,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update debug info
             updateDebugInfo();
         });
-    }
-    
-    // Exposure mode tabs
-    document.querySelectorAll('.exposure-mode-tabs .tab-trigger').forEach(tab => {
-        tab.addEventListener('click', function() {
-            const mode = this.dataset.mode;
-            setExposureMode(mode);
-        });
     });
-    
+
     // Preview mode tabs
     document.querySelectorAll('.preview-mode-tabs .tab-trigger').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -1862,24 +1803,24 @@ document.addEventListener('DOMContentLoaded', function() {
             previewMode = mode;
             
             // Hide all overlays and info
-            if (dofOverlay) dofOverlay.classList.add('hidden');
-            if (motionOverlay) motionOverlay.classList.add('hidden');
-            if (dofInfo) dofInfo.classList.add('hidden');
-            if (motionInfo) motionInfo.classList.add('hidden');
+            dofOverlay.classList.add('hidden');
+            motionOverlay.classList.add('hidden');
+            dofInfo.classList.add('hidden');
+            motionInfo.classList.add('hidden');
             
             // Show the selected overlay and info
             if (previewMode === 'dof') {
-                if (dofOverlay) dofOverlay.classList.remove('hidden');
-                if (dofInfo) dofInfo.classList.remove('hidden');
+                dofOverlay.classList.remove('hidden');
+                dofInfo.classList.remove('hidden');
                 updateDofVisualization();
             } else if (previewMode === 'motion') {
-                if (motionOverlay) motionOverlay.classList.remove('hidden');
-                if (motionInfo) motionInfo.classList.remove('hidden');
+                motionOverlay.classList.remove('hidden');
+                motionInfo.classList.remove('hidden');
                 updateMotionVisualization();
             }
         });
     });
-    
+
     // Exposure triangle guide tabs
     document.querySelectorAll('.exposure-guide-tabs .tab-trigger').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -1900,57 +1841,50 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Show the selected tab content
-            const tabContent = document.getElementById(`${tabId}-tab`);
-            if (tabContent) tabContent.classList.remove('hidden');
+            document.getElementById(`${tabId}-tab`).classList.remove('hidden');
         });
     });
-    
+
     // Triangle guide toggle
-    if (triangleGuideToggle && triangleGuideContainer) {
-        triangleGuideToggle.addEventListener('click', function() {
-            const isVisible = !triangleGuideContainer.classList.contains('hidden');
-            
-            if (isVisible) {
-                triangleGuideContainer.classList.add('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show Exposure Triangle Guide';
-            } else {
-                triangleGuideContainer.classList.remove('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide Exposure Triangle Guide';
-            }
-        });
-    }
-    
+    triangleGuideToggle.addEventListener('click', function() {
+        const isVisible = !triangleGuideContainer.classList.contains('hidden');
+        
+        if (isVisible) {
+            triangleGuideContainer.classList.add('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show Exposure Triangle Guide';
+        } else {
+            triangleGuideContainer.classList.remove('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide Exposure Triangle Guide';
+        }
+    });
+
     // EV table toggle
-    if (evTableToggle && evTableContainer) {
-        evTableToggle.addEventListener('click', function() {
-            const isVisible = !evTableContainer.classList.contains('hidden');
-            
-            if (isVisible) {
-                evTableContainer.classList.add('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show EV Reference Table';
-            } else {
-                evTableContainer.classList.remove('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide EV Reference Table';
-            }
-        });
-    }
-    
+    evTableToggle.addEventListener('click', function() {
+        const isVisible = !evTableContainer.classList.contains('hidden');
+        
+        if (isVisible) {
+            evTableContainer.classList.add('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show EV Reference Table';
+        } else {
+            evTableContainer.classList.remove('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide EV Reference Table';
+        }
+    });
+
     // Debug toggle
-    if (debugToggle && debugContainer) {
-        debugToggle.addEventListener('click', function() {
-            debugMode = !debugMode;
-            
-            if (debugMode) {
-                debugContainer.classList.remove('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide Debug Info';
-                updateDebugInfo();
-            } else {
-                debugContainer.classList.add('hidden');
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show Debug Info';
-            }
-        });
-    }
-    
+    debugToggle.addEventListener('click', function() {
+        debugMode = !debugMode;
+        
+        if (debugMode) {
+            debugContainer.classList.remove('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="18 15 12 9 6 15"></polyline></svg> Hide Debug Info';
+            updateDebugInfo();
+        } else {
+            debugContainer.classList.add('hidden');
+            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1"><polyline points="6 9 12 15 18 9"></polyline></svg> Show Debug Info';
+        }
+    });
+
     // Initialize the application
     initialize();
 });
