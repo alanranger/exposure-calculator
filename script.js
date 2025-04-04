@@ -131,8 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sunset: "https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=800&h=450&fit=crop&q=80",
       dusk: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=800&h=450&fit=crop&q=80",
       night: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=450&fit=crop&q=80",
-    },
-  }
+    },\
+  ]
 
   // State variables
   let sceneType = "landscape"
@@ -833,7 +833,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Update motion visualization
   function updateMotionVisualization() {
-    if (!motionLines || !motionIndicator || !motionExplanation || !motionCurrentSetting) return
+    console.log("Updating motion visualization")
+    if (!motionLines) {
+      console.error("Motion lines element not found!")
+      return
+    }
+
+    // Make sure the motion overlay is visible
+    if (motionOverlay) {
+      motionOverlay.classList.remove("hidden")
+    }
 
     const shutterSpeed = standardShutterSpeeds[shutterSpeedIndex]
 
@@ -854,55 +863,94 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Update motion indicator
-    motionIndicator.textContent = `${formatShutterSpeed(shutterSpeed)} - ${motionCategory === "very-slow" ? "Significant Motion Blur" : motionCategory === "slow" ? "Moderate Motion Blur" : motionCategory === "medium" ? "Slight Motion Blur" : "Frozen Motion"}`
+    if (motionIndicator) {
+      motionIndicator.textContent = `${formatShutterSpeed(shutterSpeed)} - ${
+        motionCategory === "very-slow"
+          ? "Significant Motion Blur"
+          : motionCategory === "slow"
+            ? "Moderate Motion Blur"
+            : motionCategory === "medium"
+              ? "Slight Motion Blur"
+              : "Frozen Motion"
+      }`
+    }
 
     // Update motion current setting
-    motionCurrentSetting.innerHTML = `Your current setting: <strong>${formatShutterSpeed(shutterSpeed)}</strong> - ${motionCategory === "very-slow" ? "Significant motion blur" : motionCategory === "slow" ? "Moderate motion blur" : motionCategory === "medium" ? "Slight motion blur" : "Frozen motion"}`
+    if (motionCurrentSetting) {
+      motionCurrentSetting.innerHTML = `Your current setting: <strong>${formatShutterSpeed(shutterSpeed)}</strong> - ${
+        motionCategory === "very-slow"
+          ? "Significant motion blur"
+          : motionCategory === "slow"
+            ? "Moderate motion blur"
+            : motionCategory === "medium"
+              ? "Slight motion blur"
+              : "Frozen motion"
+      }`
+    }
 
-    // Update motion lines
-    motionLines.innerHTML = ""
+    // Clear existing motion lines
+    while (motionLines.firstChild) {
+      motionLines.removeChild(motionLines.firstChild)
+    }
 
+    console.log("Creating motion lines for category:", motionCategory)
+
+    // Create lines based on motion category
     if (motionCategory === "very-slow") {
-      // Long motion streaks for very slow shutter
+      // Create 15 long motion streaks
       for (let i = 0; i < 15; i++) {
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-        line.setAttribute("x1", 10 + i * 5)
-        line.setAttribute("y1", 10)
-        line.setAttribute("x2", 30 + i * 5)
-        line.setAttribute("y2", 90)
-        line.setAttribute("stroke", "red")
-        line.setAttribute("stroke-width", "0.8")
-        line.setAttribute("stroke-opacity", "0.8")
-        motionLines.appendChild(line)
+        try {
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
+          line.setAttribute("x1", String(10 + i * 5))
+          line.setAttribute("y1", "10")
+          line.setAttribute("x2", String(30 + i * 5))
+          line.setAttribute("y2", "90")
+          line.setAttribute("stroke", "red")
+          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-opacity", "0.8")
+          motionLines.appendChild(line)
+        } catch (error) {
+          console.error("Error creating SVG line:", error)
+        }
       }
     } else if (motionCategory === "slow") {
-      // Medium motion streaks for slow shutter
+      // Create 10 medium motion streaks
       for (let i = 0; i < 10; i++) {
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-        line.setAttribute("x1", 20 + i * 6)
-        line.setAttribute("y1", 20)
-        line.setAttribute("x2", 30 + i * 6)
-        line.setAttribute("y2", 80)
-        line.setAttribute("stroke", "red")
-        line.setAttribute("stroke-width", "0.8")
-        line.setAttribute("stroke-opacity", "0.8")
-        motionLines.appendChild(line)
+        try {
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
+          line.setAttribute("x1", String(20 + i * 6))
+          line.setAttribute("y1", "20")
+          line.setAttribute("x2", String(30 + i * 6))
+          line.setAttribute("y2", "80")
+          line.setAttribute("stroke", "red")
+          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-opacity", "0.8")
+          motionLines.appendChild(line)
+        } catch (error) {
+          console.error("Error creating SVG line:", error)
+        }
       }
     } else if (motionCategory === "medium") {
-      // Short motion streaks for medium shutter
+      // Create 8 short motion streaks
       for (let i = 0; i < 8; i++) {
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-        line.setAttribute("x1", 30 + i * 5)
-        line.setAttribute("y1", 30)
-        line.setAttribute("x2", 35 + i * 5)
-        line.setAttribute("y2", 70)
-        line.setAttribute("stroke", "red")
-        line.setAttribute("stroke-width", "0.8")
-        line.setAttribute("stroke-opacity", "0.8")
-        motionLines.appendChild(line)
+        try {
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
+          line.setAttribute("x1", String(30 + i * 5))
+          line.setAttribute("y1", "30")
+          line.setAttribute("x2", String(35 + i * 5))
+          line.setAttribute("y2", "70")
+          line.setAttribute("stroke", "red")
+          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-opacity", "0.8")
+          motionLines.appendChild(line)
+        } catch (error) {
+          console.error("Error creating SVG line:", error)
+        }
       }
     }
     // No motion streaks for fast shutter
+
+    console.log("Motion lines created:", motionLines.childNodes.length)
   }
 
   // Update histogram
@@ -1623,6 +1671,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to set preview mode
   function setPreviewMode(mode) {
+    console.log("Setting preview mode to:", mode)
     // Update preview mode
     previewMode = mode
 
@@ -1636,10 +1685,25 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     // Show/hide overlays based on mode
-    if (dofOverlay) dofOverlay.classList.toggle("hidden", mode !== "dof")
-    if (motionOverlay) motionOverlay.classList.toggle("hidden", mode !== "motion")
-    if (dofInfo) dofInfo.classList.toggle("hidden", mode !== "dof")
-    if (motionInfo) motionInfo.classList.toggle("hidden", mode !== "motion")
+    if (dofOverlay) {
+      dofOverlay.classList.toggle("hidden", mode !== "dof")
+    } else {
+      console.error("DOF overlay element not found")
+    }
+
+    if (motionOverlay) {
+      motionOverlay.classList.toggle("hidden", mode !== "motion")
+    } else {
+      console.error("Motion overlay element not found")
+    }
+
+    if (dofInfo) {
+      dofInfo.classList.toggle("hidden", mode !== "dof")
+    }
+
+    if (motionInfo) {
+      motionInfo.classList.toggle("hidden", mode !== "motion")
+    }
 
     // Update visualizations
     if (mode === "dof") {
@@ -1647,8 +1711,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mode === "motion") {
       updateMotionVisualization()
     }
-
-    console.log("Preview mode set to:", mode)
   }
 
   // Function to toggle debug mode
@@ -1729,6 +1791,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update exposure meter
     updateExposureMeter()
 
+    // Add this line to update the histogram whenever settings change
+    updateHistogram()
+
+    // If in motion preview mode, update motion visualization
+    if (previewMode === "motion") {
+      updateMotionVisualization()
+    }
+
     isUpdating = false
   }
 
@@ -1777,6 +1847,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update settings based on exposure mode
       updateSettingsBasedOnExposureMode()
+
+      // Directly update histogram when aperture changes
+      updateHistogram()
     })
   }
 

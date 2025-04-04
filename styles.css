@@ -239,6 +239,25 @@ select {
   transition: height 0.3s ease;
 }
 
+/* Motion visualization */
+#motion-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#motion-lines {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .overlay-indicator {
   position: absolute;
   top: 1rem;
@@ -500,7 +519,12 @@ select {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 1px;
+  margin: 0 1px;
+}
+
+.histogram-bar > div {
+  width: 100%;
+  transition: height 0.3s ease;
 }
 
 .histogram-labels {

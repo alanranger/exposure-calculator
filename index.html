@@ -405,6 +405,19 @@
         </footer>
     </div>
 
+    <div id="debug-log" style="display:none;"></div>
+    <script>
+    // Simple debug logger
+    function debugLog(message) {
+        console.log(message);
+        const debugElement = document.getElementById('debug-log');
+        if (debugElement) {
+            const entry = document.createElement('div');
+            entry.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            debugElement.appendChild(entry);
+        }
+    }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
