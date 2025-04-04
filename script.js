@@ -1019,17 +1019,20 @@ document.addEventListener("DOMContentLoaded", () => {
       barContainer.className = "histogram-bar"
 
       // Determine the color based on the position in the histogram
-      // Left side (shadows) = blue, Right side (highlights) = red
-      let barColor = "bg-gray-700" // Default for midtones
+      let barColor
 
       if (i < 8) {
         barColor = "bg-blue-700" // Shadows (left side)
       } else if (i >= 24) {
         barColor = "bg-red-700" // Highlights (right side)
+      } else {
+        barColor = "bg-gray-700" // Default for midtones
       }
 
       const bar = document.createElement("div")
-      bar.className = `w-full ${barColor}`
+      bar.className = "w-full"
+      bar.style.backgroundColor =
+        barColor === "bg-blue-700" ? "#1d4ed8" : barColor === "bg-red-700" ? "#b91c1c" : "#374151" // Convert Tailwind classes to actual colors
       bar.style.height = `${(data[i] / maxValue) * 100}%`
 
       barContainer.appendChild(bar)
@@ -1644,6 +1647,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mode === "motion") {
       updateMotionVisualization()
     }
+
+    console.log("Preview mode set to:", mode)
   }
 
   // Function to toggle debug mode
@@ -1914,6 +1919,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initialized = true
   }
+
+  // Add this near the top of your script, after DOM elements are defined
+  console.log("Histogram container found:", !!histogramContainer)
+  console.log("Motion lines element found:", !!motionLines)
 
   // Initialize the application
   initialize()
