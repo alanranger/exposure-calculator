@@ -256,6 +256,7 @@ select {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 10;
 }
 
 .overlay-indicator {
@@ -345,11 +346,12 @@ select {
   border-radius: 0.25rem;
 }
 
+/* Update the EV indicator styles */
 .ev-indicator {
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
   font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  white-space: nowrap;
 }
 
 /* Exposure meter */
@@ -663,5 +665,99 @@ footer {
 
 .icon-locked {
   color: #ef4444;
+}
+
+/* Add styles for the exposure slider visualization */
+.exposure-slider-visualization {
+  margin-top: 1.5rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.slider-visualization {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.slider-label {
+  width: 6rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.slider-track {
+  flex: 1;
+  height: 0.5rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  position: relative;
+  margin: 0 1rem;
+}
+
+.slider-center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 0.125rem;
+  background-color: #9ca3af;
+  transform: translateX(-50%);
+}
+
+.slider-indicator {
+  position: absolute;
+  height: 1rem;
+  width: 1rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #3b82f6;
+  border-radius: 50%;
+  transition: left 0.3s ease;
+}
+
+.slider-value {
+  width: 5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.slider-explanation {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.total-exposure {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.total-exposure-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.total-exposure-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.total-exposure-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
 }
 

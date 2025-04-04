@@ -896,18 +896,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Creating motion lines for category:", motionCategory)
 
-    // Create lines based on motion category
+    // Create lines based on motion category - CENTERED and LARGER
     if (motionCategory === "very-slow") {
-      // Create 15 long motion streaks
+      // Create 15 long motion streaks - centered in the SVG
       for (let i = 0; i < 15; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          line.setAttribute("x1", String(10 + i * 5))
-          line.setAttribute("y1", "10")
-          line.setAttribute("x2", String(30 + i * 5))
-          line.setAttribute("y2", "90")
+          // Center the lines horizontally by starting at 25% and ending at 75%
+          line.setAttribute("x1", String(25 + i * 3))
+          line.setAttribute("y1", "20")
+          line.setAttribute("x2", String(45 + i * 3))
+          line.setAttribute("y2", "80")
           line.setAttribute("stroke", "red")
-          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
           motionLines.appendChild(line)
         } catch (error) {
@@ -915,16 +916,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     } else if (motionCategory === "slow") {
-      // Create 10 medium motion streaks
+      // Create 10 medium motion streaks - centered
       for (let i = 0; i < 10; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          line.setAttribute("x1", String(20 + i * 6))
-          line.setAttribute("y1", "20")
-          line.setAttribute("x2", String(30 + i * 6))
-          line.setAttribute("y2", "80")
+          line.setAttribute("x1", String(30 + i * 4))
+          line.setAttribute("y1", "30")
+          line.setAttribute("x2", String(40 + i * 4))
+          line.setAttribute("y2", "70")
           line.setAttribute("stroke", "red")
-          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
           motionLines.appendChild(line)
         } catch (error) {
@@ -932,16 +933,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     } else if (motionCategory === "medium") {
-      // Create 8 short motion streaks
+      // Create 8 short motion streaks - centered
       for (let i = 0; i < 8; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          line.setAttribute("x1", String(30 + i * 5))
-          line.setAttribute("y1", "30")
-          line.setAttribute("x2", String(35 + i * 5))
-          line.setAttribute("y2", "70")
+          line.setAttribute("x1", String(35 + i * 4))
+          line.setAttribute("y1", "40")
+          line.setAttribute("x2", String(40 + i * 4))
+          line.setAttribute("y2", "60")
           line.setAttribute("stroke", "red")
-          line.setAttribute("stroke-width", "0.8")
+          line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
           motionLines.appendChild(line)
         } catch (error) {
@@ -1125,6 +1126,196 @@ document.addEventListener("DOMContentLoaded", () => {
     initialized = true
   }
 
+  // Add this function to update the exposure slider visualization
+  function updateExposureSliderVisualization() {
+    const apertureSliderIndicator = document.getElementById("aperture-slider-indicator")
+    const shutterSliderIndicator = document.getElementById("shutter-slider-indicator")
+    const isoSliderIndicator = document.getElementById("iso-slider-indicator")
+    const apertureSliderValue = document.getElementById("aperture-slider-value")
+    const shutterSliderValue = document.getElementById("shutter-slider-value")
+    const isoSliderValue = document.getElementById("iso-slider-value")
+    const totalExposureValue = document.getElementById("total-exposure-value")
+    const totalExposureDescription = document.getElementById("total-exposure-description")
+    const exposureModeExplanation = document.getElementById("exposure-mode-explanation")
+
+    if (
+      !apertureSliderIndicator ||
+      !shutterSliderIndicator ||
+      !isoSliderIndicator ||
+      !apertureSliderValue ||
+      !shutterSliderValue ||
+      !isoSliderValue ||
+      !totalExposureValue ||
+      !totalExposureDescription ||
+      !exposureModeExplanation
+    ) {
+      return
+    }
+
+    // Calculate display values based on exposure mode
+    let displayApertureEvDiff = apertureEvDiff
+    let displayShutterEvDiff = shutterEvDiff
+    // Invert ISO EV diff for display - higher ISO means more light (positive effect on exposure)
+    const displayIsoEvDiff = -isoEvDiff
+
+    // In aperture priority mode:
+    if (exposureMode === "aperture") {
+      // The shutter speed should show the opposite of BOTH aperture AND ISO changes
+      displayShutterEvDiff = -(apertureEvDiff - isoEvDiff)
+      exposureModeExplanation.textContent =
+        "In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure."
+    }
+    // In shutter priority mode:
+    else if (exposureMode === "shutter") {
+      // The aperture should show the opposite of BOTH shutter AND ISO changes
+      displayApertureEvDiff = -(shutterEvDiff - isoEvDiff)
+      exposureModeExplanation.textContent =
+        "In Shutter Priority mode, changing shutter speed or ISO will automatically adjust aperture to maintain exposure."
+    }
+    // In manual mode:
+    else {
+      exposureModeExplanation.textContent =
+        "In Manual mode, you must balance all three settings yourself to achieve proper exposure."
+    }
+
+    // Calculate slider positions based on EV differences
+    // Center position is 50%, each stop is ~15% in either direction
+    const getSliderPosition = (evDiff) => {
+      // Limit to +/- 3 stops for display purposes
+      const limitedDiff = Math.max(-3, Math.min(3, evDiff))
+      // Use 15% per stop to make the movement more noticeable
+      return 50 + limitedDiff * 15
+    }
+
+    // Format EV differences for display
+    const formatEvDiff = (diff) => {
+      return `${diff > 0 ? "+" : diff < 0 ? "-" : ""}${Math.abs(diff).toFixed(1)} EV`
+    }
+
+    // Update slider indicators and values
+    apertureSliderIndicator.style.left = `${getSliderPosition(displayApertureEvDiff)}%`
+    shutterSliderIndicator.style.left = `${getSliderPosition(displayShutterEvDiff)}%`
+    isoSliderIndicator.style.left = `${getSliderPosition(displayIsoEvDiff)}%`
+
+    apertureSliderValue.textContent = formatEvDiff(displayApertureEvDiff)
+    shutterSliderValue.textContent = formatEvDiff(displayShutterEvDiff)
+    isoSliderValue.textContent = formatEvDiff(displayIsoEvDiff)
+
+    // Set colors based on values
+    apertureSliderValue.className =
+      "slider-value " + (displayApertureEvDiff > 0 ? "text-red-600" : displayApertureEvDiff < 0 ? "text-green-600" : "")
+
+    shutterSliderValue.className =
+      "slider-value " + (displayShutterEvDiff > 0 ? "text-red-600" : displayShutterEvDiff < 0 ? "text-green-600" : "")
+
+    isoSliderValue.className =
+      "slider-value " + (displayIsoEvDiff > 0 ? "text-red-600" : displayIsoEvDiff < 0 ? "text-green-600" : "")
+
+    // Set indicator colors based on exposure mode
+    if (exposureMode === "aperture") {
+      apertureSliderIndicator.style.backgroundColor = "#16a34a" // green
+      shutterSliderIndicator.style.backgroundColor = "#ef4444" // red
+      isoSliderIndicator.style.backgroundColor = "#f97316" // orange
+    } else if (exposureMode === "shutter") {
+      apertureSliderIndicator.style.backgroundColor = "#ef4444" // red
+      shutterSliderIndicator.style.backgroundColor = "#16a34a" // green
+      isoSliderIndicator.style.backgroundColor = "#f97316" // orange
+    } else {
+      apertureSliderIndicator.style.backgroundColor = "#3b82f6" // blue
+      shutterSliderIndicator.style.backgroundColor = "#3b82f6" // blue
+      isoSliderIndicator.style.backgroundColor = "#f97316" // orange
+    }
+
+    // Calculate total EV adjustment based on exposure mode
+    let totalEvAdjustment = 0
+
+    if (exposureMode === "manual") {
+      // In manual mode, all three factors contribute to the total adjustment
+      totalEvAdjustment = apertureEvDiff + shutterEvDiff - isoEvDiff
+    } else {
+      // In aperture or shutter priority modes, the camera automatically compensates
+      // So the total should be 0 if the camera is perfectly compensating
+      totalEvAdjustment = 0
+    }
+
+    // Update total exposure value
+    totalExposureValue.textContent =
+      Math.abs(totalEvAdjustment) < 0.1
+        ? "0.0 EV"
+        : `${totalEvAdjustment > 0 ? "+" : ""}${totalEvAdjustment.toFixed(1)} EV`
+
+    totalExposureValue.className =
+      "total-exposure-value " +
+      (Math.abs(totalEvAdjustment) < 0.1 ? "" : totalEvAdjustment > 0 ? "text-red-600" : "text-green-600")
+
+    // Update total exposure description
+    totalExposureDescription.textContent =
+      Math.abs(totalEvAdjustment) < 0.1
+        ? "Correct exposure"
+        : totalEvAdjustment > 0
+          ? "Overexposed: Image will be brighter than ideal"
+          : "Underexposed: Image will be darker than ideal"
+  }
+
+  // Add this function to update the EV indicators
+  function updateEvIndicators() {
+    const apertureEvIndicator = document.getElementById("aperture-ev-indicator")
+    const shutterEvIndicator = document.getElementById("shutter-ev-indicator")
+    const isoEvIndicator = document.getElementById("iso-ev-indicator")
+
+    if (!apertureEvIndicator || !shutterEvIndicator || !isoEvIndicator) return
+
+    // Calculate display values based on exposure mode
+    let displayApertureEvDiff = apertureEvDiff
+    let displayShutterEvDiff = shutterEvDiff
+    // Invert ISO EV diff for display - higher ISO means more light (positive effect on exposure)
+    const displayIsoEvDiff = -isoEvDiff
+
+    // In aperture priority mode:
+    if (exposureMode === "aperture") {
+      // The shutter speed should show the opposite of BOTH aperture AND ISO changes
+      displayShutterEvDiff = -(apertureEvDiff - isoEvDiff)
+    }
+    // In shutter priority mode:
+    else if (exposureMode === "shutter") {
+      // The aperture should show the opposite of BOTH shutter AND ISO changes
+      displayApertureEvDiff = -(shutterEvDiff - isoEvDiff)
+    }
+
+    // Format EV differences for display
+    const formatEvDiff = (diff) => {
+      return `${diff > 0 ? "+" : diff < 0 ? "-" : ""}${Math.abs(diff).toFixed(1)}`
+    }
+
+    // Update the indicators with formatted values and appropriate colors
+    if (userChangedAperture) {
+      apertureEvIndicator.textContent = `${formatEvDiff(displayApertureEvDiff)} stops`
+      apertureEvIndicator.className =
+        "ev-indicator " +
+        (displayApertureEvDiff > 0 ? "text-red-600" : displayApertureEvDiff < 0 ? "text-green-600" : "text-gray-600")
+    } else {
+      apertureEvIndicator.textContent = ""
+    }
+
+    if (userChangedShutter) {
+      shutterEvIndicator.textContent = `${formatEvDiff(displayShutterEvDiff)} stops`
+      shutterEvIndicator.className =
+        "ev-indicator " +
+        (displayShutterEvDiff > 0 ? "text-red-600" : displayShutterEvDiff < 0 ? "text-green-600" : "text-gray-600")
+    } else {
+      shutterEvIndicator.textContent = ""
+    }
+
+    if (userChangedIso) {
+      isoEvIndicator.textContent = `${formatEvDiff(displayIsoEvDiff)} stops`
+      isoEvIndicator.className =
+        "ev-indicator " +
+        (displayIsoEvDiff > 0 ? "text-red-600" : displayIsoEvDiff < 0 ? "text-green-600" : "text-gray-600")
+    } else {
+      isoEvIndicator.textContent = ""
+    }
+  }
+
   // Update EV differences
   function updateEvDifferences() {
     const aperture = standardApertures[apertureIndex]
@@ -1138,6 +1329,12 @@ document.addEventListener("DOMContentLoaded", () => {
     apertureEvDiff = apertureDiff
     shutterEvDiff = shutterDiff
     isoEvDiff = isoDiff
+
+    // Update EV indicators
+    updateEvIndicators()
+
+    // Update exposure slider visualization
+    updateExposureSliderVisualization()
 
     // Update exposure meter
     updateExposureMeter()
@@ -1211,8 +1408,16 @@ document.addEventListener("DOMContentLoaded", () => {
     updateApertureDisplay()
     updateShutterDisplay()
     updateIsoDisplay()
+    updateEvDifferences() // This will call updateEvIndicators and updateExposureSliderVisualization
     updateExposureMeter()
     updateHistogram()
+
+    // Update visualizations based on current preview mode
+    if (previewMode === "dof") {
+      updateDofVisualization()
+    } else if (previewMode === "motion") {
+      updateMotionVisualization()
+    }
   }
 
   // Set exposure mode

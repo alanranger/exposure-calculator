@@ -202,6 +202,44 @@
                           <span class="highlights">Highlights (Overexposed)</span>
                       </div>
 
+                      <div class="exposure-slider-visualization">
+                        <h3>Exposure Adjustments</h3>
+                        <div class="slider-visualization">
+                          <div class="slider-row">
+                            <div class="slider-label">Aperture:</div>
+                            <div class="slider-track">
+                              <div class="slider-center-line"></div>
+                              <div id="aperture-slider-indicator" class="slider-indicator"></div>
+                            </div>
+                            <div id="aperture-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                          <div class="slider-row">
+                            <div class="slider-label">Shutter:</div>
+                            <div class="slider-track">
+                              <div class="slider-center-line"></div>
+                              <div id="shutter-slider-indicator" class="slider-indicator"></div>
+                            </div>
+                            <div id="shutter-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                          <div class="slider-row">
+                            <div class="slider-label">ISO:</div>
+                            <div class="slider-track">
+                              <div class="slider-center-line"></div>
+                              <div id="iso-slider-indicator" class="slider-indicator"></div>
+                            </div>
+                            <div id="iso-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                        </div>
+                        <div class="slider-explanation">
+                          <p id="exposure-mode-explanation">In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.</p>
+                        </div>
+                        <div class="total-exposure">
+                          <div class="total-exposure-label">Total Exposure Adjustment:</div>
+                          <div id="total-exposure-value" class="total-exposure-value">0.0 EV</div>
+                        </div>
+                        <div id="total-exposure-description" class="total-exposure-description">Correct exposure</div>
+                      </div>
+
                       <div id="exposure-tips-correct" class="tips">
                           <h4 class="tips-title">Correct Exposure</h4>
                           <p>Your current settings provide a well-balanced exposure for this scene.</p>
