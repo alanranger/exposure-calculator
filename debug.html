@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Exposure Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        #debugOutput {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .info {
+            color: blue;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exposure Calculator Debugger</h1>
+    <div>
+        <button id="checkElements">Check DOM Elements</button>
+        <button id="checkImages">Check Image URLs</button>
+        <button id="forceInit">Force Reinitialize</button>
+        <button id="clearLog">Clear Log</button>
+    </div>
+    <div id="debugOutput"></div>
+
+    <script>
+        // Wait for the main page to load
+        window.addEventListener('load', function() {
+            const output = document.getElementById('debugOutput');
+            
+            function log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = type;
+                entry.textContent = `[${timestamp}] ${message}`;
+                output.appendChild(entry);
+                output.scrollTop = output.scrollHeight;
+            }
+            
+            log('Debug page loaded', 'info');
+            
+            // Check DOM elements
+            document.getElementById('checkElements').addEventListener('click', function() {
+                log('Checking critical DOM elements...', 'info');
+                
+                const elementsToCheck = [
+                    'scene-type', 'time-of-day', 'aperture-slider', 'shutter-slider', 
+                    'iso-slider', 'scene-image', 'histogram-container', 'motion-lines'
+                ];
+                
+                elementsToCheck.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        log(`✓ Element '${id}' found`, 'success');
+                    } else {
+                        log(`✗ Element '${id}' NOT found`, 'error');
+                    }
+                });
+            });
+            
+            // Check image URLs
+            document.getElementById('checkImages').addEventListener('click', function() {
+                log('Checking image URLs...', 'info');
+                
+                // Access the scene image URLs from the main page
+                try {
+                    const sceneType = document.getElementById('scene-type').value;
+                    const timeOfDay = document.getElementById('time-of-day').value;
+                    
+                    log(`Current scene: ${sceneType} at ${timeOfDay}`, 'info');
+                    
+                    // Try to access the sceneImageUrls object from the main page
+                    if (window.sceneImageUrls) {
+                        const url = window.sceneImageUrls[sceneType]?.[timeOfDay];
+                        if (url) {
+                            log(`Image URL found: ${url}`, 'success');
+                            
+                            // Test loading the image
+                            const img = new Image();
+                            img.onload = () => log('Image loaded successfully', 'success');
+                            img.onerror = () => log('Failed to load image', 'error');
+                            img.src = url;
+                        } else {
+                            log('No image URL found for current scene', 'error');
+                        }
+                    } else {
+                        log('sceneImageUrls object not accessible', 'error');
+                    }
+                } catch (error) {
+                    log(`Error checking images: ${error.message}`, 'error');
+                }
+            });
+            
+            // Force reinitialize
+            document.getElementById('forceInit').addEventListener('click', function() {
+                log('Forcing reinitialization...', 'info');
+                
+                try {
+                    // Reset the initialized flag
+                    window.initialized = false;
+                    
+                    // Call initialize function if it exists
+                    if (typeof window.initialize === 'function') {
+                        window.initialize();
+                        log('Reinitialization function called', 'success');
+                    } else {
+                        log('Initialize function not accessible', 'error');
+                        
+                        // Try to manually update the scene
+                        if (typeof window.updateSceneImage === 'function') {
+                            window.updateSceneImage();
+                            log('Manual updateSceneImage called', 'info');
+                        }
+                        
+                        if (typeof window.updateExposureMeter === 'function') {
+                            window.updateExposureMeter();
+                            log('Manual updateExposureMeter called', 'info');
+                        }
+                        
+                        if (typeof window.updateHistogram === 'function') {
+                            window.updateHistogram();
+                            log('Manual updateHistogram called', 'info');
+                        }
+                    }
+                } catch (error) {
+                    log(`Error during reinitialization: ${error.message}`, 'error');
+                }
+            });
+            
+            // Clear log
+            document.getElementById('clearLog').addEventListener('click', function() {
+                output.innerHTML = '';
+                log('Log cleared', 'info');
+            });
+        });
+    </script>
+</body>
+</html>
+
