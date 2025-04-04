@@ -546,22 +546,26 @@ document.addEventListener("DOMContentLoaded", () => {
         exposureTipsIncorrect.classList.add("hidden")
         exposureTipsBulb.classList.remove("hidden")
         bulbExposureTimeSpan.textContent = bulbTime
+        bulbExposureTimeSpan.className = "text-red-600 font-bold"
 
         // Set the bulb warning title and suggestions
         if (exposureTipsTitle) {
           exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+          exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
         }
         if (exposureTipsDescription) {
           exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+          exposureTipsDescription.className = "text-amber-700 mb-2"
         }
         if (exposureTipsSuggestions) {
           exposureTipsSuggestions.innerHTML =
-            "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
             "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-            "Consider these adjustments to avoid bulb mode:<br>" +
+            "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
             "• Increase ISO (will introduce more noise)<br>" +
             "• Use a wider aperture (lower f-number)<br>" +
-            "Add additional lighting to the scene if possible"
+            "• Add additional lighting to the scene if possible"
+          exposureTipsSuggestions.className = "text-amber-700"
         }
       }
     } else {
@@ -1469,22 +1473,26 @@ document.addEventListener("DOMContentLoaded", () => {
         exposureTipsIncorrect.classList.add("hidden")
         exposureTipsBulb.classList.remove("hidden")
         bulbExposureTimeSpan.textContent = bulbTime
+        bulbExposureTimeSpan.className = "text-red-600 font-bold"
 
         // Set the bulb warning title and suggestions
         if (exposureTipsTitle) {
           exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+          exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
         }
         if (exposureTipsDescription) {
           exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+          exposureTipsDescription.className = "text-amber-700 mb-2"
         }
         if (exposureTipsSuggestions) {
           exposureTipsSuggestions.innerHTML =
-            "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
             "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-            "Consider these adjustments to avoid bulb mode:<br>" +
+            "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
             "• Increase ISO (will introduce more noise)<br>" +
             "• Use a wider aperture (lower f-number)<br>" +
-            "Add additional lighting to the scene if possible"
+            "• Add additional lighting to the scene if possible"
+          exposureTipsSuggestions.className = "text-amber-700"
         }
       }
     } else {
@@ -1643,22 +1651,26 @@ document.addEventListener("DOMContentLoaded", () => {
             exposureTipsIncorrect.classList.add("hidden")
             exposureTipsBulb.classList.remove("hidden")
             bulbExposureTimeSpan.textContent = bulbTime
+            bulbExposureTimeSpan.className = "text-red-600 font-bold"
 
             // Set the bulb warning title and suggestions
             if (exposureTipsTitle) {
               exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+              exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
             }
             if (exposureTipsDescription) {
               exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+              exposureTipsDescription.className = "text-amber-700 mb-2"
             }
             if (exposureTipsSuggestions) {
               exposureTipsSuggestions.innerHTML =
-                "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+                "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
                 "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-                "Consider these adjustments to avoid bulb mode:<br>" +
+                "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
                 "• Increase ISO (will introduce more noise)<br>" +
                 "• Use a wider aperture (lower f-number)<br>" +
-                "Add additional lighting to the scene if possible"
+                "• Add additional lighting to the scene if possible"
+              exposureTipsSuggestions.className = "text-amber-700"
             }
           }
         } else if (exposureTipsBulb) {
@@ -1735,22 +1747,26 @@ document.addEventListener("DOMContentLoaded", () => {
             exposureTipsIncorrect.classList.add("hidden")
             exposureTipsBulb.classList.remove("hidden")
             bulbExposureTimeSpan.textContent = bulbTime
+            bulbExposureTimeSpan.className = "text-red-600 font-bold"
 
             // Set the bulb warning title and suggestions
             if (exposureTipsTitle) {
               exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+              exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
             }
             if (exposureTipsDescription) {
               exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+              exposureTipsDescription.className = "text-amber-700 mb-2"
             }
             if (exposureTipsSuggestions) {
               exposureTipsSuggestions.innerHTML =
-                "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+                "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
                 "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-                "Consider these adjustments to avoid bulb mode:<br>" +
+                "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
                 "• Increase ISO (will introduce more noise)<br>" +
                 "• Use a wider aperture (lower f-number)<br>" +
-                "Add additional lighting to the scene if possible"
+                "• Add additional lighting to the scene if possible"
+              exposureTipsSuggestions.className = "text-amber-700"
             }
           }
         } else if (exposureTipsBulb) {

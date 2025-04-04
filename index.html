@@ -6,7 +6,7 @@
   <title>Outdoor Photography Exposure Calculator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="exposure-mode-aperture">
   <div class="container">
       <header>
           <div class="header-content">
@@ -240,25 +240,36 @@
                         <div id="total-exposure-description" class="total-exposure-description">Correct exposure</div>
                       </div>
 
+                      <!-- Fix the styling for the exposure tips sections -->
+
+                      <!-- Update the exposure-tips-correct div -->
                       <div id="exposure-tips-correct" class="tips">
-                          <h4 class="tips-title">Correct Exposure</h4>
-                          <p>Your current settings provide a well-balanced exposure for this scene.</p>
+                          <h4 class="tips-title text-green-600 font-bold">Correct Exposure</h4>
+                          <p class="text-gray-700">Your current settings provide a well-balanced exposure for this scene.</p>
                       </div>
 
+                      <!-- Update the exposure-tips-incorrect div -->
                       <div id="exposure-tips-incorrect" class="tips hidden">
-                          <h4 id="exposure-tips-title" class="tips-title">Underexposed by 2.0 stops</h4>
-                          <p id="exposure-tips-description">Your image is too dark. Consider these adjustments:</p>
-                          <ul id="exposure-tips-suggestions">
+                          <h4 id="exposure-tips-title" class="tips-title text-red-600 font-bold">Underexposed by 2.0 stops</h4>
+                          <p id="exposure-tips-description" class="text-gray-700 mb-2">Your image is too dark. Consider these adjustments:</p>
+                          <ul id="exposure-tips-suggestions" class="text-gray-700 space-y-1">
                               <li>Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)</li>
                               <li>Use slower shutter speed (lower number like 1/30 instead of 1/125)</li>
                               <li>Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light</li>
                           </ul>
                       </div>
 
-                      <div id="exposure-tips-bulb" class="tips hidden">
-                          <h4 class="tips-title">Bulb Mode Required</h4>
-                          <p>This scene requires a very long exposure time of <span id="bulb-exposure-time">30s</span>, which exceeds standard shutter speeds.</p>
-                          <p>Use Bulb mode on your camera and a remote trigger to keep the shutter open for the required time.</p>
+                      <!-- Update the exposure-tips-bulb div -->
+                      <div id="exposure-tips-bulb" class="tips hidden" style="background-color: #fef3c7; border-left-color: #f59e0b;">
+                          <h4 class="tips-title text-amber-700 font-bold">Bulb Mode Required</h4>
+                          <p class="text-amber-700 mb-2">Recommended exposure time: <span id="bulb-exposure-time" class="text-red-600 font-bold">30s</span></p>
+                          <p class="text-amber-800 mb-2"><strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. Use a remote shutter release or timer to avoid touching the camera during exposure.</p>
+                          <p class="text-amber-700">Consider these adjustments to avoid bulb mode:</p>
+                          <ul class="list-disc list-inside text-amber-700 space-y-1 mt-1">
+                              <li>Increase ISO (will introduce more noise)</li>
+                              <li>Use a wider aperture (lower f-number)</li>
+                              <li>Add additional lighting to the scene if possible</li>
+                          </ul>
                       </div>
 
                       <div id="ev-table-container" class="hidden">
@@ -390,6 +401,18 @@
         }
       }, 3000);
     });
+
+    // Update body class based on exposure mode
+    document.querySelectorAll(".exposure-mode-tabs .tab-trigger").forEach((tab) => {
+      tab.addEventListener("click", function () {
+        // Update body class for styling
+        document.body.classList.remove("exposure-mode-aperture", "exposure-mode-shutter", "exposure-mode-manual");
+        document.body.classList.add("exposure-mode-" + this.dataset.mode);
+      });
+    });
+    
+    // Initialize with aperture priority class
+    document.body.classList.add("exposure-mode-aperture");
   </script>
 </body>
 </html>

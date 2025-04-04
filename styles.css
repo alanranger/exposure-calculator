@@ -640,19 +640,63 @@ footer {
 }
 
 .text-green-600 {
-  color: #16a34a;
+  color: #16a34a !important;
 }
 
 .text-red-600 {
-  color: #ef4444;
+  color: #dc2626 !important;
 }
 
 .text-blue-600 {
-  color: #2563eb;
+  color: #2563eb !important;
 }
 
 .text-orange-500 {
-  color: #f97316;
+  color: #f97316 !important;
+}
+
+.text-amber-500 {
+  color: #f59e0b !important;
+}
+
+.text-amber-700 {
+  color: #b45309 !important;
+}
+
+.text-amber-800 {
+  color: #92400e !important;
+}
+
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.text-gray-700 {
+  color: #374151 !important;
+}
+
+.font-bold {
+  font-weight: 700 !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.space-y-1 > * + * {
+  margin-top: 0.25rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem !important;
+}
+
+.list-disc {
+  list-style-type: disc;
+}
+
+.list-inside {
+  list-style-position: inside;
 }
 
 .disabled {
@@ -778,5 +822,61 @@ footer {
 
 #motion-overlay {
   z-index: 10;
+}
+
+/* Fix the styling for the bulb warning section */
+#exposure-tips-bulb {
+  background-color: #fef3c7 !important;
+  border-left: 4px solid #f59e0b !important;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: #92400e !important;
+  border-radius: 0.25rem;
+}
+
+#exposure-tips-bulb .tips-title {
+  color: #92400e !important;
+  font-weight: 700 !important;
+}
+
+#bulb-exposure-time {
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+}
+
+/* Color styling for camera controls based on exposure mode */
+/* Aperture priority styling */
+.exposure-mode-aperture #aperture-label {
+  color: #16a34a !important;
+  font-weight: 500;
+}
+
+.exposure-mode-aperture #shutter-label {
+  color: #dc2626 !important;
+  font-weight: 500;
+}
+
+/* Shutter priority styling */
+.exposure-mode-shutter #aperture-label {
+  color: #dc2626 !important;
+  font-weight: 500;
+}
+
+.exposure-mode-shutter #shutter-label {
+  color: #16a34a !important;
+  font-weight: 500;
+}
+
+/* Manual mode styling */
+.exposure-mode-manual #aperture-label,
+.exposure-mode-manual #shutter-label {
+  color: #2563eb !important;
+  font-weight: 500;
+}
+
+/* ISO styling */
+#iso-label {
+  color: #f97316 !important;
+  font-weight: 500;
 }
 
