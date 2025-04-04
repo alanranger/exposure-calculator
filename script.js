@@ -530,27 +530,44 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if we need bulb mode
     if (requiredShutter > 30) {
       // Format the time for bulb mode
-      let bulbTime = "";
+      let bulbTime = ""
       if (requiredShutter > 60) {
-        const minutes = Math.floor(requiredShutter / 60);
-        const seconds = Math.round(requiredShutter % 60);
-        bulbTime = `${minutes}m ${seconds}s`;
+        const minutes = Math.floor(requiredShutter / 60)
+        const seconds = Math.round(requiredShutter % 60)
+        bulbTime = `${minutes}m ${seconds}s`
       } else {
-        bulbTime = `${Math.round(requiredShutter)}s`;
+        bulbTime = `${Math.round(requiredShutter)}s`
       }
 
       // Update bulb mode UI
       if (exposureTipsBulb && bulbExposureTimeSpan) {
-        exposureTipsCorrect.classList.add("hidden");
-        exposureTipsIncorrect.classList.add("hidden");
-        exposureTipsBulb.classList.remove("hidden");
-        bulbExposureTimeSpan.textContent = bulbTime;
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+        exposureTipsBulb.classList.remove("hidden")
+        bulbExposureTimeSpan.textContent = bulbTime
+
+        // Set the bulb warning title and suggestions
+        if (exposureTipsTitle) {
+          exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+        }
+        if (exposureTipsDescription) {
+          exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+        }
+        if (exposureTipsSuggestions) {
+          exposureTipsSuggestions.innerHTML =
+            "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+            "Consider these adjustments to avoid bulb mode:<br>" +
+            "• Increase ISO (will introduce more noise)<br>" +
+            "• Use a wider aperture (lower f-number)<br>" +
+            "• Add additional lighting to the scene if possible"
+        }
       }
     } else {
       // Hide bulb mode UI
       if (exposureTipsBulb) {
-        exposureTipsBulb.classList.add("hidden");
-        exposureTipsCorrect.classList.remove("hidden");
+        exposureTipsBulb.classList.add("hidden")
+        exposureTipsCorrect.classList.remove("hidden")
       }
     }
 
@@ -562,28 +579,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateShutterPriorityWithAutoIso(shutterValue, evValue) {
     // Calculate the required ISO for auto ISO mode
     const requiredIso = calculateRequiredIsoForShutterPriority(shutterValue, evValue)
-    console.log("Auto ISO calculation:", { shutterValue, evValue, requiredIso });
+    console.log("Auto ISO calculation:", { shutterValue, evValue, requiredIso })
 
     // Find the closest standard ISO value
-    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso);
+    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
 
     // Update the ISO index
-    isoIndex = closestIsoIndex;
-    userChangedIso = true;
+    isoIndex = closestIsoIndex
+    userChangedIso = true
 
     // Calculate the aperture with this ISO
-    const requiredAperture = calculateRequiredAperture(shutterValue, evValue, standardIsoValues[closestIsoIndex]);
+    const requiredAperture = calculateRequiredAperture(shutterValue, evValue, standardIsoValues[closestIsoIndex])
 
     // Find the closest standard aperture
-    const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture);
+    const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
 
     // Update the aperture index
-    apertureIndex = closestApertureIndex;
-    userChangedAperture = true;
+    apertureIndex = closestApertureIndex
+    userChangedAperture = true
 
     // Update displays
-    updateIsoDisplay();
-    updateApertureDisplay();
+    updateIsoDisplay()
+    updateApertureDisplay()
   }
 
   // Update ISO in manual mode with Auto ISO
@@ -1411,8 +1428,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (exposureIndicator) {
       if (exposureCorrect) {
         exposureIndicator.classList.add("hidden")
-            if (exposureCorrect) {
-        exposureIndicator.classList.add("hidden")
       } else {
         exposureIndicator.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} by ${Math.abs(evDifference).toFixed(1)} stops`
         exposureIndicator.classList.remove("hidden")
@@ -1432,6 +1447,47 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } else if (sceneImage) {
       sceneImage.style.filter = ""
+    }
+
+    // Check if bulb mode warning is needed in aperture priority mode
+    if (exposureMode === "aperture" && !autoIso) {
+      const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
+      if (requiredShutter > 30) {
+        // Format the time for bulb mode
+        let bulbTime = ""
+        if (requiredShutter > 60) {
+          const minutes = Math.floor(requiredShutter / 60)
+          const seconds = Math.round(requiredShutter % 60)
+          bulbTime = `${minutes}m ${seconds}s`
+        } else {
+          bulbTime = `${Math.round(requiredShutter)}s`
+        }
+
+        // Update bulb mode UI
+        if (exposureTipsBulb && bulbExposureTimeSpan) {
+          exposureTipsCorrect.classList.add("hidden")
+          exposureTipsIncorrect.classList.add("hidden")
+          exposureTipsBulb.classList.remove("hidden")
+          bulbExposureTimeSpan.textContent = bulbTime
+
+          // Set the bulb warning title and suggestions
+          if (exposureTipsTitle) {
+            exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+          }
+          if (exposureTipsDescription) {
+            exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+          }
+          if (exposureTipsSuggestions) {
+            exposureTipsSuggestions.innerHTML =
+              "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+              "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+              "Consider these adjustments to avoid bulb mode:<br>" +
+              "• Increase ISO (will introduce more noise)<br>" +
+              "• Use a wider aperture (lower f-number)<br>" +
+              "• Add additional lighting to the scene if possible"
+          }
+        }
+      }
     }
 
     // Update histogram to reflect exposure changes
@@ -1555,6 +1611,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
         shutterSpeedIndex = closestShutterIndex
         updateShutterDisplay()
+
+        // Check if we need to show bulb mode warning
+        if (requiredShutter > 30 && !autoIso) {
+          // Format the time for bulb mode
+          let bulbTime = ""
+          if (requiredShutter > 60) {
+            const minutes = Math.floor(requiredShutter / 60)
+            const seconds = Math.round(requiredShutter % 60)
+            bulbTime = `${minutes}m ${seconds}s`
+          } else {
+            bulbTime = `${Math.round(requiredShutter)}s`
+          }
+
+          // Update bulb mode UI
+          if (exposureTipsBulb && bulbExposureTimeSpan) {
+            exposureTipsCorrect.classList.add("hidden")
+            exposureTipsIncorrect.classList.add("hidden")
+            exposureTipsBulb.classList.remove("hidden")
+            bulbExposureTimeSpan.textContent = bulbTime
+
+            // Set the bulb warning title and suggestions
+            if (exposureTipsTitle) {
+              exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+            }
+            if (exposureTipsDescription) {
+              exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+            }
+            if (exposureTipsSuggestions) {
+              exposureTipsSuggestions.innerHTML =
+                "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+                "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+                "Consider these adjustments to avoid bulb mode:<br>" +
+                "• Increase ISO (will introduce more noise)<br>" +
+                "• Use a wider aperture (lower f-number)<br>" +
+                "• Add additional lighting to the scene if possible"
+            }
+          }
+        } else if (exposureTipsBulb) {
+          // Hide bulb mode UI if no longer needed
+          exposureTipsBulb.classList.add("hidden")
+          exposureTipsCorrect.classList.remove("hidden")
+        }
       }
 
       updateExposureMeter()
@@ -1605,6 +1703,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
         shutterSpeedIndex = closestShutterIndex
         updateShutterDisplay()
+
+        // Check if we need to show bulb mode warning
+        if (requiredShutter > 30 && !autoIso) {
+          // Format the time for bulb mode
+          let bulbTime = ""
+          if (requiredShutter > 60) {
+            const minutes = Math.floor(requiredShutter / 60)
+            const seconds = Math.round(requiredShutter % 60)
+            bulbTime = `${minutes}m ${seconds}s`
+          } else {
+            bulbTime = `${Math.round(requiredShutter)}s`
+          }
+
+          // Update bulb mode UI
+          if (exposureTipsBulb && bulbExposureTimeSpan) {
+            exposureTipsCorrect.classList.add("hidden")
+            exposureTipsIncorrect.classList.add("hidden")
+            exposureTipsBulb.classList.remove("hidden")
+            bulbExposureTimeSpan.textContent = bulbTime
+
+            // Set the bulb warning title and suggestions
+            if (exposureTipsTitle) {
+              exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+            }
+            if (exposureTipsDescription) {
+              exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+            }
+            if (exposureTipsSuggestions) {
+              exposureTipsSuggestions.innerHTML =
+                "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+                "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+                "Consider these adjustments to avoid bulb mode:<br>" +
+                "• Increase ISO (will introduce more noise)<br>" +
+                "• Use a wider aperture (lower f-number)<br>" +
+                "• Add additional lighting to the scene if possible"
+            }
+          }
+        } else if (exposureTipsBulb) {
+          // Hide bulb mode UI if no longer needed
+          exposureTipsBulb.classList.add("hidden")
+          exposureTipsCorrect.classList.remove("hidden")
+        }
       } else if (exposureMode === "shutter") {
         // In shutter priority, adjust aperture
         const shutter = standardShutterSpeeds[shutterSpeedIndex]
@@ -1720,9 +1860,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize the application
   initialize()
 })
-\
+
 // Add a fallback initialization to ensure everything loads
-window.addEventListener("load", () => 
+window.addEventListener("load", () => {
   console.log("Window fully loaded - checking if initialization completed")
 
   // If not initialized after 2 secondsconds, try again
@@ -1737,9 +1877,9 @@ window.addEventListener("load", () =>
       console.log("Forcing scene image update")
       updateSceneImage()
     }
-  }, 2000))
-
+  }, 2000));
+\
 //Remove duplicate functions and state variables
 //The functions and state variables were declared twice.
-//The second declaration is removed.
+//The second declaration is emoved.
 
