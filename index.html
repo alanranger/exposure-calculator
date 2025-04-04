@@ -261,85 +261,41 @@
                           <p>Use Bulb mode on your camera and a remote trigger to keep the shutter open for the required time.</p>
                       </div>
 
-                      <button id="triangle-guide-toggle" class="toggle-button">
-                          <span class="toggle-icon">▶</span> Show Exposure Triangle Guide
-                      </button>
-
-                      <div id="triangle-guide-container" class="hidden">
-                          <div class="guide-tabs">
-                              <button class="guide-tab active" data-guide="basics">Basics</button>
-                              <button class="guide-tab" data-guide="aperture">Aperture</button>
-                              <button class="guide-tab" data-guide="shutter">Shutter</button>
-                              <button class="guide-tab" data-guide="iso">ISO</button>
-                          </div>
-
-                          <div class="guide-content">
-                              <div class="guide-text">
-                                  <p>The exposure triangle consists of three elements: <span class="highlight">Aperture</span>, <span class="highlight">Shutter Speed</span>, and <span class="highlight">ISO</span>.</p>
-                                  <p>Each element affects exposure by one "stop" when doubled or halved. A balanced exposure can be achieved with different combinations of these settings.</p>
-                              </div>
-                              <div class="guide-diagram">
-                                  <div class="diagram-labels">
-                                      <span>Aperture</span>
-                                      <span>Shutter</span>
-                                      <span>ISO</span>
-                                  </div>
-                                  <div class="diagram-caption">
-                                      Changing one element requires adjusting at least one other to maintain the same exposure.
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-
-                      <button id="ev-table-toggle" class="toggle-button">
-                          <span class="toggle-icon">▶</span> Show EV Table
-                      </button>
-
                       <div id="ev-table-container" class="hidden">
                           <div class="ev-table-wrapper">
                               <table class="ev-table">
                                   <thead>
                                       <tr>
-                                          <th>Lighting Condition</th>
-                                          <th>Typical EV</th>
-                                          <th>Example Settings</th>
+                                          <th>Time of Day</th>
+                                          <th>EV</th>
+                                          <th>Exposure Time (f/5.6, ISO 100)</th>
                                       </tr>
                                   </thead>
                                   <tbody>
                                       <tr>
-                                          <td>Night, away from city lights</td>
-                                          <td>-6 to -4</td>
-                                          <td>f/2.8, 30s, ISO 3200</td>
+                                          <td>Night</td>
+                                          <td>-12</td>
+                                          <td>68m 16s</td>
                                       </tr>
                                       <tr>
-                                          <td>Night, city lights</td>
-                                          <td>-3 to 0</td>
-                                          <td>f/4, 15s, ISO 800</td>
+                                          <td>Dawn/Dusk</td>
+                                          <td>-3</td>
+                                          <td>8s</td>
                                       </tr>
                                       <tr>
                                           <td>Sunrise/Sunset</td>
-                                          <td>-1 to 3</td>
-                                          <td>f/5.6, 1/15s, ISO 100</td>
+                                          <td>-1</td>
+                                          <td>2s</td>
                                       </tr>
                                       <tr>
-                                          <td>Overcast day</td>
-                                          <td>7 to 9</td>
-                                          <td>f/8, 1/125s, ISO 100</td>
-                                      </tr>
-                                      <tr>
-                                          <td>Sunny day</td>
-                                          <td>12 to 15</td>
-                                          <td>f/11, 1/250s, ISO 100</td>
-                                      </tr>
-                                      <tr>
-                                          <td>Bright snow/beach</td>
-                                          <td>15 to 16</td>
-                                          <td>f/16, 1/250s, ISO 100</td>
+                                          <td>Midday</td>
+                                          <td>12</td>
+                                          <td>1/2000s</td>
                                       </tr>
                                   </tbody>
                               </table>
                           </div>
-                          <p class="table-note">Note: These are general guidelines. Actual settings may vary based on specific conditions and creative intent.</p>
+                          <p class="table-note">Note: These values are calculated for f/5.6 aperture and ISO 100. Adjusting either setting will change the required exposure time.</p>
                       </div>
                   </div>
               </div>
@@ -395,6 +351,92 @@
       </footer>
   </div>
   <script src="script.js"></script>
+
+  <script>
+    // Fallback script to ensure everything loads
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        // Check if scene image is loaded
+        var sceneImg = document.getElementById('scene-image');
+        if (sceneImg && (!sceneImg.complete || sceneImg.naturalHeight === 0)) {
+          console.log("Scene image not loaded properly, forcing update");
+          sceneImg.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=450&fit=crop&q=80";
+          sceneImg.crossOrigin = "anonymous";
+        }
+        
+        // Force slider updates
+        var apertureSlider = document.getElementById('aperture-slider');
+        var shutterSlider = document.getElementById('shutter-slider');
+        var isoSlider = document.getElementById('iso-slider');
+        
+        if (apertureSlider) {
+          var event = new Event('input');
+          apertureSlider.dispatchEvent(event);
+        }
+        
+        if (shutterSlider) {
+          var event = new Event('input');
+          shutterSlider.dispatchEvent(event);
+        }
+        
+        if (isoSlider) {
+          var event = new Event('input');
+          isoSlider.dispatchEvent(event);
+        }
+      }, 3000);
+    });
+  </script>
+<!-- Add this right before the closing </body> tag in your index.html -->
+<script>
+// Fallback initialization script
+(function() {
+    console.log("Running fallback initialization");
+    
+    // Wait for everything to load
+    window.addEventListener('load', function() {
+        console.log("Window fully loaded - running fallback");
+        
+        // Check if scene image is loaded
+        const sceneImage = document.getElementById('scene-image');
+        if (sceneImage && sceneImage.src.includes('placeholder')) {
+            console.log("Scene image not properly loaded, forcing update");
+            
+            // Force update scene image
+            setTimeout(function() {
+                // Get current scene type and time of day
+                const sceneType = document.getElementById('scene-type').value || 'landscape';
+                const timeOfDay = document.getElementById('time-of-day').value || 'midday';
+                
+                // Try to get image URL from the scene image URLs object
+                if (window.sceneImageUrls && window.sceneImageUrls[sceneType] && window.sceneImageUrls[sceneType][timeOfDay]) {
+                    const imageUrl = window.sceneImageUrls[sceneType][timeOfDay];
+                    console.log("Setting image URL to:", imageUrl);
+                    sceneImage.src = imageUrl;
+                } else {
+                    // Fallback to a known URL
+                    console.log("Using fallback image URL");
+                    sceneImage.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=450&fit=crop&q=80";
+                }
+                
+                // Try to update other elements
+                if (typeof window.updateHistogram === 'function') {
+                    window.updateHistogram();
+                }
+                
+                if (typeof window.updateExposureMeter === 'function') {
+                    window.updateExposureMeter();
+                }
+                
+                console.log("Fallback initialization complete");
+            }, 500);
+        } else {
+            console.log("Scene image appears to be loaded correctly");
+        }
+    });
+})();
+</script>
+
+
 </body>
 </html>
 

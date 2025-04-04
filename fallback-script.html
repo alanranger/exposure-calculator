@@ -1,0 +1,50 @@
+<!-- Add this right before the closing </body> tag in your index.html -->
+<script>
+// Fallback initialization script
+(function() {
+    console.log("Running fallback initialization");
+    
+    // Wait for everything to load
+    window.addEventListener('load', function() {
+        console.log("Window fully loaded - running fallback");
+        
+        // Check if scene image is loaded
+        const sceneImage = document.getElementById('scene-image');
+        if (sceneImage && sceneImage.src.includes('placeholder')) {
+            console.log("Scene image not properly loaded, forcing update");
+            
+            // Force update scene image
+            setTimeout(function() {
+                // Get current scene type and time of day
+                const sceneType = document.getElementById('scene-type').value || 'landscape';
+                const timeOfDay = document.getElementById('time-of-day').value || 'midday';
+                
+                // Try to get image URL from the scene image URLs object
+                if (window.sceneImageUrls && window.sceneImageUrls[sceneType] && window.sceneImageUrls[sceneType][timeOfDay]) {
+                    const imageUrl = window.sceneImageUrls[sceneType][timeOfDay];
+                    console.log("Setting image URL to:", imageUrl);
+                    sceneImage.src = imageUrl;
+                } else {
+                    // Fallback to a known URL
+                    console.log("Using fallback image URL");
+                    sceneImage.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=450&fit=crop&q=80";
+                }
+                
+                // Try to update other elements
+                if (typeof window.updateHistogram === 'function') {
+                    window.updateHistogram();
+                }
+                
+                if (typeof window.updateExposureMeter === 'function') {
+                    window.updateExposureMeter();
+                }
+                
+                console.log("Fallback initialization complete");
+            }, 500);
+        } else {
+            console.log("Scene image appears to be loaded correctly");
+        }
+    });
+})();
+</script>
+
