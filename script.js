@@ -1878,17 +1878,23 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   console.log("Window fully loaded - checking if initialization completed")
 
-  // If not initialized after 2 secondsconds, try again
+  // If not initialized after 2 seconds, try again
   setTimeout(() => {
-    if (!initialized) {
+    if (typeof initialized === "undefined" || !initialized) {
       console.log("Forcing initialization")
-      initialize()
+      if (typeof initialize === "function") {
+        initialize()
+      }
     }
 
     // Force update scene image if it's not loaded
-    if (sceneImage && (!sceneImage.complete || sceneImage.naturalHeight === 0)) {
+    var sceneImg = document.getElementById("scene-image")
+    if (sceneImg && (!sceneImg.complete || sceneImg.naturalHeight === 0)) {
       console.log("Forcing scene image update")
-      updateSceneImage()
+      if (typeof updateSceneImage === "function") {
+        updateSceneImage()
+      }
     }
-  }, 2000));\
+  }, 2000)
+})
 
