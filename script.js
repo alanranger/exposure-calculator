@@ -896,17 +896,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Creating motion lines for category:", motionCategory)
 
-    // Create lines based on motion category - CENTERED and LARGER
+    // Create lines based on motion category
     if (motionCategory === "very-slow") {
-      // Create 15 long motion streaks - centered in the SVG
+      // Create 15 long motion streaks across the entire image
       for (let i = 0; i < 15; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          // Center the lines horizontally by starting at 25% and ending at 75%
-          line.setAttribute("x1", String(25 + i * 3))
-          line.setAttribute("y1", "20")
-          line.setAttribute("x2", String(45 + i * 3))
-          line.setAttribute("y2", "80")
+          // Distribute lines across the full width and height
+          const startX = 10 + i * 5
+          const startY = 10 + i * 5
+          const endX = 70 + i * 5
+          const endY = 90 - i * 3
+
+          line.setAttribute("x1", String(startX))
+          line.setAttribute("y1", String(startY))
+          line.setAttribute("x2", String(endX))
+          line.setAttribute("y2", String(endY))
           line.setAttribute("stroke", "red")
           line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
@@ -916,14 +921,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     } else if (motionCategory === "slow") {
-      // Create 10 medium motion streaks - centered
+      // Create 10 medium motion streaks
       for (let i = 0; i < 10; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          line.setAttribute("x1", String(30 + i * 4))
-          line.setAttribute("y1", "30")
-          line.setAttribute("x2", String(40 + i * 4))
-          line.setAttribute("y2", "70")
+          // Distribute lines across the full width and height
+          const startX = 20 + i * 6
+          const startY = 20 + i * 4
+          const endX = 60 + i * 6
+          const endY = 80 - i * 2
+
+          line.setAttribute("x1", String(startX))
+          line.setAttribute("y1", String(startY))
+          line.setAttribute("x2", String(endX))
+          line.setAttribute("y2", String(endY))
           line.setAttribute("stroke", "red")
           line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
@@ -933,14 +944,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     } else if (motionCategory === "medium") {
-      // Create 8 short motion streaks - centered
+      // Create 8 short motion streaks
       for (let i = 0; i < 8; i++) {
         try {
           const line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-          line.setAttribute("x1", String(35 + i * 4))
-          line.setAttribute("y1", "40")
-          line.setAttribute("x2", String(40 + i * 4))
-          line.setAttribute("y2", "60")
+          // Distribute lines across the full width and height
+          const startX = 30 + i * 5
+          const startY = 30 + i * 3
+          const endX = 50 + i * 5
+          const endY = 70 - i * 1
+
+          line.setAttribute("x1", String(startX))
+          line.setAttribute("y1", String(startY))
+          line.setAttribute("x2", String(endX))
+          line.setAttribute("y2", String(endY))
           line.setAttribute("stroke", "red")
           line.setAttribute("stroke-width", "1.5")
           line.setAttribute("stroke-opacity", "0.8")
@@ -1574,17 +1591,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (autoIsoCheckbox) {
     autoIsoCheckbox.addEventListener("change", function () {
+      console.log("Auto ISO checkbox changed:", this.checked)
       autoIso = this.checked
 
       // Update ISO slider state
       if (isoSlider) {
         isoSlider.disabled = autoIso
+        isoSlider.classList.toggle("disabled", autoIso)
       }
 
-      updateAutoIsoInfo()
+      // Make Auto ISO info visible
+      if (autoIsoInfo) {
+        autoIsoInfo.classList.toggle("hidden", !autoIso)
+
+        if (autoIso) {
+          if (exposureMode === "aperture") {
+            autoIsoInfo.textContent = "Auto ISO: Maintaining minimum shutter speed of 1/60s"
+          } else if (exposureMode === "shutter") {
+            autoIsoInfo.textContent = "Auto ISO: Adjusting ISO when aperture range is insufficient"
+          } else if (exposureMode === "manual") {
+            autoIsoInfo.textContent = "Auto ISO: Automatically adjusting ISO to achieve correct exposure"
+          }
+        }
+      }
 
       // Update settings based on exposure mode and auto ISO status
       if (autoIso) {
+        console.log("Updating settings for Auto ISO mode:", exposureMode)
         if (exposureMode === "aperture") {
           updateAutoIso(standardApertures[apertureIndex], ev)
         } else if (exposureMode === "shutter") {

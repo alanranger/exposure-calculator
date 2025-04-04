@@ -761,3 +761,21 @@ footer {
   margin-top: 0.25rem;
 }
 
+/* Motion visualization improvements */
+#motion-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+#motion-lines line {
+  transition: all 0.3s ease;
+}
+
+#motion-overlay {
+  z-index: 10;
+}
+
