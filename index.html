@@ -5,231 +5,556 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Outdoor Photography Exposure Calculator</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Outdoor Photography Exposure Calculator</h1>
-            <p class="subtitle">Visualise and calculate exposure settings for your outdoor photography.</p>
-            <p class="disclaimer">For educational purposes only - real life light and situations may vary</p>
-            <div class="version">Version 1.1s <span id="current-date"></span></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-container">
+                <div class="header-left">
+                    <div class="logo-container">
+                        <img src="logo.png" alt="Alan Ranger Photography" class="logo">
+                    </div>
+                    <div>
+                        <h1 class="header-title">Outdoor Photography Exposure Calculator</h1>
+                        <p class="header-subtitle">
+                            Visualise and calculate exposure settings for your outdoor photography.
+                            <br>
+                            <span class="header-note">For educational purposes only - real life light and situations may vary</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="version">Version 1.1s</div>
+                    <div class="date">April 3, 2025</div>
+                </div>
+            </div>
         </header>
 
-        <div class="main-content">
-            <div class="left-column">
-                <section class="scene-settings">
-                    <h2>Scene Settings</h2>
-                    <div class="form-group">
-                        <label for="scene-type">Scene Type</label>
-                        <select id="scene-type">
-                            <option value="landscape">Landscape</option>
-                            <option value="cityscape">Cityscape</option>
-                            <option value="portrait">Portrait</option>
-                            <option value="wildlife">Wildlife</option>
-                            <option value="sports">Sports</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="time-of-day">Time of Day</label>
-                        <select id="time-of-day">
-                            <option value="dawn">Dawn</option>
-                            <option value="sunrise">Sunrise</option>
-                            <option value="midday">Midday</option>
-                            <option value="sunset">Sunset</option>
-                            <option value="dusk">Dusk</option>
-                            <option value="night">Night</option>
-                        </select>
-                    </div>
-                </section>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="grid-container">
+                <!-- Left Column - Scene Settings and Exposure Controls -->
+                <div class="left-column">
+                    <!-- Scene Settings -->
+                    <div class="card">
+                        <div class="card-content">
+                            <h2 class="section-title">Scene Settings</h2>
 
-                <section class="exposure-controls">
-                    <div class="section-header">
-                        <h2>Exposure Controls</h2>
-                        <div class="exposure-mode-tabs">
-                            <button class="tab-trigger active" data-mode="aperture">A/AV</button>
-                            <button class="tab-trigger" data-mode="shutter">S/TV</button>
-                            <button class="tab-trigger" data-mode="manual">M</button>
-                        </div>
-                    </div>
+                            <div class="settings-group">
+                                <div class="form-group">
+                                    <label class="form-label">Scene Type</label>
+                                    <select id="scene-type" class="select">
+                                        <option value="landscape">Landscape</option>
+                                        <option value="cityscape">Cityscape</option>
+                                        <option value="forest">Forest</option>
+                                        <option value="portrait">Portrait</option>
+                                        <option value="wildlife">Wildlife</option>
+                                        <option value="sports">Sports</option>
+                                    </select>
+                                </div>
 
-                    <div class="form-group">
-                        <div class="setting-header">
-                            <label for="aperture-slider">Aperture (f-stop/depth of field)</label>
-                            <span id="aperture-value">f/5.6</span>
-                        </div>
-                        <div class="slider-container">
-                            <span class="slider-label">Wide (f/1.4)</span>
-                            <input type="range" id="aperture-slider" min="0" max="27" value="12">
-                            <span class="slider-label">Narrow (f/32)</span>
-                        </div>
-                        <p id="aperture-tips" class="setting-tips"></p>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="setting-header">
-                            <label for="shutter-slider">Shutter Speed (movement)</label>
-                            <span id="shutter-value">1/2000s</span>
-                        </div>
-                        <div class="slider-container">
-                            <span class="slider-label">Slow (30") - Blur Motion</span>
-                            <input type="range" id="shutter-slider" min="0" max="54" value="48">
-                            <span class="slider-label">Fast (1/8000s) - Freeze Motion</span>
-                        </div>
-                        <p id="shutter-tips" class="setting-tips"></p>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="setting-header">
-                            <label for="iso-slider">
-                                ISO (grain/exposure time)
-                                <span class="auto-iso-container">
-                                    <input type="checkbox" id="auto-iso">
-                                    <label for="auto-iso" class="auto-iso-label">Auto</label>
-                                </span>
-                            </label>
-                            <span id="iso-value">100</span>
-                        </div>
-                        <div class="slider-container">
-                            <span class="slider-label">Low (50) - Low Noise</span>
-                            <input type="range" id="iso-slider" min="0" max="33" value="3">
-                            <span class="slider-label">High (102400) - High Noise</span>
-                        </div>
-                        <p id="iso-tips" class="setting-tips"></p>
-                        <p id="auto-iso-info" class="auto-iso-info hidden"></p>
-                    </div>
-                </section>
-            </div>
-
-            <div class="right-column">
-                <section class="scene-preview">
-                    <div class="section-header">
-                        <h2>Scene Preview</h2>
-                        <div class="preview-mode-tabs">
-                            <button class="tab-trigger active" data-mode="normal">Normal</button>
-                            <button class="tab-trigger" data-mode="dof">Depth of Field</button>
-                            <button class="tab-trigger" data-mode="motion">Motion</button>
-                        </div>
-                    </div>
-
-                    <div class="scene-image-container">
-                        <img id="scene-image" src="/placeholder.svg" alt="Scene preview">
-                        <div id="scene-loading" class="scene-loading">Loading...</div>
-                        <div id="scene-error" class="scene-error hidden">Image not available</div>
-                        <div id="exposure-indicator" class="exposure-indicator hidden"></div>
-                        
-                        <!-- DOF Overlay -->
-                        <div id="dof-overlay" class="preview-overlay hidden">
-                            <div id="dof-info" class="preview-info">
-                                <div id="dof-zone" class="dof-zone"></div>
-                                <div id="dof-indicator" class="preview-indicator"></div>
-                                <p id="dof-explanation" class="preview-explanation"></p>
-                                <p id="dof-current-setting" class="current-setting"></p>
-                            </div>
-                        </div>
-                        
-                        <!-- Motion Overlay -->
-                        <div id="motion-overlay" class="preview-overlay hidden">
-                            <div id="motion-info" class="preview-info">
-                                <svg id="motion-lines" class="motion-lines" width="100%" height="100%" viewBox="0 0 100 100"></svg>
-                                <div id="motion-indicator" class="preview-indicator"></div>
-                                <p id="motion-explanation" class="preview-explanation"></p>
-                                <p id="motion-current-setting" class="current-setting"></p>
+                                <div class="form-group">
+                                    <label class="form-label">Time of Day</label>
+                                    <select id="time-of-day" class="select">
+                                        <option value="dawn">Dawn</option>
+                                        <option value="sunrise">Sunrise</option>
+                                        <option value="midday" selected>Midday</option>
+                                        <option value="sunset">Sunset</option>
+                                        <option value="dusk">Dusk</option>
+                                        <option value="night">Night</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <p id="scene-description" class="scene-description"></p>
-                </section>
 
-                <section class="exposure-meter">
-                    <h2>Exposure Meter</h2>
-                    <div class="meter-container">
+                    <!-- Exposure Controls -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="exposure-header">
+                                <h2 class="section-title">Exposure Controls</h2>
+
+                                <div class="exposure-mode-tabs">
+                                    <button class="tab-trigger active" data-mode="aperture">A/AV</button>
+                                    <button class="tab-trigger" data-mode="shutter">S/TV</button>
+                                    <button class="tab-trigger" data-mode="manual">M</button>
+                                </div>
+                            </div>
+
+                            <div class="exposure-controls">
+                                <!-- Aperture Setting -->
+                                <div class="control-group">
+                                    <div class="control-header">
+                                        <label id="aperture-label" class="control-label">Aperture (f-stop/depth of field)</label>
+                                        <div class="control-value">
+                                            <span id="aperture-value">f/5.6</span>
+                                            <span id="aperture-icon" class="control-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-active"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div id="aperture-ev-indicator" class="ev-indicator"></div>
+                                    <div class="slider-labels">
+                                        <span>Wide (f/1.4)</span>
+                                        <span>Narrow (f/32)</span>
+                                    </div>
+                                    <div class="slider-container">
+                                        <input type="range" id="aperture-slider" class="slider" min="0" max="27" value="12">
+                                        <div id="aperture-slider-dot" class="slider-dot"></div>
+                                    </div>
+                                    <div id="aperture-ev-display" class="ev-display"></div>
+                                    <div class="tips-box">
+                                        <div id="aperture-tips" class="photography-tips"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Shutter Speed Setting -->
+                                <div class="control-group">
+                                    <div class="control-header">
+                                        <label id="shutter-label" class="control-label">Shutter Speed (movement)</label>
+                                        <div class="control-value">
+                                            <span id="shutter-value">1/2000s</span>
+                                            <span id="shutter-icon" class="control-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-locked"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M12 1v2"></path><path d="M12 21v2"></path><path d="M4.22 4.22l1.42 1.42"></path><path d="M18.36 18.36l1.42 1.42"></path><path d="M1 12h2"></path><path d="M21 12h2"></path><path d="M4.22 19.78l1.42-1.42"></path><path d="M18.36 5.64l1.42-1.42"></path></svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div id="shutter-ev-indicator" class="ev-indicator"></div>
+                                    <div class="slider-labels">
+                                        <span>Slow (30") - Blur Motion</span>
+                                        <span>Fast (1/8000) - Freeze Motion</span>
+                                    </div>
+                                    <div class="slider-container">
+                                        <input type="range" id="shutter-slider" class="slider disabled" min="0" max="54" value="48" disabled>
+                                        <div id="shutter-slider-dot" class="slider-dot"></div>
+                                    </div>
+                                    <div id="shutter-ev-display" class="ev-display"></div>
+                                    <div class="tips-box">
+                                        <div id="shutter-tips" class="photography-tips"></div>
+                                    </div>
+                                </div>
+
+                                <!-- ISO Setting -->
+                                <div class="control-group">
+                                    <div class="control-header">
+                                        <label id="iso-label" class="control-label">ISO (grain/exposure time)</label>
+                                        <div class="control-value">
+                                            <span id="iso-value">100</span>
+                                            <div class="auto-iso-container">
+                                                <input type="checkbox" id="auto-iso" class="auto-iso-checkbox">
+                                                <label for="auto-iso" class="auto-iso-label">Auto</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="iso-ev-indicator" class="ev-indicator"></div>
+                                    <div class="slider-labels">
+                                        <span>Low (50) / Low Noise<br>Slower Shutter Speed</span>
+                                        <span>High (102400) / High Noise<br>Faster Shutter Speed</span>
+                                    </div>
+                                    <div class="slider-container">
+                                        <input type="range" id="iso-slider" class="slider" min="0" max="33" value="3">
+                                        <div id="iso-slider-dot" class="slider-dot"></div>
+                                    </div>
+                                    <div id="iso-ev-display" class="ev-display"></div>
+                                    <div class="tips-box">
+                                        <div id="iso-tips" class="photography-tips"></div>
+                                    </div>
+                                    <div id="auto-iso-info" class="auto-iso-info hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Scene Preview and Exposure Information -->
+                <div class="right-column">
+                    <!-- Scene Preview -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="scene-header">
+                                <h3 class="scene-title">Scene Preview</h3>
+                                <div class="preview-mode-tabs">
+                                    <button class="tab-trigger active" data-mode="normal">Normal</button>
+                                    <button class="tab-trigger" data-mode="dof">Depth of Field</button>
+                                    <button class="tab-trigger" data-mode="motion">Motion</button>
+                                </div>
+                            </div>
+
+                            <div class="scene-container">
+                                <div id="scene-loading" class="scene-loading">Loading...</div>
+                                <div id="scene-error" class="scene-error hidden">Image not available</div>
+                                <img id="scene-image" class="scene-image" alt="Scene preview">
+                                <div id="exposure-indicator" class="exposure-indicator hidden"></div>
+                                
+                                <!-- DOF Overlay -->
+                                <div id="dof-overlay" class="dof-overlay hidden">
+                                    <div class="dof-zone-container">
+                                        <div id="dof-zone" class="dof-zone"></div>
+                                    </div>
+                                    <div id="dof-indicator" class="effect-indicator"></div>
+                                </div>
+                                
+                                <!-- Motion Overlay -->
+                                <div id="motion-overlay" class="motion-overlay hidden">
+                                    <svg id="motion-lines" class="motion-lines" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                                    <div id="motion-indicator" class="effect-indicator"></div>
+                                </div>
+                            </div>
+
+                            <div id="scene-description" class="scene-description">Landscape at Midday</div>
+
+                            <!-- Preview Mode Info -->
+                            <div id="dof-info" class="preview-info hidden">
+                                <p class="preview-info-title">Depth of Field Effect:</p>
+                                <p class="preview-info-text">
+                                    <strong>Lower f-numbers (f/1.4, f/2.8):</strong> Create shallow depth of field with a sharp subject and
+                                    blurred background. Ideal for portraits and isolating subjects.
+                                </p>
+                                <p class="preview-info-text">
+                                    <strong>Higher f-numbers (f/11, f/16):</strong> Create deep depth of field where everything from
+                                    foreground to background is in focus. Ideal for landscapes and architecture.
+                                </p>
+                                <p id="dof-current-setting" class="preview-info-current"></p>
+                                <p id="dof-explanation" class="preview-info-explanation"></p>
+                            </div>
+
+                            <div id="motion-info" class="preview-info hidden">
+                                <p class="preview-info-title">Motion Effect:</p>
+                                <p class="preview-info-text">
+                                    <strong>Slower shutter speeds (1/15s or slower):</strong> Show motion blur for moving subjects. Great for
+                                    creative effects like flowing water or light trails.
+                                </p>
+                                <p class="preview-info-text">
+                                    <strong>Faster shutter speeds (1/500s or faster):</strong> "Freeze" motion with no blur. Ideal for sports,
+                                    wildlife, and capturing split-second moments.
+                                </p>
+                                <p id="motion-current-setting" class="preview-info-current"></p>
+                                <p id="motion-explanation" class="preview-info-explanation"></p>
+                            </div>
+
+                            <!-- Exposure Adjustment Visualization -->
+                            <div class="exposure-adjustment">
+                                <h3 class="adjustment-title">Exposure Adjustments (from Reference Settings)</h3>
+                                
+                                <div class="adjustment-sliders">
+                                    <div class="adjustment-slider">
+                                        <div class="adjustment-label">Aperture:</div>
+                                        <div class="adjustment-track">
+                                            <div class="adjustment-center-line"></div>
+                                        </div>
+                                        <div id="aperture-ev-display" class="adjustment-value"></div>
+                                    </div>
+                                    
+                                    <div class="adjustment-slider">
+                                        <div class="adjustment-label">Shutter:</div>
+                                        <div class="adjustment-track">
+                                            <div class="adjustment-center-line"></div>
+                                        </div>
+                                        <div id="shutter-ev-display" class="adjustment-value"></div>
+                                    </div>
+                                    
+                                    <div class="adjustment-slider">
+                                        <div class="adjustment-label">ISO:</div>
+                                        <div class="adjustment-track">
+                                            <div class="adjustment-center-line"></div>
+                                        </div>
+                                        <div id="iso-ev-display" class="adjustment-value"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="total-adjustment">
+                                    <div class="total-adjustment-label">Total Exposure Adjustment:</div>
+                                    <div id="total-exposure-adjustment" class="total-adjustment-value">0.0 EV</div>
+                                </div>
+                                <div id="exposure-adjustment-description" class="adjustment-description">Correct exposure</div>
+                                <div id="exposure-mode-explanation" class="mode-explanation">
+                                    In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exposure Meter -->
+                    <div class="exposure-meter-container">
+                        <h3 class="meter-title">Exposure Meter</h3>
                         <div class="meter-scale">
-                            <div class="meter-zone underexposed">Shadows (Underexposed)</div>
-                            <div class="meter-zone correct">Correct Exposure</div>
-                            <div class="meter-zone overexposed">Highlights (Overexposed)</div>
+                            <div class="meter-labels">
+                                <span>-6</span>
+                                <span>-5</span>
+                                <span>-4</span>
+                                <span>-3</span>
+                                <span>-2</span>
+                                <span>-1</span>
+                                <span>0</span>
+                                <span>+1</span>
+                                <span>+2</span>
+                                <span>+3</span>
+                                <span>+4</span>
+                                <span>+5</span>
+                                <span>+6</span>
+                            </div>
+                            <div class="meter-track">
+                                <div class="meter-center-line"></div>
+                                <div id="exposure-meter-needle" class="meter-needle"></div>
+                            </div>
                         </div>
-                        <div id="exposure-meter-needle" class="meter-needle"></div>
+                        <div id="exposure-meter-status" class="meter-status">Correct Exposure</div>
                     </div>
-                    <p id="exposure-meter-status" class="meter-status"></p>
-                </section>
 
-                <section class="histogram-section">
-                    <h3>Histogram</h3>
-                    <div id="histogram-container" class="histogram-container"></div>
-                    <div class="histogram-labels">
-                        <span>Shadows (Underexposed)</span>
-                        <span>Mid-tones</span>
-                        <span>Highlights (Overexposed)</span>
+                    <!-- Histogram -->
+                    <div class="histogram-section">
+                        <h3 class="histogram-title">Histogram</h3>
+                        <div id="histogram-container" class="histogram-container"></div>
+                        <div class="histogram-labels">
+                            <span class="histogram-shadows">Shadows (Underexposed)</span>
+                            <span>Mid-tones</span>
+                            <span class="histogram-highlights">Highlights (Overexposed)</span>
+                        </div>
                     </div>
-                </section>
 
-                <section class="exposure-tips">
-                    <div id="exposure-tips-correct" class="tips-section">
-                        <h3>Correct Exposure</h3>
-                        <p>Your current settings provide a well-balanced exposure for this scene.</p>
+                    <!-- Exposure Tips -->
+                    <div class="exposure-tips-section">
+                        <div id="exposure-tips-correct" class="exposure-tips-correct">
+                            <p class="tips-title">Correct Exposure</p>
+                            <p class="tips-text">Your current settings provide a well-balanced exposure for this scene.</p>
+                        </div>
+                        
+                        <div id="exposure-tips-incorrect" class="exposure-tips-incorrect hidden">
+                            <p id="exposure-tips-title" class="tips-title"></p>
+                            <p id="exposure-tips-description" class="tips-text"></p>
+                            <ul id="exposure-tips-suggestions" class="tips-suggestions"></ul>
+                        </div>
+                        
+                        <div id="exposure-tips-bulb" class="exposure-tips-bulb hidden">
+                            <p class="tips-title">Bulb Mode Required: Exposure time longer than 30 seconds</p>
+                            <p class="tips-text">
+                                Recommended exposure time: <span id="bulb-exposure-time" class="bulb-time"></span>
+                            </p>
+                            <p class="tips-warning">
+                                <strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. Use
+                                a remote shutter release or timer to avoid touching the camera during exposure.
+                            </p>
+                            <p class="tips-text">Consider these adjustments to avoid bulb mode:</p>
+                            <ul class="tips-suggestions">
+                                <li>Increase ISO (will introduce more noise)</li>
+                                <li>Use a wider aperture (lower f-number)</li>
+                                <li>Add additional lighting to the scene if possible</li>
+                            </ul>
+                        </div>
                     </div>
-                    
-                    <div id="exposure-tips-incorrect" class="tips-section hidden">
-                        <h3 id="exposure-tips-title"></h3>
-                        <p id="exposure-tips-description"></p>
-                        <ul id="exposure-tips-suggestions"></ul>
+
+                    <!-- Exposure Triangle Guide Button -->
+                    <div class="guide-toggle-container">
+                        <button id="triangle-guide-toggle" class="guide-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            Show Exposure Triangle Guide
+                        </button>
+                        
+                        <div id="triangle-guide-container" class="guide-container hidden">
+                            <!-- Exposure Triangle Guide Content -->
+                            <div class="triangle-guide">
+                                <h3 class="guide-title">Exposure Triangle Guide</h3>
+                                
+                                <div class="guide-tabs">
+                                    <button class="guide-tab active" data-tab="dof">Depth of Field</button>
+                                    <button class="guide-tab" data-tab="motion">Motion</button>
+                                    <button class="guide-tab" data-tab="exposure">Exposure Triangle</button>
+                                </div>
+                                
+                                <div id="dof-tab" class="tab-content">
+                                    <div class="guide-content">
+                                        <div class="guide-text">
+                                            <h4 class="guide-subtitle">What is Depth of Field?</h4>
+                                            <p class="guide-description">
+                                                Depth of field (DoF) is the distance between the nearest and the farthest objects that are in acceptably
+                                                sharp focus in an image. It's controlled primarily by your aperture setting (f-number).
+                                            </p>
+                                            
+                                            <div class="guide-details">
+                                                <h5 class="guide-detail-title">Aperture Effects:</h5>
+                                                <ul class="guide-list">
+                                                    <li>
+                                                        <strong>Wide aperture (small f-number like f/1.4, f/2.8):</strong>
+                                                        <ul class="guide-sublist">
+                                                            <li>Creates shallow depth of field</li>
+                                                            <li>Subject is sharp, background is blurred</li>
+                                                            <li>Great for portraits, isolating subjects</li>
+                                                            <li>Creates pleasing background blur (bokeh)</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <strong>Narrow aperture (large f-number like f/11, f/16):</strong>
+                                                        <ul class="guide-sublist">
+                                                            <li>Creates deep depth of field</li>
+                                                            <li>Everything from foreground to background is sharp</li>
+                                                            <li>Ideal for landscapes, architecture</li>
+                                                            <li>Requires more light or slower shutter speed</li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="guide-visualization">
+                                            <div class="dof-diagram">
+                                                <!-- DOF Diagram SVG -->
+                                                <svg viewBox="0 0 300 200" class="diagram-svg">
+                                                    <!-- Camera -->
+                                                    <rect x="10" y="85" width="40" height="30" fill="#333" />
+                                                    <circle cx="50" cy="100" r="15" fill="#555" stroke="#333" stroke-width="2" />
+                                                    
+                                                    <!-- Focus plane -->
+                                                    <line x1="150" y1="30" x2="150" y2="170" stroke="#22c55e" stroke-width="2" stroke-dasharray="5,5" />
+                                                    <text x="155" y="100" font-size="12" fill="#22c55e" font-weight="bold">Focus Plane</text>
+                                                    
+                                                    <!-- DOF zones -->
+                                                    <g opacity="0.7">
+                                                        <rect x="130" y="40" width="40" height="120" fill="#22c55e" fill-opacity="0.2" stroke="#22c55e" stroke-width="1" />
+                                                        <text x="135" y="35" font-size="10" fill="#22c55e">Shallow DoF</text>
+                                                    </g>
+                                                    
+                                                    <g opacity="0.5">
+                                                        <rect x="100" y="40" width="100" height="120" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="1" />
+                                                        <text x="105" y="25" font-size="10" fill="#3b82f6">Medium DoF</text>
+                                                    </g>
+                                                    
+                                                    <g opacity="0.3">
+                                                        <rect x="70" y="40" width="160" height="120" fill="#6366f1" fill-opacity="0.1" stroke="#6366f1" stroke-width="1" />
+                                                        <text x="75" y="15" font-size="10" fill="#6366f1">Deep DoF</text>
+                                                    </g>
+                                                    
+                                                    <!-- Subject -->
+                                                    <circle cx="150" cy="100" r="10" fill="#ef4444" />
+                                                    <text x="150" y="85" font-size="10" text-anchor="middle" fill="#000">Subject</text>
+                                                    
+                                                    <!-- Background elements -->
+                                                    <circle cx="220" cy="70" r="8" fill="#888" />
+                                                    <circle cx="240" cy="110" r="12" fill="#777" />
+                                                    <circle cx="200" cy="130" r="10" fill="#999" />
+                                                    <text x="220" y="50" font-size="10" fill="#000">Background</text>
+                                                    
+                                                    <!-- Foreground elements -->
+                                                    <circle cx="100" cy="120" r="7" fill="#aaa" />
+                                                    <circle cx="80" cy="90" r="9" fill="#bbb" />
+                                                    <text x="80" y="70" font-size="10" fill="#000">Foreground</text>
+                                                </svg>
+                                            </div>
+                                            <div class="diagram-labels">
+                                                <span>f/1.4 (Shallow)</span>
+                                                <span>f/16 (Deep)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="motion-tab" class="tab-content hidden">
+                                    <!-- Motion Tab Content -->
+                                </div>
+                                
+                                <div id="exposure-tab" class="tab-content hidden">
+                                    <!-- Exposure Triangle Tab Content -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div id="exposure-tips-bulb" class="tips-section hidden">
-                        <h3>Bulb Mode Required</h3>
-                        <p>This scene requires a very long exposure. Use Bulb mode with an exposure time of <span id="bulb-exposure-time"></span>.</p>
-                        <p>You'll need a tripod and remote shutter release for best results.</p>
+
+                    <!-- EV Reference Table Button -->
+                    <div class="guide-toggle-container">
+                        <button id="ev-table-toggle" class="guide-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            Show EV Reference Table
+                        </button>
+                        
+                        <div id="ev-table-container" class="guide-container hidden">
+                            <!-- EV Reference Table Content -->
+                            <div class="ev-table">
+                                <h3 class="table-title">EV Reference Table (f/5.6, ISO 100)</h3>
+                                
+                                <table class="reference-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time of Day</th>
+                                            <th>EV</th>
+                                            <th>Exposure Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Night</td>
+                                            <td>-12</td>
+                                            <td>68m 16s</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dawn/Dusk</td>
+                                            <td>-3</td>
+                                            <td>8s</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sunrise/Sunset</td>
+                                            <td>-1</td>
+                                            <td>2s</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Midday</td>
+                                            <td>12</td>
+                                            <td>1/2000s</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p class="table-note">
+                                    <strong>Note:</strong> These values are calculated for f/5.6 aperture and ISO 100. Adjusting either setting
+                                    will change the required exposure time.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </section>
+
+                    <!-- Debug Information (hidden by default) -->
+                    <div id="debug-container" class="debug-container hidden">
+                        <h2 class="debug-title">Debug Information</h2>
+                        <div class="debug-grid">
+                            <div class="debug-column">
+                                <h3 class="debug-subtitle">Scene Settings</h3>
+                                <ul class="debug-list">
+                                    <li><strong>Scene Type:</strong> <span id="debug-scene-type">landscape</span></li>
+                                    <li><strong>Time of Day:</strong> <span id="debug-time-of-day">midday</span></li>
+                                    <li><strong>Scene EV:</strong> <span id="debug-scene-ev">12</span></li>
+                                    <li><strong>Reference Exposure Time (f/5.6, ISO 100):</strong> <span id="debug-reference-exposure">1/2000s</span></li>
+                                </ul>
+                            </div>
+                            <div class="debug-column">
+                                <h3 class="debug-subtitle">Camera Settings</h3>
+                                <ul class="debug-list">
+                                    <li><strong>ISO:</strong> <span id="debug-iso">100</span> <span id="debug-auto-iso" class="debug-auto-iso hidden">(Auto)</span></li>
+                                    <li><strong>Aperture:</strong> f/<span id="debug-aperture">5.6</span></li>
+                                    <li><strong>Shutter Speed:</strong> <span id="debug-shutter-speed">1/2000s</span></li>
+                                    <li><strong>Required Exposure Time:</strong> <span id="debug-required-exposure">1/2000s</span></li>
+                                    <li><strong>Exposure Mode:</strong> <span id="debug-exposure-mode">Aperture Priority</span></li>
+                                    <li><strong>Calculated EV:</strong> <span id="debug-calculated-ev">12.00</span></li>
+                                    <li><strong>Exposure Difference:</strong> <span id="debug-exposure-difference">0.00</span> stops</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
 
-        <footer>
-            <button id="triangle-guide-toggle" class="toggle-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                Show Exposure Triangle Guide
-            </button>
-            
-            <div id="triangle-guide-container" class="guide-container hidden">
-                <h3>The Exposure Triangle</h3>
-                <div class="exposure-guide-tabs">
-                    <button class="tab-trigger active" data-tab="overview">Overview</button>
-                    <button class="tab-trigger" data-tab="aperture">Aperture</button>
-                    <button class="tab-trigger" data-tab="shutter">Shutter Speed</button>
-                    <button class="tab-trigger" data-tab="iso">ISO</button>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-left">
+                    <p class="copyright">© <span id="current-year">2025</span> Alan Ranger Photography. All rights reserved.</p>
+                    <p class="footer-note">This calculator is designed to help photographers understand exposure settings.</p>
                 </div>
-                
-                <div id="overview-tab" class="tab-content">
-                    <p>The exposure triangle represents the three elements that determine the exposure of a photograph: aperture, shutter speed, and ISO. Changing one element requires adjusting at least one of the others to maintain the same exposure.</p>
-                    <ul>
-                        <li><strong>Aperture:</strong> Controls depth of field (how much is in focus)</li>
-                        <li><strong>Shutter Speed:</strong> Controls motion blur</li>
-                        <li><strong>ISO:</strong> Controls sensitivity (and noise/grain)</li>
-                    </ul>
-                </div>
-                
-                <div id="aperture-tab" class="tab-content hidden">
-                    <p>Aperture is the opening in the lens that lets light through. It's measured in f-stops (f/2.8, f/4, f/5.6, etc.).</p>
-                    <ul>
-                        <li><strong>Lower f-number (f/1.4, f/2.8):</strong> Wider aperture, more light, shallow depth of field (background blur)</li>
-                        <li><strong>Higher f-number (f/11, f/16):</strong> Narrower aperture, less light, deep depth of field (everything in focus)</li>
-                    </ul>
-                </div>
-                
-                <div id="shutter-tab" class="tab-content hidden">
-                    <p>Shutter speed is how long the camera's sensor is exposed to light. It's measured in seconds or fractions of a second.</p>
-                    <ul>
-                        <li><strong>Slow shutter (1/30s or slower):</strong> More light, motion blur</li>
-                        <li><strong>Fast shutter (1/250s or faster):</strong> Less light, freezes motion</li>
-                    </ul>
-                </div>
-                
-                <div id="iso-tab" class="tab-content hidden">
-                    <p>ISO measures the sensitivity of the camera's sensor to light. Higher ISO allows you to shoot in darker conditions but introduces noise.</p>
-                    <ul>
-                        <li><strong>Low ISO (100-400):</strong> Less sensitive, less noise, better quality</li>
-                        <li><strong>High ISO (1600+):</strong> More sensitive, more noise, useful in low light</li>
-                    </ul>
+                <div class="footer-right">
+                    <button id="debug-toggle" class="debug-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        Show Debug Info
+                    </button>
                 </div>
             </div>
         </footer>
@@ -238,4 +563,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
