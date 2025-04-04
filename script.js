@@ -1,6 +1,7 @@
-// Initialize the application when the DOM is fully loaded
+// Wait for the DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded - initializing exposure calculator")
+
   // Reference settings for midday
   const REFERENCE_APERTURE = 5.6
   const REFERENCE_ISO = 100
@@ -132,8 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sunset: "https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=800&h=450&fit=crop&q=80",
       dusk: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=800&h=450&fit=crop&q=80",
       night: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=450&fit=crop&q=80",
-    },\
-  ]
+    },
+  }
 
   // State variables
   let sceneType = "landscape"
@@ -145,14 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let exposureMode = "aperture" // aperture, shutter, manual
   let ev = 12 // Default to midday EV
   let exposureCorrect = true
-  let bulbMode = false
-  let bulbExposureTime = ""
+  const bulbMode = false
+  const bulbExposureTime = ""
   let debugMode = false
   let previewMode = "normal" // normal, dof, motion
   let userChangedAperture = false
   let userChangedShutter = false
   let userChangedIso = false
-  let isUpdating = false
+  const isUpdating = false
   let initialized = false
 
   // EV differences
@@ -161,11 +162,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let isoEvDiff = 0
 
   // Previous values for EV stop indicators
-  let prevAperture = standardApertures[apertureIndex]
-  let prevShutterSpeed = standardShutterSpeeds[shutterSpeedIndex]
-  let prevIso = standardIsoValues[isoIndex]
+  const prevAperture = standardApertures[apertureIndex]
+  const prevShutterSpeed = standardShutterSpeeds[shutterSpeedIndex]
+  const prevIso = standardIsoValues[isoIndex]
 
-  // DOM elements
+  // Get DOM elements
   const sceneTypeSelect = document.getElementById("scene-type")
   const timeOfDaySelect = document.getElementById("time-of-day")
   const apertureSlider = document.getElementById("aperture-slider")
@@ -193,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const triangleGuideContainer = document.getElementById("triangle-guide-container")
   const evTableToggle = document.getElementById("ev-table-toggle")
   const evTableContainer = document.getElementById("ev-table-container")
-  const debugToggle = document.getElementById("debug-toggle")
   const debugToggleFooter = document.getElementById("debug-toggle-footer")
   const debugContainer = document.getElementById("debug-container")
   const apertureTips = document.getElementById("aperture-tips")
@@ -213,53 +213,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const motionExplanation = document.getElementById("motion-explanation")
   const dofCurrentSetting = document.getElementById("dof-current-setting")
   const motionCurrentSetting = document.getElementById("motion-current-setting")
-  const apertureSliderDot = document.getElementById("aperture-slider-dot")
-  const shutterSliderDot = document.getElementById("shutter-slider-dot")
-  const isoSliderDot = document.getElementById("iso-slider-dot")
-  const apertureEvDisplay = document.getElementById("aperture-ev-display")
-  const shutterEvDisplay = document.getElementById("shutter-ev-display")
-  const isoEvDisplay = document.getElementById("iso-slider-dot")
-  const totalExposureAdjustment = document.getElementById("total-exposure-adjustment")
-  const exposureAdjustmentDescription = document.getElementById("exposure-adjustment-description")
-  const exposureModeExplanation = document.getElementById("exposure-mode-explanation")
-  const apertureEvIndicator = document.getElementById("aperture-ev-indicator")
-  const shutterEvIndicator = document.getElementById("shutter-ev-indicator")
-  const isoEvIndicator = document.getElementById("iso-ev-indicator")
-  const apertureLabel = document.getElementById("aperture-label")
-  const shutterLabel = document.getElementById("shutter-label")
-  const isoLabel = document.getElementById("iso-label")
-  const apertureIcon = document.getElementById("aperture-icon")
-  const shutterIcon = document.getElementById("shutter-icon")
-  const currentSettingsDescription = document.getElementById("current-settings-description")
-  const equivalentSettings = document.getElementById("equivalent-settings")
-  const debugSceneType = document.getElementById("debug-scene-type")
-  const debugTimeOfDay = document.getElementById("debug-time-of-day")
-  const debugSceneEv = document.getElementById("debug-scene-ev")
-  const debugReferenceExposure = document.getElementById("debug-reference-exposure")
-  const debugIso = document.getElementById("debug-iso")
-  const debugAutoIso = document.getElementById("debug-auto-iso")
-  const debugAperture = document.getElementById("debug-aperture")
-  const debugShutterSpeed = document.getElementById("debug-shutter-speed")
-  const debugRequiredExposure = document.getElementById("debug-required-exposure")
-  const debugExposureMode = document.getElementById("debug-exposure-mode")
-  const debugCalculatedEv = document.getElementById("debug-calculated-ev")
-  const debugExposureDifference = document.getElementById("debug-exposure-difference")
   const currentYear = document.getElementById("current-year")
+
+  // Debug function
+  function debugLog(message) {
+    if (debugMode) {
+      console.log(`DEBUG: ${message}`)
+    }
+  }
+
+  // Check critical elements
+  function checkCriticalElements() {
+    debugLog("Checking critical elements")
+    const criticalElements = [
+      { name: "sceneTypeSelect", element: sceneTypeSelect },
+      { name: "timeOfDaySelect", element: timeOfDaySelect },
+      { name: "apertureSlider", element: apertureSlider },
+      { name: "shutterSlider", element: shutterSlider },
+      { name: "isoSlider", element: isoSlider },
+      { name: "sceneImage", element: sceneImage },
+    ]
+
+    criticalElements.forEach((item) => {
+      if (!item.element) {
+        console.error(`Critical element missing: ${item.name}`)
+      }
+    })
+  }
+
+  // Check if we have any critical elements before proceeding
+  checkCriticalElements()
 
   // Set current year
   if (currentYear) {
     currentYear.textContent = new Date().getFullYear()
   }
 
-  // Helper function to get EV for time of day
+  // Helper function to get EV for time of day - corrected to match the EV reference table
   function getEvForTimeOfDay(time) {
     const evValues = {
-      dawn: 9,
-      sunrise: 11,
+      dawn: -3,
+      sunrise: -1,
       midday: 12,
-      sunset: 11,
-      dusk: 9,
-      night: 0,
+      sunset: -1,
+      dusk: -3,
+      night: -12,
     }
     return evValues[time] || 12
   }
@@ -340,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // For ISO: positive stops (higher ISO) means faster shutter (divide by 2^stops)
     // For EV: positive stops (brighter scene) means faster shutter (divide by 2^stops)
     requiredShutter =
-      (requiredShutter * Math.pow(2, apertureStopsDiff)) / Math.pow(2, isoStopsDiff) / Math.pow(2, evStopsDiff)
+      (requiredShutter * Math.pow(2, apertureStopsDiff)) / (Math.pow(2, isoStopsDiff) * Math.pow(2, evStopsDiff))
 
     return requiredShutter
   }
@@ -392,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // For shutter: positive stops (slower shutter) means lower ISO (divide by 2^stops)
     // For EV: positive stops (brighter scene) means lower ISO (divide by 2^stops)
     requiredIso =
-      (requiredIso * Math.pow(2, apertureStopsDiff)) / Math.pow(2, shutterStopsDiff) / Math.pow(2, evStopsDiff)
+      (requiredIso * Math.pow(2, apertureStopsDiff)) / (Math.pow(2, shutterStopsDiff) * Math.pow(2, evStopsDiff))
 
     // Limit to available ISO range
     requiredIso = Math.max(standardIsoValues[0], Math.min(MAX_AUTO_ISO, requiredIso))
@@ -411,10 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // So we need an offset of -3.94 to align with our scale
     const OFFSET = -3.94
 
-    const EV100 = log2((apertureValue * apertureValue) / shutterValue)
-    const EV = EV100 + log2(100 / isoValue) + OFFSET
-
-    return EV
+    return log2((apertureValue * apertureValue) / shutterValue) + log2(100 / isoValue) + OFFSET
   }
 
   // Calculate EV differences from reference settings
@@ -521,7 +516,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the ISO index
     isoIndex = closestIsoIndex
     userChangedIso = true
-    updateIsoDisplay()
 
     // Calculate the shutter speed with this ISO
     const requiredShutter = calculateRequiredShutterSpeed(apertureValue, evValue, standardIsoValues[closestIsoIndex])
@@ -532,6 +526,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the shutter speed index
     shutterSpeedIndex = closestShutterIndex
     userChangedShutter = true
+
+    // Update displays
+    updateIsoDisplay()
     updateShutterDisplay()
   }
 
@@ -544,16 +541,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
 
     // Check if we need to adjust ISO
-    let requiredIso = REFERENCE_ISO
     let needIsoAdjustment = false
 
     // If the required aperture is outside our available range
     if (requiredAperture < standardApertures[0]) {
       // We need a wider aperture than available, so use the widest and increase ISO
       closestApertureIndex = 0
-      needIsoAdjustment = true
-    } else if (requiredAperture > standardApertures[standardApertures.length - 1]) {
-      // We need a narrower aperture than available, so use the narrowest and decrease ISO
       needIsoAdjustment = true
     } else if (requiredAperture > standardApertures[standardApertures.length - 1]) {
       // We need a narrower aperture than available, so use the narrowest and decrease ISO
@@ -564,12 +557,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the aperture index
     apertureIndex = closestApertureIndex
     userChangedAperture = true
+
+    // Update aperture display
     updateApertureDisplay()
 
     // If we need to adjust ISO
     if (needIsoAdjustment || autoIso) {
       // Calculate the required ISO for this shutter speed and aperture
-      requiredIso = calculateRequiredIsoForShutterPriority(shutterValue, evValue)
+      const requiredIso = calculateRequiredIsoForShutterPriority(shutterValue, evValue)
 
       // Find the closest standard ISO value
       const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
@@ -577,6 +572,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update the ISO index
       isoIndex = closestIsoIndex
       userChangedIso = true
+
+      // Update ISO display
       updateIsoDisplay()
     }
   }
@@ -592,6 +589,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the ISO index
     isoIndex = closestIsoIndex
     userChangedIso = true
+
+    // Update ISO display
     updateIsoDisplay()
   }
 
@@ -633,11 +632,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update aperture tips
     updatePhotographyTips("aperture", aperture)
 
-    // Update debug info
-    if (debugMode && debugAperture) {
-      debugAperture.textContent = aperture
-    }
-
     // Update DOF visualization if active
     if (previewMode === "dof") {
       updateDofVisualization()
@@ -658,11 +652,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update shutter tips
     updatePhotographyTips("shutter", shutter)
 
-    // Update debug info
-    if (debugMode && debugShutterSpeed) {
-      debugShutterSpeed.textContent = formatShutterSpeed(shutter)
-    }
-
     // Update motion visualization if active
     if (previewMode === "motion") {
       updateMotionVisualization()
@@ -682,12 +671,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update ISO tips
     updatePhotographyTips("iso", iso)
-
-    // Update debug info
-    if (debugMode) {
-      if (debugIso) debugIso.textContent = iso
-      if (debugAutoIso) debugAutoIso.style.display = autoIso ? "inline" : "none"
-    }
 
     // Update Auto ISO info
     updateAutoIsoInfo()
@@ -966,9 +949,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    // No motion streaks for fast shutter
-
-    console.log("Motion lines created:", motionLines.childNodes.length)
   }
 
   // Update histogram
@@ -1088,17 +1068,16 @@ document.addEventListener("DOMContentLoaded", () => {
       let barColor
 
       if (i < 8) {
-        barColor = "bg-blue-700" // Shadows (left side)
+        barColor = "#1d4ed8" // Shadows (left side) - blue
       } else if (i >= 24) {
-        barColor = "bg-red-700" // Highlights (right side)
+        barColor = "#b91c1c" // Highlights (right side) - red
       } else {
-        barColor = "bg-gray-700" // Default for midtones
+        barColor = "#374151" // Midtones - gray
       }
 
       const bar = document.createElement("div")
-      bar.className = "w-full"
-      bar.style.backgroundColor =
-        barColor === "bg-blue-700" ? "#1d4ed8" : barColor === "bg-red-700" ? "#b91c1c" : "#374151" // Convert Tailwind classes to actual colors
+      bar.className = "histogram-bar-fill"
+      bar.style.backgroundColor = barColor
       bar.style.height = `${(data[i] / maxValue) * 100}%`
 
       barContainer.appendChild(bar)
@@ -1106,234 +1085,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Update exposure meter
-  function updateExposureMeter() {
-    if (!exposureMeterNeedle || !exposureMeterStatus) return
+  // Initialize the application
+  function initialize() {
+    console.log("Initializing exposure calculator...")
 
-    const aperture = standardApertures[apertureIndex]
-    const shutter = standardShutterSpeeds[shutterSpeedIndex]
-    const iso = standardIsoValues[isoIndex]
-
-    // Calculate the actual EV from current camera settings
-    const calculatedEv = calculateActualEv(aperture, shutter, iso)
-
-    // Calculate the difference between the calculated EV and scene EV
-    // If calculatedEv < ev, we're underexposed (too dark, need more light) -> negative value
-    // If calculatedEv > ev, we're overexposed (too bright, need less light) -> positive value
-    const evDifference = ev - calculatedEv
-
-    // Determine the position of the needle on the meter
-    // We'll use a range of -6 to +6 stops
-    const needlePosition = Math.max(-6, Math.min(6, evDifference))
-    const needlePercentage = ((needlePosition + 6) / 12) * 100
-
-    // Update the needle position
-    exposureMeterNeedle.style.left = `${needlePercentage}%`
-
-    // Update the exposure status
-    exposureCorrect = Math.abs(evDifference) < 0.5
-
-    if (exposureCorrect) {
-      exposureMeterStatus.textContent = "Correct Exposure"
-      exposureMeterStatus.className = "meter-status text-green-600 font-medium"
-      if (exposureIndicator) exposureIndicator.classList.add("hidden")
-      if (sceneImage) sceneImage.style.filter = "brightness(1)"
-    } else {
-      exposureMeterStatus.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} (${evDifference < 0 ? "" : "+"}${Math.abs(evDifference).toFixed(1)} stops)`
-      exposureMeterStatus.className = "meter-status text-red-500 font-medium"
-
-      // Update exposure indicator on the image
-      if (exposureIndicator) {
-        exposureIndicator.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} by ${Math.abs(evDifference).toFixed(1)} stops`
-        exposureIndicator.classList.remove("hidden")
-      }
-
-      // Apply visual effect to the image
-      if (sceneImage) {
-        if (evDifference < 0) {
-          // Underexposed (negative difference)
-          // Convert stops to brightness percentage (0.5^stops * 100)
-          const brightnessPercent = Math.pow(0.5, Math.abs(evDifference))
-          sceneImage.style.filter = `brightness(${brightnessPercent})`
-        } else {
-          // Overexposed (positive difference)
-          // For overexposure, we use 2^stops
-          const brightnessPercent = Math.pow(2, evDifference)
-          sceneImage.style.filter = `brightness(${Math.min(2, brightnessPercent)})`
-        }
-      }
+    // Set current year
+    if (currentYear) {
+      currentYear.textContent = new Date().getFullYear()
     }
 
-    // Update exposure tips
-    updateExposureTips(evDifference)
+    // Initialize exposure mode
+    setExposureMode("aperture")
 
-    // Update debug info
-    if (debugMode) {
-      if (debugCalculatedEv) debugCalculatedEv.textContent = calculatedEv.toFixed(2)
-      if (debugExposureDifference) debugExposureDifference.textContent = evDifference.toFixed(2)
-    }
-  }
+    // Initialize preview mode
+    setPreviewMode("normal")
 
-  // Update exposure tips
-  function updateExposureTips(exposureDifference) {
-    if (!exposureTipsCorrect || !exposureTipsIncorrect || !exposureTipsBulb) return
-
-    const aperture = standardApertures[apertureIndex]
-    const shutter = standardShutterSpeeds[shutterSpeedIndex]
-
-    // Calculate the required shutter speed for correct exposure
-    const requiredShutterValue = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
-
-    // Check if we need bulb mode (required shutter speed > 30s)
-    if (requiredShutterValue > 30) {
-      bulbMode = true
-
-      // Format the time
-      if (requiredShutterValue > 60) {
-        const minutes = Math.floor(requiredShutterValue / 60)
-        const seconds = Math.round(requiredShutterValue % 60)
-        bulbExposureTime = `${minutes}m ${seconds}s`
-      } else {
-        bulbExposureTime = `${Math.round(requiredShutterValue)}s`
-      }
-
-      // Update bulb exposure time display
-      if (bulbExposureTimeSpan) {
-        bulbExposureTimeSpan.textContent = bulbExposureTime
-      }
-
-      // Show bulb mode tips
-      exposureTipsCorrect.classList.add("hidden")
-      exposureTipsIncorrect.classList.add("hidden")
-      exposureTipsBulb.classList.remove("hidden")
-
-      // Update debug info
-      if (debugMode && debugRequiredExposure) {
-        debugRequiredExposure.textContent = bulbExposureTime
-      }
-      return
-    } else {
-      bulbMode = false
+    // Set initial values for scene type and time of day
+    if (sceneTypeSelect) {
+      sceneType = sceneTypeSelect.value
     }
 
-    // If exposureCorrect and not bulb mode, show correct exposure tips
-    if (exposureCorrect && !bulbMode) {
-      exposureTipsCorrect.classList.remove("hidden")
-      exposureTipsIncorrect.classList.add("hidden")
-      exposureTipsBulb.classList.add("hidden")
-
-      // Update debug info
-      if (debugMode && debugRequiredExposure) {
-        debugRequiredExposure.textContent = formatShutterSpeed(shutter)
-      }
-
-      return
+    if (timeOfDaySelect) {
+      timeOfDay = timeOfDaySelect.value
     }
 
-    // If not correct exposure and not bulb mode, show incorrect exposure tips
-    if (!exposureCorrect && !bulbMode) {
-      exposureTipsCorrect.classList.add("hidden")
-      exposureTipsIncorrect.classList.remove("hidden")
-      exposureTipsBulb.classList.add("hidden")
+    // Calculate initial EV based on time of day
+    ev = getEvForTimeOfDay(timeOfDay)
 
-      // If exposureDifference is negative, we're underexposed (too dark, need more light)
-      // If exposureDifference is positive, we're overexposed (too bright, need less light)
-      const isUnderexposed = exposureDifference < 0
-      const stopsDifference = Math.abs(exposureDifference).toFixed(1)
+    // Initialize settings for the current time of day
+    initializeSettingsForTimeOfDay(timeOfDay)
 
-      // Update title
-      if (exposureTipsTitle) {
-        exposureTipsTitle.textContent = isUnderexposed
-          ? `Underexposed by ${stopsDifference} stops`
-          : `Overexposed by ${stopsDifference} stops`
-      }
+    // Update scene image
+    updateSceneImage()
 
-      // Update description
-      if (exposureTipsDescription) {
-        exposureTipsDescription.textContent = isUnderexposed
-          ? "Your image is too dark. Consider these adjustments:"
-          : "Your image is too bright. Consider these adjustments:"
-      }
+    // Update displays
+    updateAllDisplays()
 
-      // Clear existing suggestions
-      if (exposureTipsSuggestions) {
-        exposureTipsSuggestions.innerHTML = ""
-
-        // Determine which settings can be adjusted based on exposure mode
-        const suggestions = []
-
-        if (isUnderexposed) {
-          // Underexposure suggestions - need MORE light
-          if (exposureMode === "manual") {
-            if (!autoIso)
-              suggestions.push(
-                "Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)",
-              )
-            suggestions.push("Use slower shutter speed (lower number like 1/30 instead of 1/125)")
-            suggestions.push("Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light")
-          } else if (exposureMode === "aperture") {
-            if (!autoIso) {
-              suggestions.push(
-                "Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)",
-              )
-            } else {
-              suggestions.push("Your camera is using Auto ISO to maintain proper exposure")
-            }
-            suggestions.push("Consider using a wider aperture (lower f-number) if available")
-          } else if (exposureMode === "shutter") {
-            if (!autoIso) {
-              suggestions.push(
-                "Increase ISO to boost sensitivity (allows wider aperture range but introduces more noise)",
-              )
-            } else {
-              suggestions.push("Your camera is using Auto ISO to maintain proper exposure")
-            }
-          }
-        } else {
-          // Overexposure suggestions - need LESS light
-          if (exposureMode === "manual") {
-            if (!autoIso) suggestions.push("Decrease ISO to reduce sensitivity (reduces noise)")
-            suggestions.push("Use faster shutter speed (higher number like 1/250 instead of 1/60)")
-            suggestions.push("Use smaller aperture (higher f-number like f/11 instead of f/5.6)")
-          } else if (exposureMode === "aperture") {
-            if (!autoIso) {
-              suggestions.push("Decrease ISO to reduce sensitivity (improves image quality)")
-            } else {
-              suggestions.push("Your camera is using Auto ISO to maintain proper exposure")
-            }
-            suggestions.push("Consider using a smaller aperture (higher f-number) if available")
-          } else if (exposureMode === "shutter") {
-            if (!autoIso) {
-              suggestions.push("Decrease ISO to reduce sensitivity (improves image quality)")
-            } else {
-              suggestions.push("Your camera is using Auto ISO to maintain proper exposure")
-            }
-          }
-        }
-
-        if (autoIso) {
-          suggestions.push("Auto ISO is enabled: Your camera is adjusting ISO automatically to help correct exposure")
-        }
-
-        // Add information about Auto ISO behavior in the tips component
-        if (autoIso && exposureMode === "aperture") {
-          suggestions.push("Auto ISO is maintaining a minimum shutter speed of 1/60s, adjusting ISO as needed")
-          suggestions.push("The camera will use the lowest possible ISO to achieve this shutter speed")
-        }
-
-        // Add suggestions to the list
-        suggestions.forEach((suggestion) => {
-          const li = document.createElement("li")
-          li.textContent = suggestion
-          exposureTipsSuggestions.appendChild(li)
-        })
-
-        // Update debug info
-        if (debugMode && debugRequiredExposure) {
-          debugRequiredExposure.textContent = formatShutterSpeed(requiredShutterValue)
-        }
-      }
-    }
+    console.log("Initialization complete.")
+    initialized = true
   }
 
   // Update EV differences
@@ -1350,296 +1139,85 @@ document.addEventListener("DOMContentLoaded", () => {
     shutterEvDiff = shutterDiff
     isoEvDiff = isoDiff
 
-    // Update EV stop indicators
-    updateEvStopIndicators()
-
-    // Update exposure slider visualization
-    updateExposureSliderVisualization()
-
-    // Update previous values
-    prevAperture = aperture
-    prevShutterSpeed = shutter
-    prevIso = iso
+    // Update exposure meter
+    updateExposureMeter()
   }
 
-  // Update EV stop indicators
-  function updateEvStopIndicators() {
-    // Only show indicators when there's a user change
-    if (userChangedAperture && apertureEvIndicator) {
-      const displayEvDiff = apertureEvDiff
-      const formattedEvDiff =
-        displayEvDiff === 0 ? "0.0 stops" : `${displayEvDiff > 0 ? "+" : ""}${displayEvDiff.toFixed(1)} stops`
-      const colorClass = displayEvDiff > 0 ? "text-red-500" : displayEvDiff < 0 ? "text-green-500" : "text-gray-500"
-
-      apertureEvIndicator.innerHTML = `<span class="font-medium ${colorClass}">${formattedEvDiff}</span>`
-    } else if (apertureEvIndicator) {
-      apertureEvIndicator.innerHTML = ""
-    }
-
-    if (userChangedShutter && shutterEvIndicator) {
-      // Adjust the displayed EV difference based on exposure mode
-      let displayEvDiff = shutterEvDiff
-
-      // In aperture priority mode, shutter speed compensates for aperture changes
-      if (exposureMode === "aperture") {
-        // The shutter speed should show the opposite of the aperture change
-        displayEvDiff = -apertureEvDiff
-      }
-
-      const formattedEvDiff =
-        displayEvDiff === 0 ? "0.0 stops" : `${displayEvDiff > 0 ? "+" : ""}${displayEvDiff.toFixed(1)} stops`
-      const colorClass = displayEvDiff > 0 ? "text-red-500" : displayEvDiff < 0 ? "text-green-500" : "text-gray-500"
-
-      shutterEvIndicator.innerHTML = `<span class="font-medium ${colorClass}">${formattedEvDiff}</span>`
-    } else if (shutterEvIndicator) {
-      shutterEvIndicator.innerHTML = ""
-    }
-
-    if (userChangedIso && isoEvIndicator) {
-      // For ISO, we need to invert the sign for display purposes
-      // Higher ISO means more sensitivity (positive effect on exposure)
-      // But in our EV calculation, higher ISO gives positive EV difference
-      const displayEvDiff = -isoEvDiff
-
-      const formattedEvDiff =
-        displayEvDiff === 0 ? "0.0 stops" : `${displayEvDiff > 0 ? "+" : ""}${displayEvDiff.toFixed(1)} stops`
-      const colorClass = displayEvDiff > 0 ? "text-red-500" : displayEvDiff < 0 ? "text-green-500" : "text-gray-500"
-
-      isoEvIndicator.innerHTML = `<span class="font-medium ${colorClass}">${formattedEvDiff}</span>`
-    } else if (isoEvIndicator) {
-      isoEvIndicator.innerHTML = ""
-    }
-  }
-
-  // Update exposure slider visualization
-  function updateExposureSliderVisualization() {
-    if (!apertureSliderDot || !shutterSliderDot || !isoSliderDot) return
-
-    // Calculate display values directly from props
-    // In priority modes, we need to show the compensating relationship
-    let displayApertureEvDiff = apertureEvDiff
-    let displayShutterEvDiff = shutterEvDiff
-    // Invert ISO EV diff for display - higher ISO means more light (positive effect on exposure)
-    const displayIsoEvDiff = -isoEvDiff
-
-    // In aperture priority mode:
-    if (exposureMode === "aperture") {
-      // The shutter speed should show the opposite of BOTH aperture AND ISO changes
-      displayShutterEvDiff = -(apertureEvDiff - isoEvDiff)
-    }
-    // In shutter priority mode:
-    else if (exposureMode === "shutter") {
-      // The aperture should show the opposite of BOTH shutter AND ISO changes
-      displayApertureEvDiff = -(shutterEvDiff - isoEvDiff)
-    }
-
-    // Format EV differences for display
-    const apertureEvDisplayText = formatEvDiff(displayApertureEvDiff)
-    const shutterEvDisplayText = formatEvDiff(displayShutterEvDiff)
-    const isoEvDisplayText = formatEvDiff(displayIsoEvDiff)
-
-    // Calculate slider positions
-    const aperturePosition = getSliderPosition(displayApertureEvDiff)
-    const shutterPosition = getSliderPosition(displayShutterEvDiff)
-    const isoPosition = getSliderPosition(displayIsoEvDiff)
-
-    // Update slider dot positions
-    apertureSliderDot.style.left = `${aperturePosition}%`
-    shutterSliderDot.style.left = `${shutterPosition}%`
-    isoSliderDot.style.left = `${isoPosition}%`
-
-    // Update EV displays
-    if (apertureEvDisplay) {
-      apertureEvDisplay.textContent = apertureEvDisplayText
-      apertureEvDisplay.className = `adjustment-value ${apertureEvDisplayText.includes("+") ? "text-red-500" : apertureEvDisplayText.includes("-") ? "text-green-500" : "text-gray-500"}`
-    }
-
-    if (shutterEvDisplay) {
-      shutterEvDisplay.textContent = shutterEvDisplayText
-      shutterEvDisplay.className = `adjustment-value ${shutterEvDisplayText.includes("+") ? "text-red-500" : shutterEvDisplayText.includes("-") ? "text-green-500" : "text-gray-500"}`
-    }
-
-    if (isoEvDisplay) {
-      isoEvDisplay.textContent = isoEvDisplayText
-      isoEvDisplay.className = `adjustment-value ${isoEvDisplayText.includes("+") ? "text-red-500" : isoEvDisplayText.includes("-") ? "text-green-500" : "text-gray-500"}`
-    }
-
-    // Calculate total EV adjustment based on exposure mode
-    let totalEvAdjustment = 0
-
-    if (exposureMode === "manual") {
-      // In manual mode, all three factors contribute to the total adjustment
-      totalEvAdjustment = apertureEvDiff + shutterEvDiff - isoEvDiff
-    } else {
-      // In aperture or shutter priority modes, the camera automatically compensates
-      // So the total should be 0 if the camera is perfectly compensating
-      totalEvAdjustment = 0
-    }
-
-    // Update total exposure adjustment
-    if (totalExposureAdjustment) {
-      totalExposureAdjustment.textContent = `${Math.abs(totalEvAdjustment) < 0.1 ? "0.0" : `${totalEvAdjustment > 0 ? "+" : ""}${totalEvAdjustment.toFixed(1)}`} EV`
-      totalExposureAdjustment.className = `total-adjustment-value ${Math.abs(totalEvAdjustment) < 0.1 ? "text-gray-500" : totalEvAdjustment > 0 ? "text-red-500" : "text-green-500"}`
-    }
-
-    // Update exposure adjustment description
-    if (exposureAdjustmentDescription) {
-      exposureAdjustmentDescription.textContent =
-        Math.abs(totalEvAdjustment) < 0.1
-          ? "Correct exposure"
-          : totalEvAdjustment > 0
-            ? "Overexposed: Image will be brighter than ideal"
-            : "Underexposed: Image will be darker than ideal"
-    }
-
-    // Update exposure mode explanation
-    if (exposureModeExplanation) {
-      if (exposureMode === "aperture") {
-        exposureModeExplanation.textContent =
-          "In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure."
-      } else if (exposureMode === "shutter") {
-        exposureModeExplanation.textContent =
-          "In Shutter Priority mode, changing shutter speed or ISO will automatically adjust aperture to maintain exposure."
-      } else {
-        exposureModeExplanation.textContent =
-          "In Manual mode, you must balance all three settings yourself to achieve proper exposure."
-      }
-    }
-
-    // Update equivalent settings
-    updateEquivalentSettings()
-  }
-
-  // Format EV differences for display
-  function formatEvDiff(diff) {
-    return `${diff > 0 ? "+" : diff < 0 ? "-" : ""}${Math.abs(diff).toFixed(1)} EV`
-  }
-
-  // Calculate slider positions based on EV differences
-  function getSliderPosition(evDiff) {
-    // Limit to +/- 3 stops for display purposes
-    const limitedDiff = Math.max(-3, Math.min(3, evDiff))
-    // Use 15% per stop to make the movement more noticeable
-    return 50 + limitedDiff * 15
-  }
-
-  // Update equivalent settings
-  function updateEquivalentSettings() {
-    if (!currentSettingsDescription || !equivalentSettings) return
+  // Update exposure meter
+  function updateExposureMeter() {
+    if (!exposureMeterNeedle || !exposureMeterStatus) return
 
     const aperture = standardApertures[apertureIndex]
     const shutter = standardShutterSpeeds[shutterSpeedIndex]
     const iso = standardIsoValues[isoIndex]
-
-    // Update current settings description
-    currentSettingsDescription.textContent = `Your current settings (f/${aperture}, ${formatShutterSpeed(shutter)}, ISO ${iso}) can be balanced in different ways.`
-
-    // Calculate equivalent settings examples
-    const settings = []
-
-    // Example 1: Increase aperture by 1 stop, decrease shutter by 1 stop
-    const aperture1 = aperture * Math.sqrt(2)
-    const shutter1 = shutter * 2
-
-    // Example 2: Decrease ISO by 2 stops, increase shutter by 2 stops
-    const iso2 = iso / 4
-    const shutter2 = shutter / 4
-
-    // Example 3: Increase ISO by 1 stop, decrease aperture by 1 stop
-    const iso3 = iso * 2
-    const aperture3 = aperture / Math.sqrt(2)
-
-    // Format the settings for display
-    settings.push(`f/${aperture1.toFixed(1)}, ${formatShutterSpeed(shutter1)}, ISO ${iso}`)
-    settings.push(`f/${aperture}, ${formatShutterSpeed(shutter2)}, ISO ${iso2}`)
-    settings.push(`f/${aperture3.toFixed(1)}, ${formatShutterSpeed(shutter)}, ISO ${iso3}`)
-
-    // Update equivalent settings list
-    equivalentSettings.innerHTML = ""
-    settings.forEach((setting) => {
-      const li = document.createElement("li")
-      li.textContent = setting
-      equivalentSettings.appendChild(li)
-    })
-  }
-
-  // Update debug info
-  function updateDebugInfo() {
-    if (!debugMode) return
-
-    const aperture = standardApertures[apertureIndex]
-    const shutter = standardShutterSpeeds[shutterSpeedIndex]
-    const iso = standardIsoValues[isoIndex]
-
-    if (debugSceneType) debugSceneType.textContent = sceneType
-    if (debugTimeOfDay) debugTimeOfDay.textContent = timeOfDay
-    if (debugSceneEv) debugSceneEv.textContent = ev
-
-    // Get the reference exposure time for the current time of day
-    const getReferenceExposureTime = (timeOfDay) => {
-      switch (timeOfDay) {
-        case "night":
-          return "68m 16s"
-        case "dawn":
-        case "dusk":
-          return "8s"
-        case "sunrise":
-        case "sunset":
-          return "2s"
-        case "midday":
-          return "1/2000s"
-        default:
-          return "Unknown"
-      }
-    }
-
-    if (debugReferenceExposure) debugReferenceExposure.textContent = getReferenceExposureTime(timeOfDay)
-
-    if (debugIso) debugIso.textContent = iso
-    if (debugAutoIso) debugAutoIso.style.display = autoIso ? "inline" : "none"
-
-    if (debugAperture) debugAperture.textContent = aperture
-    if (debugShutterSpeed) debugShutterSpeed.textContent = formatShutterSpeed(shutter)
-
-    // Calculate the required shutter speed for correct exposure
-    const requiredShutterValue = calculateRequiredShutterSpeed(aperture, ev, iso)
-
-    // Format the required exposure time
-    const formatRequiredExposureTime = (seconds) => {
-      if (seconds >= 60) {
-        const minutes = Math.floor(seconds / 60)
-        const remainingSeconds = Math.round(seconds % 60)
-        return `${minutes}m ${remainingSeconds}s`
-      } else if (seconds >= 1) {
-        return `${Math.round(seconds)}s`
-      } else {
-        return `1/${Math.round(1 / seconds)}s`
-      }
-    }
-
-    if (debugRequiredExposure) debugRequiredExposure.textContent = formatRequiredExposureTime(requiredShutterValue)
-
-    if (debugExposureMode)
-      debugExposureMode.textContent = `${exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1)} Priority`
 
     // Calculate the actual EV from current camera settings
     const calculatedEv = calculateActualEv(aperture, shutter, iso)
-    if (debugCalculatedEv) debugCalculatedEv.textContent = calculatedEv.toFixed(2)
 
     // Calculate the difference between the calculated EV and scene EV
     const evDifference = ev - calculatedEv
-    if (debugExposureDifference) debugExposureDifference.textContent = evDifference.toFixed(2)
+
+    // Determine if the exposure is correct
+    exposureCorrect = Math.abs(evDifference) < 0.5
+
+    // Determine the position of the needle on the meter
+    // Range from -6 to +6 stops
+    const needlePosition = Math.max(-6, Math.min(6, evDifference))
+    const needlePercentage = ((needlePosition + 6) / 12) * 100
+
+    // Update the needle position
+    exposureMeterNeedle.style.left = `${needlePercentage}%`
+
+    // Update the exposure status text
+    if (exposureCorrect) {
+      exposureMeterStatus.textContent = "Correct Exposure"
+      exposureMeterStatus.className = "meter-status text-green-600"
+    } else {
+      exposureMeterStatus.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} (${evDifference < 0 ? "" : "+"}${Math.abs(evDifference).toFixed(1)} stops)`
+      exposureMeterStatus.className = "meter-status text-red-600"
+    }
+
+    // Update exposure indicator on the image if needed
+    if (exposureIndicator) {
+      if (exposureCorrect) {
+        exposureIndicator.classList.add("hidden")
+      } else {
+        exposureIndicator.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} by ${Math.abs(evDifference).toFixed(1)} stops`
+        exposureIndicator.classList.remove("hidden")
+      }
+    }
+
+    // Apply visual effect to the image based on exposure
+    if (sceneImage && !exposureCorrect) {
+      if (evDifference < 0) {
+        // Underexposed
+        const brightnessPercent = Math.pow(0.5, Math.abs(evDifference))
+        sceneImage.style.filter = `brightness(${brightnessPercent})`
+      } else {
+        // Overexposed
+        const brightnessPercent = Math.pow(2, evDifference)
+        sceneImage.style.filter = `brightness(${Math.min(2, brightnessPercent)})`
+      }
+    } else if (sceneImage) {
+      sceneImage.style.filter = ""
+    }
+
+    // Update histogram to reflect exposure changes
+    updateHistogram()
   }
 
-  // Function to set exposure mode
-  function setExposureMode(mode) {
-    // Update exposure mode
-    exposureMode = mode
+  // Update all displays
+  function updateAllDisplays() {
+    updateApertureDisplay()
+    updateShutterDisplay()
+    updateIsoDisplay()
+    updateExposureMeter()
+    updateHistogram()
+  }
 
-    // Reset user change flags
-    userChangedAperture = false
-    userChangedShutter = false
-    userChangedIso = false
+  // Set exposure mode
+  function setExposureMode(mode) {
+    exposureMode = mode
 
     // Update tab UI
     document.querySelectorAll(".exposure-mode-tabs .tab-trigger").forEach((tab) => {
@@ -1650,47 +1228,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
 
-    // Update labels and icons based on exposure mode
-    if (exposureMode === "aperture") {
-      if (apertureLabel) apertureLabel.className = "control-label text-green-600"
-      if (shutterLabel) shutterLabel.className = "control-label text-red-500"
-      if (isoLabel) isoLabel.className = autoIso ? "control-label text-red-500" : "control-label text-orange-500"
-
-      if (apertureSlider) apertureSlider.disabled = false
-      if (shutterSlider) shutterSlider.disabled = true
-      if (isoSlider) isoSlider.disabled = autoIso
-    } else if (exposureMode === "shutter") {
-      if (apertureLabel) apertureLabel.className = "control-label text-red-500"
-      if (shutterLabel) shutterLabel.className = "control-label text-green-600"
-      if (isoLabel) isoLabel.className = autoIso ? "control-label text-red-500" : "control-label text-orange-500"
-
-      if (apertureSlider) apertureSlider.disabled = true
-      if (shutterSlider) shutterSlider.disabled = false
-      if (isoSlider) isoSlider.disabled = autoIso
-    } else if (exposureMode === "manual") {
-      if (apertureLabel) apertureLabel.className = "control-label text-green-600"
-      if (shutterLabel) shutterLabel.className = "control-label text-green-600"
-      if (isoLabel) isoLabel.className = autoIso ? "control-label text-red-500" : "control-label text-green-600"
-
-      if (apertureSlider) apertureSlider.disabled = false
-      if (shutterSlider) shutterSlider.disabled = false
-      if (isoSlider) isoSlider.disabled = autoIso
+    // Enable/disable sliders based on mode
+    if (apertureSlider) {
+      apertureSlider.disabled = mode === "shutter"
     }
 
-    // Update exposure meter and tips
-    updateExposureMeter()
-    updateEvDifferences()
-
-    // Update debug info
-    if (debugMode && debugExposureMode) {
-      debugExposureMode.textContent = `${exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1)} Priority`
+    if (shutterSlider) {
+      shutterSlider.disabled = mode === "aperture"
     }
+
+    if (isoSlider) {
+      isoSlider.disabled = autoIso
+    }
+
+    // Update displays
+    updateAllDisplays()
   }
 
-  // Function to set preview mode
+  // Set preview mode
   function setPreviewMode(mode) {
-    console.log("Setting preview mode to:", mode)
-    // Update preview mode
     previewMode = mode
 
     // Update tab UI
@@ -1702,17 +1258,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
 
-    // Show/hide overlays based on mode
+    // Show/hide appropriate overlays
     if (dofOverlay) {
       dofOverlay.classList.toggle("hidden", mode !== "dof")
-    } else {
-      console.error("DOF overlay element not found")
     }
 
     if (motionOverlay) {
       motionOverlay.classList.toggle("hidden", mode !== "motion")
-    } else {
-      console.error("Motion overlay element not found")
     }
 
     if (dofInfo) {
@@ -1723,7 +1275,7 @@ document.addEventListener("DOMContentLoaded", () => {
       motionInfo.classList.toggle("hidden", mode !== "motion")
     }
 
-    // Update visualizations
+    // Update visualizations if needed
     if (mode === "dof") {
       updateDofVisualization()
     } else if (mode === "motion") {
@@ -1731,169 +1283,87 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Function to toggle debug mode
-  function toggleDebugMode() {
-    debugMode = !debugMode
-
-    if (debugContainer) {
-      debugContainer.classList.toggle("hidden", !debugMode)
-    }
-
-    if (debugToggleFooter) {
-      debugToggleFooter.textContent = debugMode ? "Hide Debug Info" : "Show Debug Info"
-    }
-
-    if (debugMode) {
-      updateDebugInfo()
-    }
-  }
-
-  // Function to update all displays
-  function updateAllDisplays() {
-    updateApertureDisplay()
-    updateShutterDisplay()
-    updateIsoDisplay()
-    updateSceneImage()
-    updateExposureMeter()
-    updateHistogram()
-
-    if (previewMode === "dof") {
-      updateDofVisualization()
-    } else if (previewMode === "motion") {
-      updateMotionVisualization()
-    }
-
-    if (debugMode) {
-      updateDebugInfo()
-    }
-  }
-
-  // Function to update settings based on exposure mode
-  function updateSettingsBasedOnExposureMode() {
-    isUpdating = true
-
-    const aperture = standardApertures[apertureIndex]
-    const shutter = standardShutterSpeeds[shutterSpeedIndex]
-
-    if (exposureMode === "aperture") {
-      // In aperture priority, we adjust shutter speed based on aperture and ISO
-      if (autoIso) {
-        // With Auto ISO, we adjust both ISO and shutter speed
-        updateAutoIso(aperture, ev)
-      } else {
-        // Without Auto ISO, we only adjust shutter speed
-        const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
-        const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
-        shutterSpeedIndex = closestShutterIndex
-        userChangedShutter = true
-        updateShutterDisplay()
-      }
-    } else if (exposureMode === "shutter") {
-      // In shutter priority, we adjust aperture based on shutter speed and ISO
-      if (autoIso) {
-        // With Auto ISO, we may need to adjust both aperture and ISO
-        updateShutterPriorityWithAutoIso(shutter, ev)
-      } else {
-        // Without Auto ISO, we only adjust aperture
-        const requiredAperture = calculateRequiredAperture(shutter, ev, standardIsoValues[isoIndex])
-        const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
-        apertureIndex = closestApertureIndex
-        userChangedAperture = true
-        updateApertureDisplay()
-      }
-    } else if (exposureMode === "manual" && autoIso) {
-      // In manual mode with Auto ISO, we adjust ISO based on aperture and shutter
-      updateManualWithAutoIso(aperture, shutter, ev)
-    }
-
-    // Update exposure meter
-    updateExposureMeter()
-
-    // Add this line to update the histogram whenever settings change
-    updateHistogram()
-
-    // If in motion preview mode, update motion visualization
-    if (previewMode === "motion") {
-      updateMotionVisualization()
-    }
-
-    isUpdating = false
-  }
-
-  // Event listeners
+  // Event Listeners
   if (sceneTypeSelect) {
     sceneTypeSelect.addEventListener("change", function () {
       sceneType = this.value
       updateSceneImage()
       updateExposureMeter()
-
-      if (debugMode) {
-        updateDebugInfo()
-      }
     })
   }
 
   if (timeOfDaySelect) {
     timeOfDaySelect.addEventListener("change", function () {
       timeOfDay = this.value
-
-      // Update EV based on time of day
       ev = getEvForTimeOfDay(timeOfDay)
-
-      // Initialize settings for this time of day
       initializeSettingsForTimeOfDay(timeOfDay)
-
-      // Update scene image
       updateSceneImage()
-
-      // Update exposure meter
       updateExposureMeter()
-
-      if (debugMode) {
-        updateDebugInfo()
-      }
     })
   }
 
   if (apertureSlider) {
     apertureSlider.addEventListener("input", function () {
-      if (isUpdating) return
-
       apertureIndex = Number.parseInt(this.value)
       userChangedAperture = true
       updateApertureDisplay()
 
-      // Update settings based on exposure mode
-      updateSettingsBasedOnExposureMode()
+      // In aperture priority mode, adjust shutter speed
+      if (exposureMode === "aperture") {
+        const aperture = standardApertures[apertureIndex]
+        const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
+        const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
+        shutterSpeedIndex = closestShutterIndex
+        updateShutterDisplay()
+      }
 
-      // Directly update histogram when aperture changes
-      updateHistogram()
+      updateExposureMeter()
     })
   }
 
   if (shutterSlider) {
     shutterSlider.addEventListener("input", function () {
-      if (isUpdating) return
-
       shutterSpeedIndex = Number.parseInt(this.value)
       userChangedShutter = true
       updateShutterDisplay()
 
-      // Update settings based on exposure mode
-      updateSettingsBasedOnExposureMode()
+      // In shutter priority mode, adjust aperture
+      if (exposureMode === "shutter") {
+        const shutter = standardShutterSpeeds[shutterSpeedIndex]
+        const requiredAperture = calculateRequiredAperture(shutter, ev, standardIsoValues[isoIndex])
+        const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
+        apertureIndex = closestApertureIndex
+        updateApertureDisplay()
+      }
+
+      updateExposureMeter()
     })
   }
 
   if (isoSlider) {
     isoSlider.addEventListener("input", function () {
-      if (isUpdating) return
-
       isoIndex = Number.parseInt(this.value)
       userChangedIso = true
       updateIsoDisplay()
 
-      // Update settings based on exposure mode
-      updateSettingsBasedOnExposureMode()
+      // Adjust other settings based on exposure mode
+      if (exposureMode === "aperture") {
+        // In aperture priority, adjust shutter speed
+        const aperture = standardApertures[apertureIndex]
+        const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
+        const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
+        shutterSpeedIndex = closestShutterIndex
+        updateShutterDisplay()
+      } else if (exposureMode === "shutter") {
+        // In shutter priority, adjust aperture
+        const shutter = standardShutterSpeeds[shutterSpeedIndex]
+        const requiredAperture = calculateRequiredAperture(shutter, ev, standardIsoValues[isoIndex])
+        const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
+        apertureIndex = closestApertureIndex
+        updateApertureDisplay()
+      }
+
+      updateExposureMeter()
     })
   }
 
@@ -1906,16 +1376,20 @@ document.addEventListener("DOMContentLoaded", () => {
         isoSlider.disabled = autoIso
       }
 
-      // Update Auto ISO info
       updateAutoIsoInfo()
 
-      // Update settings based on exposure mode
-      updateSettingsBasedOnExposureMode()
-
-      // Update debug info
-      if (debugMode && debugAutoIso) {
-        debugAutoIso.style.display = autoIso ? "inline" : "none"
+      // Update settings based on exposure mode and auto ISO status
+      if (autoIso) {
+        if (exposureMode === "aperture") {
+          updateAutoIso(standardApertures[apertureIndex], ev)
+        } else if (exposureMode === "shutter") {
+          updateShutterPriorityWithAutoIso(standardShutterSpeeds[shutterSpeedIndex], ev)
+        } else if (exposureMode === "manual") {
+          updateManualWithAutoIso(standardApertures[apertureIndex], standardShutterSpeeds[shutterSpeedIndex], ev)
+        }
       }
+
+      updateExposureMeter()
     })
   }
 
@@ -1923,9 +1397,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".exposure-mode-tabs .tab-trigger").forEach((tab) => {
     tab.addEventListener("click", function () {
       setExposureMode(this.dataset.mode)
-
-      // Update settings based on the new exposure mode
-      updateSettingsBasedOnExposureMode()
     })
   })
 
@@ -1936,104 +1407,51 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // Triangle guide toggle
+  // Debug toggle
+  if (debugToggleFooter) {
+    debugToggleFooter.addEventListener("click", function () {
+      debugMode = !debugMode
+      if (debugContainer) {
+        debugContainer.classList.toggle("hidden", !debugMode)
+      }
+      this.textContent = debugMode ? "Hide Debug Info" : "Show Debug Info"
+    })
+  }
+
+  // Toggle triangle guide
   if (triangleGuideToggle && triangleGuideContainer) {
     triangleGuideToggle.addEventListener("click", function () {
       const isHidden = triangleGuideContainer.classList.contains("hidden")
       triangleGuideContainer.classList.toggle("hidden")
       this.querySelector(".toggle-icon").textContent = isHidden ? "▼" : "▶"
+      this.textContent = isHidden ? "Hide Exposure Triangle Guide" : "Show Exposure Triangle Guide"
     })
   }
 
-  // EV table toggle
+  // Toggle EV table
   if (evTableToggle && evTableContainer) {
     evTableToggle.addEventListener("click", function () {
       const isHidden = evTableContainer.classList.contains("hidden")
       evTableContainer.classList.toggle("hidden")
       this.querySelector(".toggle-icon").textContent = isHidden ? "▼" : "▶"
+      this.textContent = isHidden ? "Hide EV Table" : "Show EV Table"
     })
   }
 
-  // Debug toggle
-  if (debugToggleFooter) {
-    debugToggleFooter.addEventListener("click", toggleDebugMode)
-  }
+  // Make important functions available globally for debugging
+  window.calculateActualEv = calculateActualEv
+  window.calculateRequiredShutterSpeed = calculateRequiredShutterSpeed
+  window.updateSceneImage = updateSceneImage
+  window.updateHistogram = updateHistogram
+  window.updateExposureMeter = updateExposureMeter
+  window.initialize = initialize
+  window.debugLog = debugLog
+  window.standardApertures = standardApertures
+  window.standardShutterSpeeds = standardShutterSpeeds
+  window.standardIsoValues = standardIsoValues
+  window.sceneImageUrls = sceneImageUrls
 
-  // Guide tab listeners
-  document.querySelectorAll(".guide-tab").forEach((tab) => {
-    tab.addEventListener("click", function () {
-      // Remove active class from all tabs
-      document.querySelectorAll(".guide-tab").forEach((t) => t.classList.remove("active"))
-
-      // Add active class to clicked tab
-      this.classList.add("active")
-
-      // Update guide content based on selected tab
-      // This would typically show/hide different guide content sections
-    })
-  }
-
-  // Modify the initialize function to ensure the scene loads properly
-  function initialize() {
-    console.log("Initializing application...");
-    
-    if (initialized) {
-      console.log("Already initialized, skipping");
-      return;
-    }
-
-    // Set initial time of day
-    if (timeOfDaySelect) {
-      timeOfDay = timeOfDaySelect.value;
-      console.log("Initial time of day:", timeOfDay);
-    } else {
-      console.error("Time of day select element not found");
-    }
-
-    // Set initial scene type
-    if (sceneTypeSelect) {
-      sceneType = sceneTypeSelect.value;
-      console.log("Initial scene type:", sceneType);
-    } else {
-      console.error("Scene type select element not found");
-    }
-
-    // Set initial EV based on time of day
-    ev = getEvForTimeOfDay(timeOfDay);
-    console.log("Initial EV value:", ev);
-
-    // Initialize settings for this time of day
-    initializeSettingsForTimeOfDay(timeOfDay);
-
-    // Set initial exposure mode
-    setExposureMode("aperture");
-
-    // Set initial preview mode
-    setPreviewMode("normal");
-
-    // Force load the scene image with a slight delay to ensure DOM is ready
-    setTimeout(() => {
-      console.log("Loading initial scene image...");
-      updateSceneImage();
-      
-      // Update exposure meter
-      updateExposureMeter();
-      
-      // Update histogram
-      updateHistogram();
-      
-      console.log("Initialization complete");
-    }, 100);
-
-    initialized = true;
-  }
-
-  // Add this near the top of your script, after DOM elements are defined
-  console.log("Histogram container found:", !!histogramContainer)
-  console.log("Motion lines element found:", !!motionLines)
-
-  // Make sure to call initialize at the end of your script
-  console.log("Calling initialize function");
+  // Initialize the application
   initialize()
 })
 

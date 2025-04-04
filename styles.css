@@ -352,94 +352,6 @@ select {
   font-size: 0.75rem;
 }
 
-/* Exposure slider visualization */
-.exposure-visualization {
-  background-color: #f9fafb;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  margin-top: 1rem;
-}
-
-.slider-visualization {
-  margin: 1rem 0;
-}
-
-.viz-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.viz-label {
-  width: 6rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.viz-track {
-  flex: 1;
-  height: 0.5rem;
-  background-color: #e5e7eb;
-  border-radius: 9999px;
-  position: relative;
-}
-
-.viz-center-line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 0.125rem;
-  background-color: #9ca3af;
-  transform: translateX(-50%);
-}
-
-.viz-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background-color: #3b82f6;
-  transform: translate(-50%, -50%);
-  transition: left 0.3s ease;
-}
-
-.adjustment-value {
-  margin-left: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  width: 4rem;
-  text-align: right;
-}
-
-.viz-explanation {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 0.5rem;
-}
-
-.total-adjustment {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
-  font-size: 0.875rem;
-}
-
-.total-adjustment-value {
-  font-weight: 600;
-}
-
-.adjustment-description {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
-}
-
 /* Exposure meter */
 .exposure-meter {
   position: relative;
@@ -522,7 +434,7 @@ select {
   margin: 0 1px;
 }
 
-.histogram-bar > div {
+.histogram-bar-fill {
   width: 100%;
   transition: height 0.3s ease;
 }
@@ -728,7 +640,7 @@ footer {
   color: #16a34a;
 }
 
-.text-red-500 {
+.text-red-600 {
   color: #ef4444;
 }
 
