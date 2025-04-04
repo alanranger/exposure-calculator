@@ -155,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let userChangedIso = false
   const isUpdating = false
   let initialized = false
+  let sceneImage
 
   // EV differences
   let apertureEvDiff = 0
@@ -176,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const apertureValue = document.getElementById("aperture-value")
   const shutterValue = document.getElementById("shutter-value")
   const isoValue = document.getElementById("iso-value")
-  const sceneImage = document.getElementById("scene-image")
+  sceneImage = document.getElementById("scene-image")
   const sceneLoading = document.getElementById("scene-loading")
   const sceneError = document.getElementById("scene-error")
   const exposureMeterNeedle = document.getElementById("exposure-meter-needle")
@@ -560,7 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Consider these adjustments to avoid bulb mode:<br>" +
             "• Increase ISO (will introduce more noise)<br>" +
             "• Use a wider aperture (lower f-number)<br>" +
-            "• Add additional lighting to the scene if possible"
+            "Add additional lighting to the scene if possible"
         }
       }
     } else {
@@ -584,8 +585,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Find the closest standard ISO value
     const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
 
-    // Update the ISO index
-    isoIndex = closestIsoIndex
+    // Update the ISO index = closestIsoIndex
     userChangedIso = true
 
     // Calculate the aperture with this ISO
@@ -1449,44 +1449,58 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneImage.style.filter = ""
     }
 
-    // Check if bulb mode warning is needed in aperture priority mode
-    if (exposureMode === "aperture" && !autoIso) {
-      const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
-      if (requiredShutter > 30) {
-        // Format the time for bulb mode
-        let bulbTime = ""
-        if (requiredShutter > 60) {
-          const minutes = Math.floor(requiredShutter / 60)
-          const seconds = Math.round(requiredShutter % 60)
-          bulbTime = `${minutes}m ${seconds}s`
-        } else {
-          bulbTime = `${Math.round(requiredShutter)}s`
-        }
+    // Check if bulb mode warning is needed
+    const apertureSetting = standardApertures[apertureIndex]
+    const isoSetting = standardIsoValues[isoIndex]
+    const requiredShutter = calculateRequiredShutterSpeed(apertureSetting, ev, isoSetting)
 
-        // Update bulb mode UI
-        if (exposureTipsBulb && bulbExposureTimeSpan) {
-          exposureTipsCorrect.classList.add("hidden")
-          exposureTipsIncorrect.classList.add("hidden")
-          exposureTipsBulb.classList.remove("hidden")
-          bulbExposureTimeSpan.textContent = bulbTime
+    // Check if we need bulb mode (required shutter speed > 30s)
+    if (requiredShutter > 30) {
+      // Format the time for bulb mode
+      let bulbTime = ""
+      if (requiredShutter > 60) {
+        const minutes = Math.floor(requiredShutter / 60)
+        const seconds = Math.round(requiredShutter % 60)
+        bulbTime = `${minutes}m ${seconds}s`
+      } else {
+        bulbTime = `${Math.round(requiredShutter)}s`
+      }
 
-          // Set the bulb warning title and suggestions
-          if (exposureTipsTitle) {
-            exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
-          }
-          if (exposureTipsDescription) {
-            exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
-          }
-          if (exposureTipsSuggestions) {
-            exposureTipsSuggestions.innerHTML =
-              "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
-              "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-              "Consider these adjustments to avoid bulb mode:<br>" +
-              "• Increase ISO (will introduce more noise)<br>" +
-              "• Use a wider aperture (lower f-number)<br>" +
-              "• Add additional lighting to the scene if possible"
-          }
+      // Update bulb mode UI
+      if (exposureTipsBulb && bulbExposureTimeSpan) {
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+        exposureTipsBulb.classList.remove("hidden")
+        bulbExposureTimeSpan.textContent = bulbTime
+
+        // Set the bulb warning title and suggestions
+        if (exposureTipsTitle) {
+          exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
         }
+        if (exposureTipsDescription) {
+          exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+        }
+        if (exposureTipsSuggestions) {
+          exposureTipsSuggestions.innerHTML =
+            "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+            "Consider these adjustments to avoid bulb mode:<br>" +
+            "• Increase ISO (will introduce more noise)<br>" +
+            "• Use a wider aperture (lower f-number)<br>" +
+            "• Add additional lighting to the scene if possible"
+        }
+      }
+    } else if (exposureTipsBulb) {
+      // Hide bulb mode UI if no longer needed
+      exposureTipsBulb.classList.add("hidden")
+
+      // Show correct or incorrect exposure tips based on exposure correctness
+      if (exposureCorrect) {
+        exposureTipsCorrect.classList.remove("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+      } else {
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.remove("hidden")
       }
     }
 
@@ -1877,9 +1891,5 @@ window.addEventListener("load", () => {
       console.log("Forcing scene image update")
       updateSceneImage()
     }
-  }, 2000));
-\
-//Remove duplicate functions and state variables
-//The functions and state variables were declared twice.
-//The second declaration is emoved.
+  }, 2000));\
 
