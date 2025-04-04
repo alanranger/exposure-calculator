@@ -1450,30 +1450,46 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneImage.style.filter = ""
     }
 
-    // In the updateExposureMeter function, replace the bulb mode warning check section with:
-    // Check if bulb mode warning is needed
-    if (exposureMode === "aperture" || exposureMode === "manual") {
-      const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
-      if (requiredShutter > 30) {
-        // Format the time for bulb mode
-        let bulbTime = ""
-        if (requiredShutter > 60) {
-          const minutes = Math.floor(requiredShutter / 60)
-          const seconds = Math.round(requiredShutter % 60)
-          bulbTime = `${minutes}m ${seconds}s`
-        } else {
-          bulbTime = `${Math.round(requiredShutter)}s`
-        }
+    // Check if we need bulb mode warning
+    const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
+    if (requiredShutter > 30) {
+      // Format the time for bulb mode
+      let bulbTime = ""
+      if (requiredShutter > 60) {
+        const minutes = Math.floor(requiredShutter / 60)
+        const seconds = Math.round(requiredShutter % 60)
+        bulbTime = `${minutes}m ${seconds}s`
+      } else {
+        bulbTime = `${Math.round(requiredShutter)}s`
+      }
 
-        // Update bulb mode UI
-        if (exposureTipsBulb && bulbExposureTimeSpan) {
-          exposureTipsCorrect.classList.add("hidden")
-          exposureTipsIncorrect.classList.add("hidden")
-          exposureTipsBulb.classList.remove("hidden")
-          bulbExposureTimeSpan.textContent = bulbTime
+      // Update bulb mode UI
+      if (exposureTipsBulb && bulbExposureTimeSpan) {
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+        exposureTipsBulb.classList.remove("hidden")
+        bulbExposureTimeSpan.textContent = bulbTime
+
+        // Set the bulb warning title and suggestions
+        if (exposureTipsTitle) {
+          exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
         }
-      } else if (exposureTipsBulb) {
-        // Hide bulb mode UI if no longer needed
+        if (exposureTipsDescription) {
+          exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+        }
+        if (exposureTipsSuggestions) {
+          exposureTipsSuggestions.innerHTML =
+            "Important: A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+            "Consider these adjustments to avoid bulb mode:<br>" +
+            "• Increase ISO (will introduce more noise)<br>" +
+            "• Use a wider aperture (lower f-number)<br>" +
+            "Add additional lighting to the scene if possible"
+        }
+      }
+    } else {
+      // Hide bulb mode UI if no longer needed
+      if (exposureTipsBulb) {
         exposureTipsBulb.classList.add("hidden")
 
         // Show correct or incorrect exposure tips based on exposure correctness
@@ -1642,7 +1658,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Consider these adjustments to avoid bulb mode:<br>" +
                 "• Increase ISO (will introduce more noise)<br>" +
                 "• Use a wider aperture (lower f-number)<br>" +
-                "• Add additional lighting to the scene if possible"
+                "Add additional lighting to the scene if possible"
             }
           }
         } else if (exposureTipsBulb) {
@@ -1734,7 +1750,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Consider these adjustments to avoid bulb mode:<br>" +
                 "• Increase ISO (will introduce more noise)<br>" +
                 "• Use a wider aperture (lower f-number)<br>" +
-                "• Add additional lighting to the scene if possible"
+                "Add additional lighting to the scene if possible"
             }
           }
         } else if (exposureTipsBulb) {
