@@ -1,5 +1,6 @@
 // Initialize the application when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded - initializing exposure calculator")
   // Reference settings for midday
   const REFERENCE_APERTURE = 5.6
   const REFERENCE_ISO = 100
@@ -217,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const isoSliderDot = document.getElementById("iso-slider-dot")
   const apertureEvDisplay = document.getElementById("aperture-ev-display")
   const shutterEvDisplay = document.getElementById("shutter-ev-display")
-  const isoEvDisplay = document.getElementById("iso-ev-display")
+  const isoEvDisplay = document.getElementById("iso-slider-dot")
   const totalExposureAdjustment = document.getElementById("total-exposure-adjustment")
   const exposureAdjustmentDescription = document.getElementById("exposure-adjustment-description")
   const exposureModeExplanation = document.getElementById("exposure-mode-explanation")
@@ -553,6 +554,9 @@ document.addEventListener("DOMContentLoaded", () => {
       needIsoAdjustment = true
     } else if (requiredAperture > standardApertures[standardApertures.length - 1]) {
       // We need a narrower aperture than available, so use the narrowest and decrease ISO
+      needIsoAdjustment = true
+    } else if (requiredAperture > standardApertures[standardApertures.length - 1]) {
+      // We need a narrower aperture than available, so use the narrowest and decrease ISO
       closestApertureIndex = standardApertures.length - 1
       needIsoAdjustment = true
     }
@@ -752,17 +756,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Update scene image
   function updateSceneImage() {
-    if (!sceneImage) return
+    console.log("Updating scene image for:", sceneType, timeOfDay)
+
+    if (!sceneImage) {
+      console.error("Scene image element not found")
+      return
+    }
 
     // Show loading state
-    if (sceneLoading) sceneLoading.classList.remove("hidden")
-    if (sceneError) sceneError.classList.add("hidden")
+    if (sceneLoading) {
+      sceneLoading.classList.remove("hidden")
+    }
+
+    if (sceneError) {
+      sceneError.classList.add("hidden")
+    }
 
     // Get the image URL
     const imageUrl = sceneImageUrls[sceneType]?.[timeOfDay]
+    console.log("Image URL:", imageUrl)
 
     if (!imageUrl) {
       // Handle missing image
+      console.error("No image URL found for", sceneType, timeOfDay)
       if (sceneLoading) sceneLoading.classList.add("hidden")
       if (sceneError) sceneError.classList.remove("hidden")
       return
@@ -772,6 +788,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const img = new Image()
 
     img.onload = () => {
+      console.log("Image loaded successfully:", imageUrl)
       // Once preloaded successfully, update the actual image
       sceneImage.src = imageUrl
       if (sceneLoading) sceneLoading.classList.add("hidden")
@@ -793,12 +810,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     img.onerror = () => {
+      console.error(`Failed to load image: ${imageUrl}`)
       if (sceneLoading) sceneLoading.classList.add("hidden")
       if (sceneError) sceneError.classList.remove("hidden")
-      console.error(`Failed to load image: ${imageUrl}`)
     }
 
     // Start loading the image
+    console.log("Starting image load:", imageUrl)
     img.src = imageUrl
   }
 
@@ -1953,51 +1971,69 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update guide content based on selected tab
       // This would typically show/hide different guide content sections
     })
-  })
+  }
 
-  // Initialize the application
+  // Modify the initialize function to ensure the scene loads properly
   function initialize() {
-    if (initialized) return
+    console.log("Initializing application...");
+    
+    if (initialized) {
+      console.log("Already initialized, skipping");
+      return;
+    }
 
     // Set initial time of day
     if (timeOfDaySelect) {
-      timeOfDay = timeOfDaySelect.value
+      timeOfDay = timeOfDaySelect.value;
+      console.log("Initial time of day:", timeOfDay);
+    } else {
+      console.error("Time of day select element not found");
     }
 
     // Set initial scene type
     if (sceneTypeSelect) {
-      sceneType = sceneTypeSelect.value
+      sceneType = sceneTypeSelect.value;
+      console.log("Initial scene type:", sceneType);
+    } else {
+      console.error("Scene type select element not found");
     }
 
     // Set initial EV based on time of day
-    ev = getEvForTimeOfDay(timeOfDay)
+    ev = getEvForTimeOfDay(timeOfDay);
+    console.log("Initial EV value:", ev);
 
     // Initialize settings for this time of day
-    initializeSettingsForTimeOfDay(timeOfDay)
+    initializeSettingsForTimeOfDay(timeOfDay);
 
     // Set initial exposure mode
-    setExposureMode("aperture")
+    setExposureMode("aperture");
 
     // Set initial preview mode
-    setPreviewMode("normal")
+    setPreviewMode("normal");
 
-    // Update scene image
-    updateSceneImage()
+    // Force load the scene image with a slight delay to ensure DOM is ready
+    setTimeout(() => {
+      console.log("Loading initial scene image...");
+      updateSceneImage();
+      
+      // Update exposure meter
+      updateExposureMeter();
+      
+      // Update histogram
+      updateHistogram();
+      
+      console.log("Initialization complete");
+    }, 100);
 
-    // Update exposure meter
-    updateExposureMeter()
-
-    // Update histogram
-    updateHistogram()
-
-    initialized = true
+    initialized = true;
   }
 
   // Add this near the top of your script, after DOM elements are defined
   console.log("Histogram container found:", !!histogramContainer)
   console.log("Motion lines element found:", !!motionLines)
 
-  // Initialize the application
+  // Make sure to call initialize at the end of your script
+  console.log("Calling initialize function");
   initialize()
 })
 
