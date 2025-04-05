@@ -1,21 +1,19 @@
 /* Filter bar styles */
 .filter-bar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   background-color: white;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
-  grid-column: 1 / -1;
-  align-items: center;
+  grid-column: 1;
 }
 
 .filter-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-grow: 1;
 }
 
 .filter-group label {
@@ -26,7 +24,7 @@
 }
 
 .filter-group select {
-  min-width: 150px;
+  flex-grow: 1;
   padding: 0.375rem 0.75rem;
   border-radius: 0.375rem;
   border: 1px solid #d1d5db;
@@ -55,6 +53,30 @@
   grid-column: 3;
 }
 
+/* Time of day selector in middle column */
+.time-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.time-selector label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.time-selector select {
+  flex-grow: 1;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  font-size: 0.875rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .grid-container {
@@ -62,7 +84,7 @@
   }
 
   .filter-bar {
-    grid-column: 1 / -1;
+    grid-column: 1;
   }
 
   .left-column {
@@ -86,16 +108,15 @@
 
   .filter-bar {
     grid-column: 1;
+  }
+
+  .time-selector {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .filter-group {
+  .time-selector select {
     width: 100%;
-  }
-
-  .filter-group select {
-    flex-grow: 1;
   }
 
   .left-column,
@@ -162,6 +183,19 @@ header {
   background-color: white;
   border-bottom: 1px solid #e5e5e5;
   padding: 1rem 0;
+}
+
+/* Header with logo */
+.header-with-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 }
 
 .header-content {
@@ -982,5 +1016,19 @@ footer {
 #iso-label {
   color: #f97316 !important;
   font-weight: 500;
+}
+
+/* Adjust responsive behavior for header */
+@media (max-width: 768px) {
+  .header-with-logo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-logo {
+    width: 50px;
+    height: 50px;
+  }
 }
 
