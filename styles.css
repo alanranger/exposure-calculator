@@ -1178,3 +1178,29 @@ footer {
   display: none;
 }
 
+/* Debug toggle button */
+.debug-toggle {
+  padding: 0.5rem 1rem;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 0.375rem;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.debug-toggle:hover {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Ensure debug info updates dynamically */
+#debug-container.card {
+  transition: all 0.3s ease;
+}
+
+#debug-container .debug-section li span {
+  transition: all 0.3s ease;
+}
+

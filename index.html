@@ -1,483 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photography Exposure Calculator</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photography Exposure Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <img src="public/logo.png" alt="Exposure Calculator Logo" class="logo">
-            <div class="title-container">
-                <h1>Photography Exposure Calculator</h1>
-                <p>Learn how aperture, shutter speed, and ISO affect your photos</p>
-            </div>
-        </div>
-    </header>
+  <header>
+      <div class="header-content">
+          <img src="public/logo.png" alt="Exposure Calculator Logo" class="logo">
+          <div class="title-container">
+              <h1>Photography Exposure Calculator</h1>
+              <p>Learn how aperture, shutter speed, and ISO affect your photos</p>
+          </div>
+      </div>
+  </header>
 
-    <main class="container">
-        <div class="grid-container">
-            <!-- Left Column - Scene Settings and Exposure Controls -->
-            <div class="left-column">
-                <!-- Scene Settings -->
-                <div class="card">
-                    <div class="card-content">
-                        <h2>Scene Settings</h2>
-                        <div class="form-group">
-                            <label for="scene-type">Scene Type</label>
-                            <select id="scene-type">
-                                <option value="landscape">Landscape</option>
-                                <option value="cityscape">Cityscape</option>
-                                <option value="portrait">Portrait</option>
-                                <option value="wildlife">Wildlife</option>
-                                <option value="sports">Sports</option>
-                                <option value="forest">Forest</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="time-of-day">Time of Day</label>
-                            <select id="time-of-day">
-                                <option value="dawn">Dawn</option>
-                                <option value="sunrise">Sunrise</option>
-                                <option value="midday" selected>Midday</option>
-                                <option value="sunset">Sunset</option>
-                                <option value="dusk">Dusk</option>
-                                <option value="night">Night</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+  <main class="container">
+      <div class="grid-container">
+          <!-- Left Column - Scene Settings and Exposure Controls -->
+          <div class="left-column">
+              <!-- Scene Settings -->
+              <div class="card">
+                  <div class="card-content">
+                      <h2>Scene Settings</h2>
+                      <div class="form-group">
+                          <label for="scene-type">Scene Type</label>
+                          <select id="scene-type">
+                              <option value="landscape">Landscape</option>
+                              <option value="cityscape">Cityscape</option>
+                              <option value="portrait">Portrait</option>
+                              <option value="wildlife">Wildlife</option>
+                              <option value="sports">Sports</option>
+                              <option value="forest">Forest</option>
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label for="time-of-day">Time of Day</label>
+                          <select id="time-of-day">
+                              <option value="dawn">Dawn</option>
+                              <option value="sunrise">Sunrise</option>
+                              <option value="midday" selected>Midday</option>
+                              <option value="sunset">Sunset</option>
+                              <option value="dusk">Dusk</option>
+                              <option value="night">Night</option>
+                          </select>
+                      </div>
+                  </div>
+              </div>
 
-                <!-- Exposure Controls -->
-                <div class="card">
-                    <div class="card-content">
-                        <div class="exposure-mode-header">
-                            <h2>Exposure Controls</h2>
-                            <div class="exposure-mode-tabs">
-                                <div class="tab-trigger active" data-mode="aperture">A/AV</div>
-                                <div class="tab-trigger" data-mode="shutter">S/TV</div>
-                                <div class="tab-trigger" data-mode="manual">M</div>
-                            </div>
-                        </div>
+              <!-- Exposure Controls -->
+              <div class="card">
+                  <div class="card-content">
+                      <div class="exposure-mode-header">
+                          <h2>Exposure Controls</h2>
+                          <div class="exposure-mode-tabs">
+                              <div class="tab-trigger active" data-mode="aperture">A/AV</div>
+                              <div class="tab-trigger" data-mode="shutter">S/TV</div>
+                              <div class="tab-trigger" data-mode="manual">M</div>
+                          </div>
+                      </div>
 
-                        <!-- Aperture Setting -->
-                        <div class="setting-group">
-                            <div class="setting-header">
-                                <label class="aperture-label">Aperture (f-stop/depth of field)</label>
-                                <div class="setting-value">
-                                    <span id="aperture-value">f/5.6</span>
-                                    <span class="setting-icon aperture-icon">A</span>
-                                </div>
-                            </div>
-                            <div class="ev-indicator-container">
-                                <span id="aperture-ev-indicator" class="ev-indicator"></span>
-                            </div>
-                            <div class="slider-labels">
-                                <span>Wide (f/1.4)</span>
-                                <span>Narrow (f/32)</span>
-                            </div>
-                            <input type="range" id="aperture-slider" min="0" max="27" value="12" class="slider">
-                            <div class="tips-box aperture-tips-box">
-                                <p id="aperture-tips">Medium aperture: Good all-around choice. Balances depth of field and sharpness.</p>
-                            </div>
-                        </div>
+                      <!-- Aperture Setting -->
+                      <div class="setting-group">
+                          <div class="setting-header">
+                              <label class="aperture-label">Aperture (f-stop/depth of field)</label>
+                              <div class="setting-value">
+                                  <span id="aperture-value">f/5.6</span>
+                                  <span class="setting-icon aperture-icon">A</span>
+                              </div>
+                          </div>
+                          <div class="ev-indicator-container">
+                              <span id="aperture-ev-indicator" class="ev-indicator"></span>
+                          </div>
+                          <div class="slider-labels">
+                              <span>Wide (f/1.4)</span>
+                              <span>Narrow (f/32)</span>
+                          </div>
+                          <input type="range" id="aperture-slider" min="0" max="27" value="12" class="slider">
+                          <div class="tips-box aperture-tips-box">
+                              <p id="aperture-tips">Medium aperture: Good all-around choice. Balances depth of field and sharpness.</p>
+                          </div>
+                      </div>
 
-                        <!-- Shutter Speed Setting -->
-                        <div class="setting-group">
-                            <div class="setting-header">
-                                <label class="shutter-label">Shutter Speed (movement)</label>
-                                <div class="setting-value">
-                                    <span id="shutter-value">1/2000s</span>
-                                    <span class="setting-icon shutter-icon">S</span>
-                                </div>
-                            </div>
-                            <div class="ev-indicator-container">
-                                <span id="shutter-ev-indicator" class="ev-indicator"></span>
-                            </div>
-                            <div class="slider-labels">
-                                <span>Slow (30") - Blur Motion</span>
-                                <span>Fast (1/8000) - Freeze Motion</span>
-                            </div>
-                            <input type="range" id="shutter-slider" min="0" max="54" value="48" class="slider">
-                            <div class="tips-box shutter-tips-box">
-                                <p id="shutter-tips">Fast shutter: Freezes fast action. Ideal for sports, wildlife, and capturing split-second moments.</p>
-                            </div>
-                        </div>
+                      <!-- Shutter Speed Setting -->
+                      <div class="setting-group">
+                          <div class="setting-header">
+                              <label class="shutter-label">Shutter Speed (movement)</label>
+                              <div class="setting-value">
+                                  <span id="shutter-value">1/2000s</span>
+                                  <span class="setting-icon shutter-icon">S</span>
+                              </div>
+                          </div>
+                          <div class="ev-indicator-container">
+                              <span id="shutter-ev-indicator" class="ev-indicator"></span>
+                          </div>
+                          <div class="slider-labels">
+                              <span>Slow (30") - Blur Motion</span>
+                              <span>Fast (1/8000) - Freeze Motion</span>
+                          </div>
+                          <input type="range" id="shutter-slider" min="0" max="54" value="48" class="slider">
+                          <div class="tips-box shutter-tips-box">
+                              <p id="shutter-tips">Fast shutter: Freezes fast action. Ideal for sports, wildlife, and capturing split-second moments.</p>
+                          </div>
+                      </div>
 
-                        <!-- ISO Setting -->
-                        <div class="setting-group">
-                            <div class="setting-header">
-                                <label class="iso-label">ISO (grain/exposure time)</label>
-                                <div class="setting-value">
-                                    <span id="iso-value">100</span>
-                                    <div class="auto-iso-toggle">
-                                        <input type="checkbox" id="auto-iso">
-                                        <label for="auto-iso" class="auto-iso-label">Auto</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ev-indicator-container">
-                                <span id="iso-ev-indicator" class="ev-indicator"></span>
-                            </div>
-                            <div class="slider-labels">
-                                <span>Low (50) / Low Noise<br>Slower Shutter Speed</span>
-                                <span>High (102400) / High Noise<br>Faster Shutter Speed</span>
-                            </div>
-                            <input type="range" id="iso-slider" min="0" max="33" value="3" class="slider">
-                            <div class="tips-box iso-tips-box">
-                                <p id="iso-tips">Low ISO: Best for bright conditions. Produces clean images with minimal noise.</p>
-                            </div>
-                            <div id="auto-iso-info" class="auto-iso-info hidden">Auto ISO: Maintaining minimum shutter speed of 1/60s</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                      <!-- ISO Setting -->
+                      <div class="setting-group">
+                          <div class="setting-header">
+                              <label class="iso-label">ISO (grain/exposure time)</label>
+                              <div class="setting-value">
+                                  <span id="iso-value">100</span>
+                                  <div class="auto-iso-toggle">
+                                      <input type="checkbox" id="auto-iso">
+                                      <label for="auto-iso" class="auto-iso-label">Auto</label>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="ev-indicator-container">
+                              <span id="iso-ev-indicator" class="ev-indicator"></span>
+                          </div>
+                          <div class="slider-labels">
+                              <span>Low (50) / Low Noise<br>Slower Shutter Speed</span>
+                              <span>High (102400) / High Noise<br>Faster Shutter Speed</span>
+                          </div>
+                          <input type="range" id="iso-slider" min="0" max="33" value="3" class="slider">
+                          <div class="tips-box iso-tips-box">
+                              <p id="iso-tips">Low ISO: Best for bright conditions. Produces clean images with minimal noise.</p>
+                          </div>
+                          <div id="auto-iso-info" class="auto-iso-info hidden">Auto ISO: Maintaining minimum shutter speed of 1/60s</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-            <!-- Right Column - Scene Preview and Exposure Information -->
-            <div class="right-column">
-                <!-- Scene Preview -->
-                <div class="card">
-                    <div class="card-content">
-                        <div class="scene-preview-container">
-                            <div id="scene-loading" class="scene-loading">
-                                <div class="spinner"></div>
-                                <p>Loading scene...</p>
-                            </div>
-                            <div id="scene-error" class="scene-error hidden">
-                                <p>Error loading image. Please try another scene.</p>
-                            </div>
-                            <img id="scene-image" class="scene-image" alt="Scene Preview" src="/placeholder.svg">
-                            <div id="exposure-indicator" class="exposure-indicator hidden">Underexposed by 2.0 stops</div>
-                            <div id="scene-description" class="scene-description">Landscape at Midday</div>
+          <!-- Right Column - Scene Preview and Exposure Information -->
+          <div class="right-column">
+              <!-- Scene Preview -->
+              <div class="card">
+                  <div class="card-content">
+                      <div class="scene-preview-container">
+                          <div id="scene-loading" class="scene-loading">
+                              <div class="spinner"></div>
+                              <p>Loading scene...</p>
+                          </div>
+                          <div id="scene-error" class="scene-error hidden">
+                              <p>Error loading image. Please try another scene.</p>
+                          </div>
+                          <img id="scene-image" class="scene-image" alt="Scene Preview" src="/placeholder.svg">
+                          <div id="exposure-indicator" class="exposure-indicator hidden">Underexposed by 2.0 stops</div>
+                          <div id="scene-description" class="scene-description">Landscape at Midday</div>
 
-                            <!-- DOF Overlay -->
-                            <div id="dof-overlay" class="scene-overlay hidden">
-                                <div id="dof-zone" class="dof-zone"></div>
-                            </div>
+                          <!-- DOF Overlay -->
+                          <div id="dof-overlay" class="scene-overlay hidden">
+                              <div id="dof-zone" class="dof-zone"></div>
+                          </div>
 
-                            <!-- Motion Overlay -->
-                            <div id="motion-overlay" class="scene-overlay hidden">
-                                <svg id="motion-lines" class="motion-lines" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
-                            </div>
-                        </div>
+                          <!-- Motion Overlay -->
+                          <div id="motion-overlay" class="scene-overlay hidden">
+                              <svg id="motion-lines" class="motion-lines" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
+                          </div>
+                      </div>
 
-                        <!-- DOF Info -->
-                        <div id="dof-info" class="overlay-info hidden">
-                            <div class="overlay-info-header">
-                                <h3 id="dof-indicator">f/5.6 - Medium DoF</h3>
-                            </div>
-                            <p id="dof-explanation">Medium f-number = moderate focus depth</p>
-                            <p id="dof-current-setting">Your current setting: <strong>f/5.6</strong> - Medium depth of field</p>
-                        </div>
+                      <!-- DOF Info -->
+                      <div id="dof-info" class="overlay-info hidden">
+                          <div class="overlay-info-header">
+                              <h3 id="dof-indicator">f/5.6 - Medium DoF</h3>
+                          </div>
+                          <p id="dof-explanation">Medium f-number = moderate focus depth</p>
+                          <p id="dof-current-setting">Your current setting: <strong>f/5.6</strong> - Medium depth of field</p>
+                      </div>
 
-                        <!-- Motion Info -->
-                        <div id="motion-info" class="overlay-info hidden">
-                            <div class="overlay-info-header">
-                                <h3 id="motion-indicator">1/2000s - Frozen Motion</h3>
-                            </div>
-                            <p id="motion-explanation">Very fast shutter = frozen motion (sharp action)</p>
-                            <p id="motion-current-setting">Your current setting: <strong>1/2000s</strong> - Frozen motion</p>
-                        </div>
+                      <!-- Motion Info -->
+                      <div id="motion-info" class="overlay-info hidden">
+                          <div class="overlay-info-header">
+                              <h3 id="motion-indicator">1/2000s - Frozen Motion</h3>
+                          </div>
+                          <p id="motion-explanation">Very fast shutter = frozen motion (sharp action)</p>
+                          <p id="motion-current-setting">Your current setting: <strong>1/2000s</strong> - Frozen motion</p>
+                      </div>
 
-                        <!-- Preview Mode Tabs -->
-                        <div class="preview-mode-tabs">
-                            <div class="tab-trigger active" data-preview="normal">Normal</div>
-                            <div class="tab-trigger" data-preview="dof">Depth of Field</div>
-                            <div class="tab-trigger" data-preview="motion">Motion</div>
-                        </div>
+                      <!-- Preview Mode Tabs -->
+                      <div class="preview-mode-tabs">
+                          <div class="tab-trigger active" data-preview="normal">Normal</div>
+                          <div class="tab-trigger" data-preview="dof">Depth of Field</div>
+                          <div class="tab-trigger" data-preview="motion">Motion</div>
+                      </div>
 
-                        <!-- Exposure Slider Visualization -->
-                        <div class="exposure-slider-visualization">
-                            <div class="exposure-slider-row">
-                                <div class="slider-label">Aperture</div>
-                                <div class="slider-track">
-                                    <div id="aperture-slider-indicator" class="slider-indicator"></div>
-                                </div>
-                                <div id="aperture-slider-value" class="slider-value">0.0 EV</div>
-                            </div>
-                            <div class="exposure-slider-row">
-                                <div class="slider-label">Shutter</div>
-                                <div class="slider-track">
-                                    <div id="shutter-slider-indicator" class="slider-indicator"></div>
-                                </div>
-                                <div id="shutter-slider-value" class="slider-value">0.0 EV</div>
-                            </div>
-                            <div class="exposure-slider-row">
-                                <div class="slider-label">ISO</div>
-                                <div class="slider-track">
-                                    <div id="iso-slider-indicator" class="slider-indicator"></div>
-                                </div>
-                                <div id="iso-slider-value" class="slider-value">0.0 EV</div>
-                            </div>
-                            <div class="exposure-slider-row total-exposure-row">
-                                <div class="slider-label">Total</div>
-                                <div id="total-exposure-value" class="total-exposure-value">0.0 EV</div>
-                                <div id="total-exposure-description" class="total-exposure-description">Correct exposure</div>
-                            </div>
-                            <p id="exposure-mode-explanation" class="exposure-mode-explanation">
-                                In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                      <!-- Exposure Slider Visualization -->
+                      <div class="exposure-slider-visualization">
+                          <div class="exposure-slider-row">
+                              <div class="slider-label">Aperture</div>
+                              <div class="slider-track">
+                                  <div id="aperture-slider-indicator" class="slider-indicator"></div>
+                              </div>
+                              <div id="aperture-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                          <div class="exposure-slider-row">
+                              <div class="slider-label">Shutter</div>
+                              <div class="slider-track">
+                                  <div id="shutter-slider-indicator" class="slider-indicator"></div>
+                              </div>
+                              <div id="shutter-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                          <div class="exposure-slider-row">
+                              <div class="slider-label">ISO</div>
+                              <div class="slider-track">
+                                  <div id="iso-slider-indicator" class="slider-indicator"></div>
+                              </div>
+                              <div id="iso-slider-value" class="slider-value">0.0 EV</div>
+                          </div>
+                          <div class="exposure-slider-row total-exposure-row">
+                              <div class="slider-label">Total</div>
+                              <div id="total-exposure-value" class="total-exposure-value">0.0 EV</div>
+                              <div id="total-exposure-description" class="total-exposure-description">Correct exposure</div>
+                          </div>
+                          <p id="exposure-mode-explanation" class="exposure-mode-explanation">
+                              In Aperture Priority mode, changing aperture or ISO will automatically adjust shutter speed to maintain exposure.
+                          </p>
+                      </div>
+                  </div>
+              </div>
 
-                <!-- Exposure Meter -->
-                <div class="card">
-                    <div class="card-content">
-                        <h2>Exposure Meter</h2>
-                        <div class="exposure-meter">
-                            <div class="meter-scale">
-                                <div class="meter-label">-6</div>
-                                <div class="meter-label">-3</div>
-                                <div class="meter-label">0</div>
-                                <div class="meter-label">+3</div>
-                                <div class="meter-label">+6</div>
-                            </div>
-                            <div class="meter-track">
-                                <div id="exposure-meter-needle" class="meter-needle"></div>
-                            </div>
-                            <div class="meter-labels">
-                                <div class="meter-label">Underexposed</div>
-                                <div class="meter-label">Correct</div>
-                                <div class="meter-label">Overexposed</div>
-                            </div>
-                        </div>
-                        <div id="exposure-meter-status" class="meter-status">Correct Exposure</div>
-                    </div>
-                </div>
+              <!-- Exposure Meter -->
+              <div class="card">
+                  <div class="card-content">
+                      <h2>Exposure Meter</h2>
+                      <div class="exposure-meter">
+                          <div class="meter-scale">
+                              <div class="meter-label">-6</div>
+                              <div class="meter-label">-3</div>
+                              <div class="meter-label">0</div>
+                              <div class="meter-label">+3</div>
+                              <div class="meter-label">+6</div>
+                          </div>
+                          <div class="meter-track">
+                              <div id="exposure-meter-needle" class="meter-needle"></div>
+                          </div>
+                          <div class="meter-labels">
+                              <div class="meter-label">Underexposed</div>
+                              <div class="meter-label">Correct</div>
+                              <div class="meter-label">Overexposed</div>
+                          </div>
+                      </div>
+                      <div id="exposure-meter-status" class="meter-status">Correct Exposure</div>
+                  </div>
+              </div>
 
-                <!-- Histogram -->
-                <div class="card">
-                    <div class="card-content">
-                        <h2>Histogram</h2>
-                        <div class="histogram-container" id="histogram-container">
-                            <!-- Histogram bars will be generated by JavaScript -->
-                        </div>
-                        <div class="histogram-labels">
-                            <div class="histogram-label">Shadows</div>
-                            <div class="histogram-label">Midtones</div>
-                            <div class="histogram-label">Highlights</div>
-                        </div>
-                    </div>
-                </div>
+              <!-- Histogram -->
+              <div class="card">
+                  <div class="card-content">
+                      <h2>Histogram</h2>
+                      <div class="histogram-container" id="histogram-container">
+                          <!-- Histogram bars will be generated by JavaScript -->
+                      </div>
+                      <div class="histogram-labels">
+                          <div class="histogram-label">Shadows</div>
+                          <div class="histogram-label">Midtones</div>
+                          <div class="histogram-label">Highlights</div>
+                      </div>
+                  </div>
+              </div>
 
-                <!-- Exposure Tips -->
-                <div class="card">
-                    <div class="card-content">
-                        <h2>Exposure Tips</h2>
-                        
-                        <!-- Correct Exposure Tips -->
-                        <div id="exposure-tips-correct">
-                            <h3 class="tips-title text-green-600">Correct Exposure</h3>
-                            <p>Your exposure settings are well-balanced for this scene. The image should have good detail in both highlights and shadows.</p>
-                            <p>Feel free to adjust settings for creative purposes:</p>
-                            <ul>
-                                <li>Wider aperture (lower f-number) for shallow depth of field</li>
-                                <li>Slower shutter speed for motion blur effects</li>
-                                <li>Lower ISO for maximum image quality</li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Incorrect Exposure Tips -->
-                        <div id="exposure-tips-incorrect" class="hidden">
-                            <h3 id="exposure-tips-title" class="tips-title text-red-600">Underexposed by 2.0 stops</h3>
-                            <p id="exposure-tips-description">Your image is too dark. Consider these adjustments:</p>
-                            <ul id="exposure-tips-suggestions">
-                                <li>Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)</li>
-                                <li>Use slower shutter speed (lower number like 1/30 instead of 1/125)</li>
-                                <li>Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light</li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Bulb Mode Warning -->
-                        <div id="exposure-tips-bulb" class="hidden">
-                            <h3 class="tips-title text-amber-500 font-bold">Bulb Mode Required: Exposure time longer than 30 seconds</h3>
-                            <p class="text-amber-700 mb-2">Recommended exposure time: <span id="bulb-exposure-time" class="text-red-600 font-bold">68m 16s</span></p>
-                            <div class="text-amber-700">
-                                <strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. 
-                                Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>
-                                <strong>Consider these adjustments to avoid bulb mode:</strong><br>
-                                • Increase ISO (will introduce more noise)<br>
-                                • Use a wider aperture (lower f-number)<br>
-                                • Add additional lighting to the scene if possible
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <!-- Exposure Tips -->
+              <div class="card">
+                  <div class="card-content">
+                      <h2>Exposure Tips</h2>
+                      
+                      <!-- Correct Exposure Tips -->
+                      <div id="exposure-tips-correct">
+                          <h3 class="tips-title text-green-600">Correct Exposure</h3>
+                          <p>Your exposure settings are well-balanced for this scene. The image should have good detail in both highlights and shadows.</p>
+                          <p>Feel free to adjust settings for creative purposes:</p>
+                          <ul>
+                              <li>Wider aperture (lower f-number) for shallow depth of field</li>
+                              <li>Slower shutter speed for motion blur effects</li>
+                              <li>Lower ISO for maximum image quality</li>
+                          </ul>
+                      </div>
+                      
+                      <!-- Incorrect Exposure Tips -->
+                      <div id="exposure-tips-incorrect" class="hidden">
+                          <h3 id="exposure-tips-title" class="tips-title text-red-600">Underexposed by 2.0 stops</h3>
+                          <p id="exposure-tips-description">Your image is too dark. Consider these adjustments:</p>
+                          <ul id="exposure-tips-suggestions">
+                              <li>Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)</li>
+                              <li>Use slower shutter speed (lower number like 1/30 instead of 1/125)</li>
+                              <li>Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light</li>
+                          </ul>
+                      </div>
+                      
+                      <!-- Bulb Mode Warning -->
+                      <div id="exposure-tips-bulb" class="hidden">
+                          <h3 class="tips-title text-amber-500 font-bold">Bulb Mode Required: Exposure time longer than 30 seconds</h3>
+                          <p class="text-amber-700 mb-2">Recommended exposure time: <span id="bulb-exposure-time" class="text-red-600 font-bold">68m 16s</span></p>
+                          <div class="text-amber-700">
+                              <strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. 
+                              Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>
+                              <strong>Consider these adjustments to avoid bulb mode:</strong><br>
+                              • Increase ISO (will introduce more noise)<br>
+                              • Use a wider aperture (lower f-number)<br>
+                              • Add additional lighting to the scene if possible
+                          </div>
+                      </div>
+                  </div>
+              </div>
 
-                <!-- Exposure Triangle Guide Button -->
-                <div class="toggle-section">
-                    <button id="triangle-guide-toggle" class="toggle-button">
-                        <span class="toggle-icon">▶</span> Show Exposure Triangle Guide
-                    </button>
-                    <div id="triangle-guide-container" class="toggle-content hidden">
-                        <!-- Exposure Triangle Guide content will be added here -->
-                    </div>
-                </div>
+              <!-- Exposure Triangle Guide Button -->
+              <div class="toggle-section">
+                  <button id="triangle-guide-toggle" class="toggle-button">
+                      <span class="toggle-icon">▶</span> Show Exposure Triangle Guide
+                  </button>
+                  <div id="triangle-guide-container" class="toggle-content hidden">
+                      <!-- Exposure Triangle Guide content will be added here -->
+                  </div>
+              </div>
 
-                <!-- EV Reference Table Button -->
-                <div class="toggle-section">
-                    <button id="ev-table-toggle" class="toggle-button" onclick="toggleEvTable()">
-                        <span class="toggle-icon">▶</span> Show EV Reference Table
-                    </button>
-                    <div id="ev-table-container" class="toggle-content hidden">
-                        <h3>EV (Exposure Value) Reference Table</h3>
-                        <p>This table shows typical EV values for different lighting conditions and the corresponding exposure settings at ISO 100.</p>
-                        <table class="ev-table">
-                            <thead>
-                                <tr>
-                                    <th>Lighting Condition</th>
-                                    <th>EV</th>
-                                    <th>Typical Settings (ISO 100)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Night, away from city lights</td>
-                                    <td>-12</td>
-                                    <td>f/5.6, 68m 16s</td>
-                                </tr>
-                                <tr>
-                                    <td>Night, distant city lights</td>
-                                    <td>-8</td>
-                                    <td>f/5.6, 4m 16s</td>
-                                </tr>
-                                <tr>
-                                    <td>Night, bright city lights</td>
-                                    <td>-6</td>
-                                    <td>f/5.6, 1m 4s</td>
-                                </tr>
-                                <tr>
-                                    <td>Night, illuminated buildings</td>
-                                    <td>-4</td>
-                                    <td>f/5.6, 16s</td>
-                                </tr>
-                                <tr>
-                                    <td>Dawn/Dusk, dim surroundings</td>
-                                    <td>-3</td>
-                                    <td>f/5.6, 8s</td>
-                                </tr>
-                                <tr>
-                                    <td>Sunrise/Sunset</td>
-                                    <td>-1</td>
-                                    <td>f/5.6, 2s</td>
-                                </tr>
-                                <tr>
-                                    <td>Deep shade</td>
-                                    <td>1</td>
-                                    <td>f/5.6, 1/2s</td>
-                                </tr>
-                                <tr>
-                                    <td>Overcast day, heavy shade</td>
-                                    <td>3</td>
-                                    <td>f/5.6, 1/8s</td>
-                                </tr>
-                                <tr>
-                                    <td>Cloudy day, light shade</td>
-                                    <td>5</td>
-                                    <td>f/5.6, 1/30s</td>
-                                </tr>
-                                <tr>
-                                    <td>Cloudy bright</td>
-                                    <td>7</td>
-                                    <td>f/5.6, 1/125s</td>
-                                </tr>
-                                <tr>
-                                    <td>Hazy sun</td>
-                                    <td>9</td>
-                                    <td>f/5.6, 1/500s</td>
-                                </tr>
-                                <tr>
-                                    <td>Bright sun</td>
-                                    <td>12</td>
-                                    <td>f/5.6, 1/2000s</td>
-                                </tr>
-                                <tr>
-                                    <td>Bright sun on snow/water</td>
-                                    <td>14</td>
-                                    <td>f/5.6, 1/8000s</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+              <!-- EV Reference Table Button -->
+              <div class="toggle-section">
+                  <button id="ev-table-toggle" class="toggle-button" onclick="toggleEvTable()">
+                      <span class="toggle-icon">▶</span> Show EV Reference Table
+                  </button>
+                  <div id="ev-table-container" class="toggle-content hidden">
+                      <h3>EV (Exposure Value) Reference Table</h3>
+                      <p>This table shows typical EV values for different lighting conditions and the corresponding exposure settings at ISO 100.</p>
+                      <table class="ev-table">
+                          <thead>
+                              <tr>
+                                  <th>Lighting Condition</th>
+                                  <th>EV</th>
+                                  <th>Typical Settings (ISO 100)</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>Night, away from city lights</td>
+                                  <td>-12</td>
+                                  <td>f/5.6, 68m 16s</td>
+                              </tr>
+                              <tr>
+                                  <td>Night, distant city lights</td>
+                                  <td>-8</td>
+                                  <td>f/5.6, 4m 16s</td>
+                              </tr>
+                              <tr>
+                                  <td>Night, bright city lights</td>
+                                  <td>-6</td>
+                                  <td>f/5.6, 1m 4s</td>
+                              </tr>
+                              <tr>
+                                  <td>Night, illuminated buildings</td>
+                                  <td>-4</td>
+                                  <td>f/5.6, 16s</td>
+                              </tr>
+                              <tr>
+                                  <td>Dawn/Dusk, dim surroundings</td>
+                                  <td>-3</td>
+                                  <td>f/5.6, 8s</td>
+                              </tr>
+                              <tr>
+                                  <td>Sunrise/Sunset</td>
+                                  <td>-1</td>
+                                  <td>f/5.6, 2s</td>
+                              </tr>
+                              <tr>
+                                  <td>Deep shade</td>
+                                  <td>1</td>
+                                  <td>f/5.6, 1/2s</td>
+                              </tr>
+                              <tr>
+                                  <td>Overcast day, heavy shade</td>
+                                  <td>3</td>
+                                  <td>f/5.6, 1/8s</td>
+                              </tr>
+                              <tr>
+                                  <td>Cloudy day, light shade</td>
+                                  <td>5</td>
+                                  <td>f/5.6, 1/30s</td>
+                              </tr>
+                              <tr>
+                                  <td>Cloudy bright</td>
+                                  <td>7</td>
+                                  <td>f/5.6, 1/125s</td>
+                              </tr>
+                              <tr>
+                                  <td>Hazy sun</td>
+                                  <td>9</td>
+                                  <td>f/5.6, 1/500s</td>
+                              </tr>
+                              <tr>
+                                  <td>Bright sun</td>
+                                  <td>12</td>
+                                  <td>f/5.6, 1/2000s</td>
+                              </tr>
+                              <tr>
+                                  <td>Bright sun on snow/water</td>
+                                  <td>14</td>
+                                  <td>f/5.6, 1/8000s</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
 
-                <!-- Debug Information -->
-                <div id="debug-container" class="card hidden">
-                    <div class="card-content">
-                        <h2>Debug Information</h2>
-                        <div class="debug-grid">
-                            <div class="debug-section">
-                                <h3>Scene Information</h3>
-                                <ul>
-                                    <li><strong>Scene Type:</strong> <span id="debug-scene-type">landscape</span></li>
-                                    <li><strong>Time of Day:</strong> <span id="debug-time-of-day">midday</span></li>
-                                    <li><strong>Scene EV:</strong> <span id="debug-scene-ev">12</span></li>
-                                    <li><strong>Reference Exposure:</strong> <span id="debug-reference-exposure">1/2000s</span></li>
-                                </ul>
-                            </div>
-                            <div class="debug-section">
-                                <h3>Camera Settings</h3>
-                                <ul>
-                                    <li><strong>Exposure Mode:</strong> <span id="debug-exposure-mode">Aperture Priority</span></li>
-                                    <li>
-                                        <strong>ISO:</strong> <span id="debug-iso">100</span> <span id="debug-iso-auto">(Auto)</span>
-                                        <span id="debug-iso-status" class="debug-status">User Selected</span>
-                                        <span id="debug-iso-diff" class="debug-diff">+0.0 stops</span>
-                                    </li>
-                                    <li>
-                                        <strong>Aperture:</strong> f/<span id="debug-aperture">5.6</span>
-                                        <span id="debug-aperture-status" class="debug-status">User Selected</span>
-                                        <span id="debug-aperture-diff" class="debug-diff">+0.0 stops</span>
-                                    </li>
-                                    <li>
-                                        <strong>Shutter Speed:</strong> <span id="debug-shutter">1/2000s</span>
-                                        <span id="debug-shutter-status" class="debug-status">Auto Calculated</span>
-                                        <span id="debug-shutter-diff" class="debug-diff">+0.0 stops</span>
-                                    </li>
-                                    <li><strong>Required Exposure Time:</strong> <span id="debug-required-exposure">1/2000s</span></li>
-                                </ul>
-                            </div>
-                            <div class="debug-section">
-                                <h3>Exposure Calculations</h3>
-                                <ul>
-                                    <li><strong>Calculated EV:</strong> <span id="debug-calculated-ev">12.00</span></li>
-                                    <li>
-                                        <strong>Exposure Difference:</strong> <span id="debug-exposure-diff">0.00 stops</span>
-                                        <span id="debug-exposure-status">(Correct Exposure)</span>
-                                    </li>
-                                    <li>
-                                        <strong>Aperture Adjustment:</strong> <span id="debug-aperture-adjustment">+0.0 stops</span>
-                                        <span id="debug-aperture-priority" class="debug-priority">(Priority Setting)</span>
-                                    </li>
-                                    <li>
-                                        <strong>Shutter Adjustment:</strong> <span id="debug-shutter-adjustment">+0.0 stops</span>
-                                        <span id="debug-shutter-priority" class="debug-priority hidden">(Priority Setting)</span>
-                                    </li>
-                                    <li>
-                                        <strong>ISO Adjustment:</strong> <span id="debug-iso-adjustment">+0.0 stops</span>
-                                        <span id="debug-iso-auto-indicator" class="debug-auto hidden">(Auto ISO)</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+              <!-- Debug Information -->
+              <div id="debug-container" class="card hidden">
+                  <div class="card-content">
+                      <h2>Debug Information</h2>
+                      <div class="debug-grid">
+                          <div class="debug-section">
+                              <h3>Scene Information</h3>
+                              <ul>
+                                  <li><strong>Scene Type:</strong> <span id="debug-scene-type">landscape</span></li>
+                                  <li><strong>Time of Day:</strong> <span id="debug-time-of-day">midday</span></li>
+                                  <li><strong>Scene EV:</strong> <span id="debug-scene-ev">12</span></li>
+                                  <li><strong>Reference Exposure:</strong> <span id="debug-reference-exposure">1/2000s</span></li>
+                              </ul>
+                          </div>
+                          <div class="debug-section">
+                              <h3>Camera Settings</h3>
+                              <ul>
+                                  <li><strong>Exposure Mode:</strong> <span id="debug-exposure-mode">Aperture Priority</span></li>
+                                  <li>
+                                      <strong>ISO:</strong> <span id="debug-iso">100</span> <span id="debug-iso-auto">(Auto)</span>
+                                      <span id="debug-iso-status" class="debug-status">User Selected</span>
+                                      <span id="debug-iso-diff" class="debug-diff">+0.0 stops</span>
+                                  </li>
+                                  <li>
+                                      <strong>Aperture:</strong> f/<span id="debug-aperture">5.6</span>
+                                      <span id="debug-aperture-status" class="debug-status">User Selected</span>
+                                      <span id="debug-aperture-diff" class="debug-diff">+0.0 stops</span>
+                                  </li>
+                                  <li>
+                                      <strong>Shutter Speed:</strong> <span id="debug-shutter">1/2000s</span>
+                                      <span id="debug-shutter-status" class="debug-status">Auto Calculated</span>
+                                      <span id="debug-shutter-diff" class="debug-diff">+0.0 stops</span>
+                                  </li>
+                                  <li><strong>Required Exposure Time:</strong> <span id="debug-required-exposure">1/2000s</span></li>
+                              </ul>
+                          </div>
+                          <div class="debug-section">
+                              <h3>Exposure Calculations</h3>
+                              <ul>
+                                  <li><strong>Calculated EV:</strong> <span id="debug-calculated-ev">12.00</span></li>
+                                  <li>
+                                      <strong>Exposure Difference:</strong> <span id="debug-exposure-diff">0.00 stops</span>
+                                      <span id="debug-exposure-status">(Correct Exposure)</span>
+                                  </li>
+                                  <li>
+                                      <strong>Aperture Adjustment:</strong> <span id="debug-aperture-adjustment">+0.0 stops</span>
+                                      <span id="debug-aperture-priority" class="debug-priority">(Priority Setting)</span>
+                                  </li>
+                                  <li>
+                                      <strong>Shutter Adjustment:</strong> <span id="debug-shutter-adjustment">+0.0 stops</span>
+                                      <span id="debug-shutter-priority" class="debug-priority hidden">(Priority Setting)</span>
+                                  </li>
+                                  <li>
+                                      <strong>ISO Adjustment:</strong> <span id="debug-iso-adjustment">+0.0 stops</span>
+                                      <span id="debug-iso-auto-indicator" class="debug-auto hidden">(Auto ISO)</span>
+                                  </li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </main>
 
-    <footer>
-        <div class="footer-content">
-            <p>&copy; <span id="current-year">2023</span> Photography Exposure Calculator</p>
-            <button id="debug-toggle-footer" class="debug-toggle">Show Debug Info</button>
-        </div>
-    </footer>
+  <footer>
+      <div class="footer-content">
+          <p>&copy; <span id="current-year">2023</span> Photography Exposure Calculator</p>
+          <button id="debug-toggle-footer" class="debug-toggle">Show Debug Info</button>
+      </div>
+  </footer>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
 
