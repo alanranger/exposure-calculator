@@ -234,13 +234,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const calculatedEv = calculateActualEv(aperture, shutter, iso)
     const evDifference = ev - calculatedEv
 
+    // Get setting status based on exposure mode
+    const getSettingStatus = (setting) => {
+      if (exposureMode === "aperture") {
+        if (setting === "aperture" || (setting === "iso" && !autoIso)) return "User Selected"
+        if (setting === "shutter") return "Auto Calculated"
+        if (setting === "iso" && autoIso) return "Auto ISO"
+      } else if (exposureMode === "shutter") {
+        if (setting === "shutter" || (setting === "iso" && !autoIso)) return "User Selected"
+        if (setting === "aperture") return "Auto Calculated"
+        if (setting === "iso" && autoIso) return "Auto ISO"
+      } else {
+        // manual
+        if (setting === "iso" && autoIso) return "Auto ISO"
+        return "User Selected"
+      }
+      return ""
+    }
+
     console.log("Exposure Calculation Debug:", {
       sceneType,
       timeOfDay,
       sceneEv: ev,
-      aperture,
-      shutter,
-      iso,
+      exposureMode,
+      aperture: {
+        value: aperture,
+        status: getSettingStatus("aperture"),
+        evDiff: apertureEvDiff,
+        userChanged: userChangedAperture,
+      },
+      shutter: {
+        value: shutter,
+        formatted: formatShutterSpeed(shutter),
+        status: getSettingStatus("shutter"),
+        evDiff: shutterEvDiff,
+        userChanged: userChangedShutter,
+      },
+      iso: {
+        value: iso,
+        status: getSettingStatus("iso"),
+        evDiff: -isoEvDiff, // Invert for display
+        userChanged: userChangedIso,
+        auto: autoIso,
+      },
       calculatedEv,
       evDifference,
       exposureCorrect: Math.abs(evDifference) < 0.5,
