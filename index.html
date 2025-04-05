@@ -11,24 +11,24 @@
   <div class="container">
       <header>
           <div class="header-content">
-            <div class="logo-title">
-                <div class="header-with-logo">
-                    <div class="logo-container">
-                        <img src="https://alanranger.github.io/exposure-calculator/ALAN%20RANGER%20ICON%20WHITE%20on%20Black%20Circle.png" alt="Alan Ranger Photography" class="header-logo">
-                    </div>
-                    <div>
-                        <h1>Outdoor Photography Exposure Calculator</h1>
-                        <p>Visualise and calculate exposure settings for your outdoor photography.</p>
-                        <p class="small-text">For educational purposes only - real life light and situations may vary</p>
-                    </div>
-                </div>
-            </div>
-            <div class="version">
-                <div class="version-number">Version 1.1s</div>
-                <div class="version-date">April 3, 2025</div>
-            </div>
+      <div class="logo-title">
+          <div class="header-with-logo">
+              <div class="logo-container">
+                  <img src="https://alanranger.github.io/exposure-calculator/ALAN%20RANGER%20ICON%20WHITE%20on%20Black%20Circle.png" alt="Alan Ranger Photography" class="header-logo">
+              </div>
+              <div class="title-text">
+                  <h1>Outdoor Photography Exposure Calculator</h1>
+                  <p>Visualise and calculate exposure settings for your outdoor photography.</p>
+                  <p class="small-text">For educational purposes only - real life light and situations may vary</p>
+              </div>
           </div>
-      </header>
+      </div>
+      <div class="version">
+          <div class="version-number">Version 1.1s</div>
+          <div class="version-date">April 3, 2025</div>
+      </div>
+    </div>
+</header>
 
       <main class="grid-container">
         <div class="left-column">
@@ -463,25 +463,33 @@
     // Initialize with aperture priority class
     document.body.classList.add("exposure-mode-aperture");
     
-    // Toggle EV table
-    document.addEventListener('DOMContentLoaded', function() {
-      var evTableToggle = document.getElementById('ev-table-toggle');
-      var evTableContainer = document.getElementById('ev-table-container');
-      
-      if (evTableToggle && evTableContainer) {
-        evTableToggle.addEventListener('click', function() {
-          evTableContainer.classList.toggle('hidden');
-          
-          if (evTableContainer.classList.contains('hidden')) {
-            this.innerHTML = '<i class="fas fa-chevron-down toggle-icon"></i> Show EV Reference Table';
-          } else {
-            this.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
-          }
-        });
+    // Direct EV table toggle implementation
+window.addEventListener('load', function() {
+  console.log("Setting up EV table toggle");
+  var evTableToggle = document.getElementById('ev-table-toggle');
+  var evTableContainer = document.getElementById('ev-table-container');
+  
+  if (evTableToggle && evTableContainer) {
+    console.log("EV table elements found, adding click handler");
+    evTableToggle.onclick = function() {
+      console.log("EV table toggle clicked");
+      if (evTableContainer.classList.contains('hidden')) {
+        evTableContainer.classList.remove('hidden');
+        evTableToggle.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
+        console.log("EV table shown");
       } else {
-        console.error('EV table toggle or container not found');
+        evTableContainer.classList.add('hidden');
+        evTableToggle.innerHTML = '<i class="fas fa-chevron-down toggle-icon"></i> Show EV Reference Table';
+        console.log("EV table hidden");
       }
+    };
+  } else {
+    console.error('EV table toggle or container not found', {
+      toggle: evTableToggle,
+      container: evTableContainer
     });
+  }
+});
   </script>
 </body>
 </html>
