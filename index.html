@@ -30,7 +30,7 @@
                       <div class="form-group">
                           <label for="scene-type">Scene Type</label>
                           <select id="scene-type">
-                              <option value="landscape">Landscape</option>
+                              <option value="landscape" selected>Landscape</option>
                               <option value="cityscape">Cityscape</option>
                               <option value="forest">Forest</option>
                               <option value="portrait">Portrait</option>
@@ -398,6 +398,35 @@
         // Force initialization if needed
         if (typeof window.initialize === 'function') {
           window.initialize();
+        }
+
+        // Ensure Auto ISO is off by default
+        var autoIsoCheckbox = document.getElementById('auto-iso');
+        if (autoIsoCheckbox) {
+          autoIsoCheckbox.checked = false;
+        }
+
+        // Fix any Auto ISO calculation issues
+        if (typeof window.calculateRequiredIsoForAutoIso === 'function') {
+          var originalCalculation = window.calculateRequiredIsoForAutoIso;
+          window.calculateRequiredIsoForAutoIso = function(apertureValue, evValue) {
+            var result = originalCalculation(apertureValue, evValue);
+            // Ensure we're not always returning max ISO
+            console.log("Auto ISO calculation result:", result);
+            if (result === 102400) {
+              // Log the inputs to diagnose the issue
+              console.log("Auto ISO calculation with high result:", {apertureValue, evValue});
+              
+              // Try a more conservative calculation
+              var shutterWithReferenceIso = window.calculateRequiredShutterSpeed(apertureValue, evValue, 100);
+              var stopsNeeded = Math.log2(shutterWithReferenceIso / (1/60));
+              var recalculatedIso = 100 * Math.pow(2, stopsNeeded);
+              recalculatedIso = Math.min(recalculatedIso, 102400);
+              console.log("Recalculated ISO:", recalculatedIso);
+              return recalculatedIso;
+            }
+            return result;
+          };
         }
       }, 3000);
     });

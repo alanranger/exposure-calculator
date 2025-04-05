@@ -505,109 +505,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return REFERENCE_ISO
   }
 
-  // Update ISO in auto ISO mode for aperture priority
-  function updateAutoIso(apertureValue, evValue) {
-    // Calculate the required ISO for auto ISO mode
-    const requiredIso = calculateRequiredIsoForAutoIso(apertureValue, evValue)
-    console.log("Auto ISO calculation:", { apertureValue, evValue, requiredIso })
-
-    // Find the closest standard ISO value
-    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
-
-    // Update the ISO index
-    isoIndex = closestIsoIndex
-    userChangedIso = true
-
-    // Calculate the shutter speed with this ISO
-    const requiredShutter = calculateRequiredShutterSpeed(apertureValue, evValue, standardIsoValues[closestIsoIndex])
-
-    // Find the closest standard shutter speed
-    const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
-
-    // Update the shutter speed index
-    shutterSpeedIndex = closestShutterIndex
-    userChangedShutter = true
-
-    // Check if we need bulb mode
-    if (requiredShutter > 30) {
-      // Format the time for bulb mode
-      let bulbTime = ""
-      if (requiredShutter > 60) {
-        const minutes = Math.floor(requiredShutter / 60)
-        const seconds = Math.round(requiredShutter % 60)
-        bulbTime = `${minutes}m ${seconds}s`
-      } else {
-        bulbTime = `${Math.round(requiredShutter)}s`
-      }
-
-      // Update bulb mode UI
-      if (exposureTipsBulb && bulbExposureTimeSpan) {
-        exposureTipsCorrect.classList.add("hidden")
-        exposureTipsIncorrect.classList.add("hidden")
-        exposureTipsBulb.classList.remove("hidden")
-        bulbExposureTimeSpan.textContent = bulbTime
-        bulbExposureTimeSpan.className = "text-red-600 font-bold"
-
-        // Set the bulb warning title and suggestions
-        if (exposureTipsTitle) {
-          exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
-          exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
-        }
-        if (exposureTipsDescription) {
-          exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
-          exposureTipsDescription.className = "text-amber-700 mb-2"
-        }
-        if (exposureTipsSuggestions) {
-          exposureTipsSuggestions.innerHTML =
-            "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
-            "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
-            "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
-            "• Increase ISO (will introduce more noise)<br>" +
-            "• Use a wider aperture (lower f-number)<br>" +
-            "• Add additional lighting to the scene if possible"
-          exposureTipsSuggestions.className = "text-amber-700"
-        }
-      }
-    } else {
-      // Hide bulb mode UI
-      if (exposureTipsBulb) {
-        exposureTipsBulb.classList.add("hidden")
-        exposureTipsCorrect.classList.remove("hidden")
-      }
-    }
-
-    // Update displays
-    updateIsoDisplay()
-    updateShutterDisplay()
-  }
-
-  function updateShutterPriorityWithAutoIso(shutterValue, evValue) {
-    // Calculate the required ISO for auto ISO mode
-    const requiredIso = calculateRequiredIsoForShutterPriority(shutterValue, evValue)
-    console.log("Auto ISO calculation:", { shutterValue, evValue, requiredIso })
-
-    // Find the closest standard ISO value
-    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
-
-    // Update the ISO index
-    isoIndex = closestIsoIndex
-    userChangedIso = true
-
-    // Calculate the aperture with this ISO
-    const requiredAperture = calculateRequiredAperture(shutterValue, evValue, standardIsoValues[closestIsoIndex])
-
-    // Find the closest standard aperture
-    const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
-
-    // Update the aperture index
-    apertureIndex = closestApertureIndex
-    userChangedAperture = true
-
-    // Update displays
-    updateIsoDisplay()
-    updateApertureDisplay()
-  }
-
   // Update ISO in manual mode with Auto ISO
   function updateManualWithAutoIso(apertureValue, shutterValue, evValue) {
     // Calculate the required ISO for manual mode with auto ISO
@@ -1158,11 +1055,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Set initial values for scene type and time of day
     if (sceneTypeSelect) {
-      sceneType = sceneTypeSelect.value
+      sceneType = sceneTypeSelect.value || "landscape"
     }
 
     if (timeOfDaySelect) {
-      timeOfDay = timeOfDaySelect.value
+      timeOfDay = timeOfDaySelect.value || "midday"
+    }
+
+    // Initialize auto ISO to false
+    autoIso = false
+    if (autoIsoCheckbox) {
+      autoIsoCheckbox.checked = false
     }
 
     // Calculate initial EV based on time of day
@@ -1888,6 +1791,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the application
   initialize()
+
+  function updateAutoIso(aperture, ev) {
+    const requiredIso = calculateRequiredIsoForAutoIso(aperture, ev)
+    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
+    isoIndex = closestIsoIndex
+    updateIsoDisplay()
+  }
+
+  function updateShutterPriorityWithAutoIso(shutter, ev) {
+    const requiredIso = calculateRequiredIsoForShutterPriority(shutter, ev)
+    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
+    isoIndex = closestIsoIndex
+    updateIsoDisplay()
+  }
 })
 
 // Add a fallback initialization to ensure everything loads
