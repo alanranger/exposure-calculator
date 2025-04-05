@@ -60,6 +60,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  width: 100%;
 }
 
 .time-selector label {
@@ -203,6 +204,10 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.logo-title {
+  padding: 0 10px;
 }
 
 .logo-title h1 {
