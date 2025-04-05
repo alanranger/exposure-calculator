@@ -505,6 +505,113 @@ document.addEventListener("DOMContentLoaded", () => {
     return REFERENCE_ISO
   }
 
+  // Update ISO in auto ISO mode for aperture priority
+  function updateAutoIso(apertureValue, evValue) {
+    // Calculate the required ISO for auto ISO mode
+    const requiredIso = calculateRequiredIsoForAutoIso(apertureValue, evValue)
+    console.log("Auto ISO calculation:", { apertureValue, evValue, requiredIso })
+
+    // Find the closest standard ISO value
+    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
+
+    // Update the ISO index
+    isoIndex = closestIsoIndex
+    userChangedIso = true
+
+    // Update ISO display
+    updateIsoDisplay()
+
+    // Calculate the shutter speed with this ISO
+    const requiredShutter = calculateRequiredShutterSpeed(apertureValue, evValue, standardIsoValues[closestIsoIndex])
+
+    // Find the closest standard shutter speed
+    const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
+
+    // Update the shutter speed index
+    shutterSpeedIndex = closestShutterIndex
+    userChangedShutter = true
+
+    // Update shutter display
+    updateShutterDisplay()
+
+    // Check if we need bulb mode
+    if (requiredShutter > 30) {
+      // Format the time for bulb mode
+      let bulbTime = ""
+      if (requiredShutter > 60) {
+        const minutes = Math.floor(requiredShutter / 60)
+        const seconds = Math.round(requiredShutter % 60)
+        bulbTime = `${minutes}m ${seconds}s`
+      } else {
+        bulbTime = `${Math.round(requiredShutter)}s`
+      }
+
+      // Update bulb mode UI
+      if (exposureTipsBulb && bulbExposureTimeSpan) {
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+        exposureTipsBulb.classList.remove("hidden")
+        bulbExposureTimeSpan.textContent = bulbTime
+        bulbExposureTimeSpan.className = "text-red-600 font-bold"
+
+        // Set the bulb warning title and suggestions
+        if (exposureTipsTitle) {
+          exposureTipsTitle.textContent = "Bulb Mode Required: Exposure time longer than 30 seconds"
+          exposureTipsTitle.className = "tips-title text-amber-500 font-bold"
+        }
+        if (exposureTipsDescription) {
+          exposureTipsDescription.textContent = `Recommended exposure time: ${bulbTime}`
+          exposureTipsDescription.className = "text-amber-700 mb-2"
+        }
+        if (exposureTipsSuggestions) {
+          exposureTipsSuggestions.innerHTML =
+            "<strong>Important:</strong> A sturdy tripod is essential for bulb mode exposures to prevent camera shake. " +
+            "Use a remote shutter release or timer to avoid touching the camera during exposure.<br><br>" +
+            "<strong>Consider these adjustments to avoid bulb mode:</strong><br>" +
+            "• Increase ISO (will introduce more noise)<br>" +
+            "• Use a wider aperture (lower f-number)<br>" +
+            "• Add additional lighting to the scene if possible"
+          exposureTipsSuggestions.className = "text-amber-700"
+        }
+      }
+    } else {
+      // Hide bulb mode UI if no longer needed
+      if (exposureTipsBulb) {
+        exposureTipsBulb.classList.add("hidden")
+        exposureTipsCorrect.classList.remove("hidden")
+      }
+    }
+  }
+
+  function updateShutterPriorityWithAutoIso(shutterValue, evValue) {
+    // Calculate the required ISO for auto ISO mode
+    const requiredIso = calculateRequiredIsoForShutterPriority(shutterValue, evValue)
+    console.log("Auto ISO calculation for shutter priority:", { shutterValue, evValue, requiredIso })
+
+    // Find the closest standard ISO value
+    const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
+
+    // Update the ISO index
+    isoIndex = closestIsoIndex
+    userChangedIso = true
+
+    // Update ISO display
+    updateIsoDisplay()
+
+    // Calculate the aperture with this ISO
+    const requiredAperture = calculateRequiredAperture(shutterValue, evValue, standardIsoValues[closestIsoIndex])
+
+    // Find the closest standard aperture
+    const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
+
+    // Update the aperture index
+    apertureIndex = closestApertureIndex
+    userChangedAperture = true
+
+    // Update aperture display
+    updateApertureDisplay()
+  }
+
   // Update ISO in manual mode with Auto ISO
   function updateManualWithAutoIso(apertureValue, shutterValue, evValue) {
     // Calculate the required ISO for manual mode with auto ISO
@@ -1211,8 +1318,11 @@ document.addEventListener("DOMContentLoaded", () => {
       Math.abs(totalEvAdjustment) < 0.1
         ? "Correct exposure"
         : totalEvAdjustment > 0
-          ? "Overexposed: Image will be brighter than ideal"
-          : "Underexposed: Image will be darker than ideal"
+          ? '  < 0.1\
+        ? "Correct exposure'
+          : totalEvAdjustment > 0
+            ? "Overexposed: Image will be brighter than ideal"
+            : "Underexposed: Image will be darker than ideal"
   }
 
   // Add this function to update the EV indicators
@@ -1519,6 +1629,20 @@ document.addEventListener("DOMContentLoaded", () => {
       initializeSettingsForTimeOfDay(timeOfDay)
       updateSceneImage()
       updateExposureMeter()
+
+      // If Auto ISO is enabled, recalculate ISO based on new EV
+      if (autoIso) {
+        const aperture = standardApertures[apertureIndex]
+        const shutter = standardShutterSpeeds[shutterSpeedIndex]
+
+        if (exposureMode === "aperture") {
+          updateAutoIso(aperture, ev)
+        } else if (exposureMode === "shutter") {
+          updateShutterPriorityWithAutoIso(shutter, ev)
+        } else if (exposureMode === "manual") {
+          updateManualWithAutoIso(aperture, shutter, ev)
+        }
+      }
     })
   }
 
@@ -1531,12 +1655,19 @@ document.addEventListener("DOMContentLoaded", () => {
       // In aperture priority mode, adjust shutter speed
       if (exposureMode === "aperture") {
         const aperture = standardApertures[apertureIndex]
-        const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
-        const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
-        shutterSpeedIndex = closestShutterIndex
-        updateShutterDisplay()
+
+        // If Auto ISO is enabled, recalculate ISO based on new aperture
+        if (autoIso) {
+          updateAutoIso(aperture, ev)
+        } else {
+          const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
+          const closestShutterIndex = findClosestIndex(standardShutterSpeeds, requiredShutter)
+          shutterSpeedIndex = closestShutterIndex
+          updateShutterDisplay()
+        }
 
         // Check if we need to show bulb mode warning
+        const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, standardIsoValues[isoIndex])
         if (requiredShutter > 30 && !autoIso) {
           // Format the time for bulb mode
           let bulbTime = ""
@@ -1581,6 +1712,11 @@ document.addEventListener("DOMContentLoaded", () => {
           exposureTipsBulb.classList.add("hidden")
           exposureTipsCorrect.classList.remove("hidden")
         }
+      } else if (exposureMode === "manual" && autoIso) {
+        // In manual mode with Auto ISO, adjust ISO
+        const aperture = standardApertures[apertureIndex]
+        const shutter = standardShutterSpeeds[shutterSpeedIndex]
+        updateManualWithAutoIso(aperture, shutter, ev)
       }
 
       updateExposureMeter()
@@ -1605,10 +1741,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // In shutter priority mode, adjust aperture
       if (exposureMode === "shutter") {
         const shutter = standardShutterSpeeds[shutterSpeedIndex]
-        const requiredAperture = calculateRequiredAperture(shutter, ev, standardIsoValues[isoIndex])
-        const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
-        apertureIndex = closestApertureIndex
-        updateApertureDisplay()
+
+        // If Auto ISO is enabled, recalculate ISO based on new shutter speed
+        if (autoIso) {
+          updateShutterPriorityWithAutoIso(shutter, ev)
+        } else {
+          const requiredAperture = calculateRequiredAperture(shutter, ev, standardIsoValues[isoIndex])
+          const closestApertureIndex = findClosestIndex(standardApertures, requiredAperture)
+          apertureIndex = closestApertureIndex
+          updateApertureDisplay()
+        }
+      } else if (exposureMode === "manual" && autoIso) {
+        // In manual mode with Auto ISO, adjust ISO
+        const aperture = standardApertures[apertureIndex]
+        const shutter = standardShutterSpeeds[shutterSpeedIndex]
+        updateManualWithAutoIso(aperture, shutter, ev)
       }
 
       // Update exposure meter and other displays
@@ -1725,9 +1872,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const shutter = standardShutterSpeeds[shutterSpeedIndex]
 
         if (exposureMode === "aperture") {
-          updateAutoIso(aperture, ev)
+          updateAutoIsoAperturePriority(aperture, ev)
         } else if (exposureMode === "shutter") {
-          updateShutterPriorityWithAutoIso(shutter, ev)
+          updateAutoIsoShutterPriority(shutter, ev)
         } else if (exposureMode === "manual") {
           updateManualWithAutoIso(aperture, shutter, ev)
         }
@@ -1792,14 +1939,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize the application
   initialize()
 
-  function updateAutoIso(aperture, ev) {
+  function updateAutoIsoAperturePriority(aperture, ev) {
     const requiredIso = calculateRequiredIsoForAutoIso(aperture, ev)
     const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
     isoIndex = closestIsoIndex
     updateIsoDisplay()
   }
 
-  function updateShutterPriorityWithAutoIso(shutter, ev) {
+  function updateAutoIsoShutterPriority(shutter, ev) {
     const requiredIso = calculateRequiredIsoForShutterPriority(shutter, ev)
     const closestIsoIndex = findClosestIndex(standardIsoValues, requiredIso)
     isoIndex = closestIsoIndex
