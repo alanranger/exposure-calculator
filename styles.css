@@ -1080,3 +1080,101 @@ footer {
   background-color: #f9fafb;
 }
 
+/* Add these styles to the end of your existing CSS file */
+
+/* Debug Information Styles */
+.debug-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.debug-section {
+  margin-bottom: 1.5rem;
+}
+
+.debug-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.debug-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.debug-section li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.debug-status {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.debug-diff {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #2563eb;
+}
+
+.debug-priority {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #16a34a;
+}
+
+.debug-auto {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #ea580c;
+}
+
+/* Center the title text */
+.title-container {
+  text-align: center;
+}
+
+/* Ensure the logo displays correctly */
+.logo {
+  height: 60px;
+  margin-right: 20px;
+}
+
+/* Make sure the EV table toggle works */
+.toggle-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.toggle-button:hover {
+  color: #1d4ed8;
+}
+
+.toggle-icon {
+  margin-right: 0.5rem;
+}
+
+.toggle-content {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.toggle-content.hidden {
+  display: none;
+}
+
