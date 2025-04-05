@@ -14,7 +14,7 @@
             <div class="logo-title">
                 <div class="header-with-logo">
                     <div class="logo-container">
-                        <img src="logo.png" alt="Alan Ranger Photography" class="header-logo">
+                        <img src="https://alanranger.github.io/exposure-calculator/ALAN%20RANGER%20ICON%20WHITE%20on%20Black%20Circle.png" alt="Alan Ranger Photography" class="header-logo">
                     </div>
                     <div>
                         <h1>Outdoor Photography Exposure Calculator</h1>
@@ -466,14 +466,12 @@
     // Toggle EV table
     document.getElementById('ev-table-toggle').addEventListener('click', function() {
       var evTableContainer = document.getElementById('ev-table-container');
-      var isHidden = evTableContainer.classList.contains('hidden');
-      
       evTableContainer.classList.toggle('hidden');
       
-      if (isHidden) {
-        this.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
-      } else {
+      if (evTableContainer.classList.contains('hidden')) {
         this.innerHTML = '<i class="fas fa-chevron-down toggle-icon"></i> Show EV Reference Table';
+      } else {
+        this.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
       }
     });
   </script>
