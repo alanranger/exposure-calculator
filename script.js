@@ -234,107 +234,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const calculatedEv = calculateActualEv(aperture, shutter, iso)
     const evDifference = ev - calculatedEv
 
-    // Get setting status based on exposure mode
-    const getSettingStatus = (setting) => {
-      if (exposureMode === "aperture") {
-        if (setting === "aperture" || (setting === "iso" && !autoIso)) return "User Selected"
-        if (setting === "shutter") return "Auto Calculated"
-        if (setting === "iso" && autoIso) return "Auto ISO"
-      } else if (exposureMode === "shutter") {
-        if (setting === "shutter" || (setting === "iso" && !autoIso)) return "User Selected"
-        if (setting === "aperture") return "Auto Calculated"
-        if (setting === "iso" && autoIso) return "Auto ISO"
-      } else {
-        // manual
-        if (setting === "iso" && autoIso) return "Auto ISO"
-        return "User Selected"
-      }
-      return ""
-    }
-
-    // Update debug display elements
-    if (document.getElementById("debug-scene-type")) {
-      document.getElementById("debug-scene-type").textContent = sceneType
-    }
-    if (document.getElementById("debug-time-of-day")) {
-      document.getElementById("debug-time-of-day").textContent = timeOfDay
-    }
-    if (document.getElementById("debug-scene-ev")) {
-      document.getElementById("debug-scene-ev").textContent = ev
-    }
-    if (document.getElementById("debug-reference-exposure")) {
-      document.getElementById("debug-reference-exposure").textContent = "1/2000s"
-    }
-
-    if (document.getElementById("debug-exposure-mode")) {
-      document.getElementById("debug-exposure-mode").textContent =
-        exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1) + " Priority"
-    }
-
-    if (document.getElementById("debug-iso")) {
-      document.getElementById("debug-iso").textContent = iso
-    }
-    if (document.getElementById("debug-auto-iso")) {
-      document.getElementById("debug-auto-iso").style.display = autoIso ? "inline" : "none"
-    }
-
-    if (document.getElementById("debug-aperture")) {
-      document.getElementById("debug-aperture").textContent = aperture
-    }
-
-    if (document.getElementById("debug-shutter-speed")) {
-      document.getElementById("debug-shutter-speed").textContent = formatShutterSpeed(shutter)
-    }
-
-    if (document.getElementById("debug-required-exposure")) {
-      const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
-      document.getElementById("debug-required-exposure").textContent = formatShutterSpeed(requiredShutter)
-    }
-
-    if (document.getElementById("debug-calculated-ev")) {
-      document.getElementById("debug-calculated-ev").textContent = calculatedEv.toFixed(2)
-    }
-
-    if (document.getElementById("debug-exposure-difference")) {
-      document.getElementById("debug-exposure-difference").textContent = evDifference.toFixed(2)
-    }
-
     console.log("Exposure Calculation Debug:", {
       sceneType,
       timeOfDay,
       sceneEv: ev,
-      exposureMode,
-      aperture: {
-        value: aperture,
-        status: getSettingStatus("aperture"),
-        evDiff: apertureEvDiff,
-        userChanged: userChangedAperture,
-      },
-      shutter: {
-        value: shutter,
-        formatted: formatShutterSpeed(shutter),
-        status: getSettingStatus("shutter"),
-        evDiff: shutterEvDiff,
-        userChanged: userChangedShutter,
-      },
-      iso: {
-        value: iso,
-        status: getSettingStatus("iso"),
-        evDiff: -isoEvDiff, // Invert for display
-        userChanged: userChangedIso,
-        auto: autoIso,
-      },
+      aperture,
+      shutter,
+      iso,
       calculatedEv,
       evDifference,
       exposureCorrect: Math.abs(evDifference) < 0.5,
       exposureStatus: evDifference < 0 ? "Underexposed" : evDifference > 0 ? "Overexposed" : "Correct",
     })
-  }
-
-  // Add this function to update the debug display whenever settings change
-  function updateDebugDisplay() {
-    if (!debugMode) return
-    debugExposureCalculation()
   }
 
   // Check critical elements
@@ -680,9 +591,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
-
-    // Update debug display
-    updateDebugDisplay()
   }
 
   // Update shutter display
@@ -703,9 +611,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
-
-    // Update debug display
-    updateDebugDisplay()
   }
 
   // Update ISO display
@@ -724,9 +629,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
-
-    // Update debug display
-    updateDebugDisplay()
   }
 
   // Update Auto ISO info
@@ -1584,9 +1486,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Call debug function
     debugExposureCalculation()
-
-    // Update debug display
-    updateDebugDisplay()
   }
 
   // Update all displays
@@ -1597,7 +1496,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateEvDifferences() // This will call updateEvIndicators and updateExposureSliderVisualization
     updateExposureMeter()
     updateHistogram()
-    updateDebugDisplay() // Add this line
 
     // Update visualizations based on current preview mode
     if (previewMode === "dof") {
@@ -2008,11 +1906,6 @@ document.addEventListener("DOMContentLoaded", () => {
         debugContainer.classList.toggle("hidden", !debugMode)
       }
       this.textContent = debugMode ? "Hide Debug Info" : "Show Debug Info"
-
-      // Update debug display when toggling debug mode
-      if (debugMode) {
-        updateDebugDisplay()
-      }
     })
   }
 
@@ -2092,131 +1985,5 @@ document.addEventListener("DOMContentLoaded", () => {
     apertureIndex = closestApertureIndex
     updateApertureDisplay()
   }
-
-  // Add this function to update the debug display
-  function updateDebugDisplay() {
-    if (!debugMode) return
-
-    const aperture = standardApertures[apertureIndex]
-    const shutter = standardShutterSpeeds[shutterSpeedIndex]
-    const iso = standardIsoValues[isoIndex]
-    const calculatedEv = calculateActualEv(aperture, shutter, iso)
-    const evDifference = ev - calculatedEv
-
-    // Format EV differences for display
-    const formatEvDiff = (diff) => {
-      return `${diff > 0 ? "+" : diff < 0 ? "-" : ""}${Math.abs(diff).toFixed(1)}`
-    }
-
-    // Determine which settings are user-selected vs auto-calculated
-    const getSettingStatus = (setting) => {
-      if (exposureMode === "aperture") {
-        if (setting === "aperture" || (setting === "iso" && !autoIso)) return "User Selected"
-        if (setting === "shutter") return "Auto Calculated"
-        if (setting === "iso" && autoIso) return "Auto ISO"
-      } else if (exposureMode === "shutter") {
-        if (setting === "shutter" || (setting === "iso" && !autoIso)) return "User Selected"
-        if (setting === "aperture") return "Auto Calculated"
-        if (setting === "iso" && autoIso) return "Auto ISO"
-      } else {
-        // manual
-        if (setting === "iso" && autoIso) return "Auto ISO"
-        return "User Selected"
-      }
-      return ""
-    }
-
-    // Update scene information
-    document.getElementById("debug-scene-type").textContent = sceneType
-    document.getElementById("debug-time-of-day").textContent = timeOfDay
-    document.getElementById("debug-scene-ev").textContent = ev
-    document.getElementById("debug-reference-exposure").textContent = "1/2000s"
-
-    // Update camera settings
-    document.getElementById("debug-exposure-mode").textContent =
-      exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1) + " Priority"
-
-    document.getElementById("debug-iso").textContent = iso
-    document.getElementById("debug-iso-auto").textContent = autoIso ? "(Auto)" : ""
-    document.getElementById("debug-iso-auto").style.display = autoIso ? "inline" : "none"
-    document.getElementById("debug-iso-status").textContent = getSettingStatus("iso")
-    document.getElementById("debug-iso-diff").textContent = userChangedIso ? `${formatEvDiff(-isoEvDiff)} stops` : ""
-    document.getElementById("debug-iso-diff").style.display = userChangedIso ? "inline" : "none"
-
-    document.getElementById("debug-aperture").textContent = aperture
-    document.getElementById("debug-aperture-status").textContent = getSettingStatus("aperture")
-    document.getElementById("debug-aperture-diff").textContent = userChangedAperture
-      ? `${formatEvDiff(apertureEvDiff)} stops`
-      : ""
-    document.getElementById("debug-aperture-diff").style.display = userChangedAperture ? "inline" : "none"
-
-    document.getElementById("debug-shutter").textContent = formatShutterSpeed(shutter)
-    document.getElementById("debug-shutter-status").textContent = getSettingStatus("shutter")
-    document.getElementById("debug-shutter-diff").textContent = userChangedShutter
-      ? `${formatEvDiff(shutterEvDiff)} stops`
-      : ""
-    document.getElementById("debug-shutter-diff").style.display = userChangedShutter ? "inline" : "none"
-
-    // Update required exposure time
-    const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
-    document.getElementById("debug-required-exposure").textContent = formatShutterSpeed(requiredShutter)
-
-    // Update exposure calculations
-    document.getElementById("debug-calculated-ev").textContent = calculatedEv.toFixed(2)
-    document.getElementById("debug-exposure-diff").textContent = `${evDifference.toFixed(2)} stops`
-
-    const exposureStatus =
-      Math.abs(evDifference) < 0.5 ? "(Correct Exposure)" : evDifference > 0 ? "(Overexposed)" : "(Underexposed)"
-    document.getElementById("debug-exposure-status").textContent = exposureStatus
-
-    // Update adjustments
-    document.getElementById("debug-aperture-adjustment").textContent = `${formatEvDiff(apertureEvDiff)} stops`
-    document.getElementById("debug-shutter-adjustment").textContent = `${formatEvDiff(shutterEvDiff)} stops`
-    document.getElementById("debug-iso-adjustment").textContent = `${formatEvDiff(-isoEvDiff)} stops`
-
-    // Show/hide priority indicators
-    document.getElementById("debug-aperture-priority").classList.toggle("hidden", exposureMode !== "aperture")
-    document.getElementById("debug-shutter-priority").classList.toggle("hidden", exposureMode !== "shutter")
-    document.getElementById("debug-iso-auto-indicator").classList.toggle("hidden", !autoIso)
-  }
-
-  // Also add the updateDebugDisplay call to the toggle function
-  if (debugToggleFooter) {
-    debugToggleFooter.addEventListener("click", function () {
-      debugMode = !debugMode
-      if (debugContainer) {
-        debugContainer.classList.toggle("hidden", !debugMode)
-      }
-      this.textContent = debugMode ? "Hide Debug Info" : "Show Debug Info"
-
-      // Update debug display when toggling debug mode
-      if (debugMode) {
-        updateDebugDisplay()
-      }
-    })
-  }
-
-  // Add the function to toggle the EV table
-  function toggleEvTable() {
-    const evTableContainer = document.getElementById("ev-table-container")
-    const evTableToggle = document.getElementById("ev-table-toggle")
-
-    if (!evTableContainer || !evTableToggle) return
-
-    const isHidden = evTableContainer.classList.contains("hidden")
-    evTableContainer.classList.toggle("hidden")
-
-    const toggleIcon = evTableToggle.querySelector(".toggle-icon")
-    if (toggleIcon) {
-      toggleIcon.textContent = isHidden ? "▼" : "▶"
-    }
-
-    // Update the button text
-    const buttonText = evTableToggle.textContent.replace("▶", "").replace("▼", "").trim()
-    evTableToggle.textContent = (isHidden ? "▼ " : "▶ ") + buttonText
-  }
-
-  // Make sure the toggleEvTable function is available globally
-  window.toggleEvTable = toggleEvTable
 })
 
