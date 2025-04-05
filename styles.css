@@ -1,17 +1,66 @@
-/* Base styles for iframe embedding */
-html, body {
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+/* Grid layout for iframe optimization */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 1rem;
+  margin: 1rem auto;
+  max-width: 1600px;
 }
 
-/* Rest of your existing CSS below */
-* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
+.left-column {
+  grid-column: 1;
+}
+
+.center-column {
+  grid-column: 2;
+}
+
+.right-column {
+  grid-column: 3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .grid-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .left-column {
+    grid-column: 1;
+  }
+
+  .center-column {
+    grid-column: 2;
+  }
+
+  .right-column {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .left-column,
+  .center-column,
+  .right-column {
+    grid-column: 1;
+  }
+
+  .left-column {
+    grid-row: 1;
+  }
+
+  .center-column {
+    grid-row: 2;
+  }
+
+  .right-column {
+    grid-row: 3;
+  }
 }
 
 /* Base styles */
@@ -98,7 +147,7 @@ header {
 }
 
 /* Grid layout */
-.grid {
+/*.grid {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 1.5rem;
@@ -110,7 +159,7 @@ header {
   .grid {
     grid-template-columns: 1fr;
   }
-}
+}*/
 
 /* Cards */
 .card {
