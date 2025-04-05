@@ -464,14 +464,22 @@
     document.body.classList.add("exposure-mode-aperture");
     
     // Toggle EV table
-    document.getElementById('ev-table-toggle').addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      var evTableToggle = document.getElementById('ev-table-toggle');
       var evTableContainer = document.getElementById('ev-table-container');
-      evTableContainer.classList.toggle('hidden');
       
-      if (evTableContainer.classList.contains('hidden')) {
-        this.innerHTML = '<i class="fas fa-chevron-down toggle-icon"></i> Show EV Reference Table';
+      if (evTableToggle && evTableContainer) {
+        evTableToggle.addEventListener('click', function() {
+          evTableContainer.classList.toggle('hidden');
+          
+          if (evTableContainer.classList.contains('hidden')) {
+            this.innerHTML = '<i class="fas fa-chevron-down toggle-icon"></i> Show EV Reference Table';
+          } else {
+            this.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
+          }
+        });
       } else {
-        this.innerHTML = '<i class="fas fa-chevron-up toggle-icon"></i> Hide EV Reference Table';
+        console.error('EV table toggle or container not found');
       }
     });
   </script>
