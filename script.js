@@ -252,6 +252,53 @@ document.addEventListener("DOMContentLoaded", () => {
       return ""
     }
 
+    // Update debug display elements
+    if (document.getElementById("debug-scene-type")) {
+      document.getElementById("debug-scene-type").textContent = sceneType
+    }
+    if (document.getElementById("debug-time-of-day")) {
+      document.getElementById("debug-time-of-day").textContent = timeOfDay
+    }
+    if (document.getElementById("debug-scene-ev")) {
+      document.getElementById("debug-scene-ev").textContent = ev
+    }
+    if (document.getElementById("debug-reference-exposure")) {
+      document.getElementById("debug-reference-exposure").textContent = "1/2000s"
+    }
+
+    if (document.getElementById("debug-exposure-mode")) {
+      document.getElementById("debug-exposure-mode").textContent =
+        exposureMode.charAt(0).toUpperCase() + exposureMode.slice(1) + " Priority"
+    }
+
+    if (document.getElementById("debug-iso")) {
+      document.getElementById("debug-iso").textContent = iso
+    }
+    if (document.getElementById("debug-auto-iso")) {
+      document.getElementById("debug-auto-iso").style.display = autoIso ? "inline" : "none"
+    }
+
+    if (document.getElementById("debug-aperture")) {
+      document.getElementById("debug-aperture").textContent = aperture
+    }
+
+    if (document.getElementById("debug-shutter-speed")) {
+      document.getElementById("debug-shutter-speed").textContent = formatShutterSpeed(shutter)
+    }
+
+    if (document.getElementById("debug-required-exposure")) {
+      const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
+      document.getElementById("debug-required-exposure").textContent = formatShutterSpeed(requiredShutter)
+    }
+
+    if (document.getElementById("debug-calculated-ev")) {
+      document.getElementById("debug-calculated-ev").textContent = calculatedEv.toFixed(2)
+    }
+
+    if (document.getElementById("debug-exposure-difference")) {
+      document.getElementById("debug-exposure-difference").textContent = evDifference.toFixed(2)
+    }
+
     console.log("Exposure Calculation Debug:", {
       sceneType,
       timeOfDay,
@@ -282,6 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
       exposureCorrect: Math.abs(evDifference) < 0.5,
       exposureStatus: evDifference < 0 ? "Underexposed" : evDifference > 0 ? "Overexposed" : "Correct",
     })
+  }
+
+  // Add this function to update the debug display whenever settings change
+  function updateDebugDisplay() {
+    if (!debugMode) return
+    debugExposureCalculation()
   }
 
   // Check critical elements
@@ -627,6 +680,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
+
+    // Update debug display
+    updateDebugDisplay()
   }
 
   // Update shutter display
@@ -647,6 +703,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
+
+    // Update debug display
+    updateDebugDisplay()
   }
 
   // Update ISO display
@@ -665,6 +724,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update EV differences
     updateEvDifferences()
+
+    // Update debug display
+    updateDebugDisplay()
   }
 
   // Update Auto ISO info
@@ -1522,6 +1584,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Call debug function
     debugExposureCalculation()
+
+    // Update debug display
+    updateDebugDisplay()
   }
 
   // Update all displays
