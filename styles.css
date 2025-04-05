@@ -48,10 +48,24 @@ header {
 /* Header with logo */
 .header-with-logo {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 1rem;
+}
+
+.logo-container {
+  flex-shrink: 0;
+}
+
+.header-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.title-text {
   text-align: center;
+  width: 100%;
 }
 
 .logo-title {
@@ -1064,10 +1078,5 @@ footer {
   border-radius: 0.5rem;
   padding: 1rem;
   background-color: #f9fafb;
-}
-
-.title-text {
-  text-align: center;
-  width: 100%;
 }
 
