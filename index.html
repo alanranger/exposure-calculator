@@ -12,7 +12,7 @@
           <div class="header-content">
     <div class="logo-title">
         <div class="header-with-logo">
-            <img src="logo.png" alt="Alan Ranger Photography" class="header-logo">
+            <img src="https://alanranger.github.io/exposure-calculator/logo.png" alt="Alan Ranger Photography" class="header-logo">
             <div>
                 <h1>Outdoor Photography Exposure Calculator</h1>
                 <p>Visualise and calculate exposure settings for your outdoor photography.</p>
@@ -29,9 +29,10 @@
       </header>
 
       <main class="grid-container">
-        <!-- Scene Settings Filter Bar -->
-        <div class="filter-bar">
-    <div class="filter-group">
+        <div class="left-column">
+            <div class="card">
+                <div class="card-content">
+    <div class="scene-type-selector">
         <label for="scene-type">Scene Type:</label>
         <select id="scene-type">
             <option value="landscape" selected>Landscape</option>
@@ -42,12 +43,7 @@
             <option value="sports">Sports</option>
         </select>
     </div>
-</div>
-
-        <div class="left-column">
-            <div class="card">
-                <div class="card-content">
-                    <div class="card-header">
+    <div class="card-header">
                         <h2>Exposure Controls</h2>
                         <div class="exposure-mode-tabs">
                             <button class="tab-trigger active" data-mode="aperture" id="aperture-priority">A/AV</button>
