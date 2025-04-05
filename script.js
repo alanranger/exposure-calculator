@@ -223,6 +223,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Debug function to log exposure calculations
+  function debugExposureCalculation() {
+    if (!debugMode) return
+
+    const aperture = standardApertures[apertureIndex]
+    const shutter = standardShutterSpeeds[shutterSpeedIndex]
+    const iso = standardIsoValues[isoIndex]
+
+    const calculatedEv = calculateActualEv(aperture, shutter, iso)
+    const evDifference = ev - calculatedEv
+
+    console.log("Exposure Calculation Debug:", {
+      sceneType,
+      timeOfDay,
+      sceneEv: ev,
+      aperture,
+      shutter,
+      iso,
+      calculatedEv,
+      evDifference,
+      exposureCorrect: Math.abs(evDifference) < 0.5,
+      exposureStatus: evDifference < 0 ? "Underexposed" : evDifference > 0 ? "Overexposed" : "Correct",
+    })
+  }
+
   // Check critical elements
   function checkCriticalElements() {
     debugLog("Checking critical elements")
@@ -1360,6 +1385,45 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneImage.style.filter = ""
     }
 
+    // Update exposure tips based on exposure correctness
+    if (exposureTipsCorrect && exposureTipsIncorrect && exposureTipsTitle && exposureTipsDescription) {
+      if (exposureCorrect) {
+        exposureTipsCorrect.classList.remove("hidden")
+        exposureTipsIncorrect.classList.add("hidden")
+      } else if (!bulbMode) {
+        exposureTipsCorrect.classList.add("hidden")
+        exposureTipsIncorrect.classList.remove("hidden")
+
+        // Set the title and description based on exposure difference
+        exposureTipsTitle.textContent = `${evDifference < 0 ? "Underexposed" : "Overexposed"} by ${Math.abs(evDifference).toFixed(1)} stops`
+        exposureTipsTitle.className = "tips-title text-red-600 font-bold"
+
+        exposureTipsDescription.textContent =
+          evDifference < 0
+            ? "Your image is too dark. Consider these adjustments:"
+            : "Your image is too bright. Consider these adjustments:"
+
+        // Update suggestions based on under/overexposure
+        if (exposureTipsSuggestions) {
+          if (evDifference < 0) {
+            // Underexposure suggestions
+            exposureTipsSuggestions.innerHTML = `
+            <li>Increase ISO to boost sensitivity (allows faster shutter speeds but introduces more noise)</li>
+            <li>Use slower shutter speed (lower number like 1/30 instead of 1/125)</li>
+            <li>Use wider aperture (lower f-number like f/2.8 instead of f/8) to let in more light</li>
+          `
+          } else {
+            // Overexposure suggestions
+            exposureTipsSuggestions.innerHTML = `
+            <li>Decrease ISO to reduce sensitivity (improves image quality)</li>
+            <li>Use faster shutter speed (higher number like 1/250 instead of 1/60)</li>
+            <li>Use smaller aperture (higher f-number like f/11 instead of f/5.6)</li>
+          `
+          }
+        }
+      }
+    }
+
     // Check if we need bulb mode warning
     const requiredShutter = calculateRequiredShutterSpeed(aperture, ev, iso)
     if (requiredShutter > 30) {
@@ -1419,6 +1483,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update histogram to reflect exposure changes
     updateHistogram()
+
+    // Call debug function
+    debugExposureCalculation()
   }
 
   // Update all displays
