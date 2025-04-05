@@ -12,7 +12,7 @@
           <div class="header-content">
     <div class="logo-title">
         <div class="header-with-logo">
-            <img src="logo.png" alt="Alan Ranger Photography" class="header-logo">
+            <img src="/logo.png" alt="Alan Ranger Photography" class="header-logo">
             <div>
                 <h1>Outdoor Photography Exposure Calculator</h1>
                 <p>Visualise and calculate exposure settings for your outdoor photography.</p>
@@ -40,6 +40,17 @@
             <option value="portrait">Portrait</option>
             <option value="wildlife">Wildlife</option>
             <option value="sports">Sports</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="time-of-day">Time of Day:</label>
+        <select id="time-of-day">
+            <option value="dawn">Dawn</option>
+            <option value="sunrise">Sunrise</option>
+            <option value="midday" selected>Midday</option>
+            <option value="sunset">Sunset</option>
+            <option value="dusk">Dusk</option>
+            <option value="night">Night</option>
         </select>
     </div>
 </div>
@@ -132,17 +143,6 @@
                         </div>
                     </div>
 
-<div class="time-selector">
-    <label for="time-of-day">Time of Day:</label>
-    <select id="time-of-day">
-        <option value="dawn">Dawn</option>
-        <option value="sunrise">Sunrise</option>
-        <option value="midday" selected>Midday</option>
-        <option value="sunset">Sunset</option>
-        <option value="dusk">Dusk</option>
-        <option value="night">Night</option>
-    </select>
-</div>
                     <div class="scene-preview">
                         <img id="scene-image" src="/placeholder.svg" alt="Scene preview">
                         <div id="scene-loading">Loading scene...</div>
